@@ -22,11 +22,22 @@ export class FirebaseAuth {
             if (user) {
                 console.log("Usuário está logado:", user);
                 callback(user); // Executa o callback passando o usuário logado
-                //window.location.href = "index.html";
+                if (!window.location.href.includes("index.html")) {
+                    if (!window.location.href.includes("avaliacao_intitucional"))
+                        window.location.href = "/avaliacao_intitucional/index.html"
+                    window.location.href = "index.html";
+                }
             } else {
                 console.log("Usuário não está logado");
+                console.log(window.location.href);
+                
+                if (!window.location.href.includes("login.html")) {
+                    if (!window.location.href.includes("avaliacao_intitucional"))
+                        window.location.href = "/avaliacao_intitucional/login.html"
+                    window.location.href = "login.html";
+                }
                 callback(null);
-                //window.location.href = "login.html";
+                
             }
         });
     }
