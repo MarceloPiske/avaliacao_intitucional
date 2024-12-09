@@ -5,6 +5,15 @@ import { init_app } from "./init_firebase_app.js"
 const app = init_app();
 const auth = getAuth(app);
 
+/* NOTE Utils section == */
+function pages_redirect(page) {
+    if (!window.location.href.includes(page + ".html")) {
+        if (!window.location.href.includes("avaliacao_intitucional"))
+            window.location.href = "/avaliacao_intitucional/" + page + ".html"
+        window.location.href = page + ".html";
+    }
+}
+/* NOTE Utils section == */
 // Classe FirebaseAuth
 export class FirebaseAuth {
     constructor() {
@@ -23,63 +32,50 @@ export class FirebaseAuth {
                 console.log("Usuário está logado:", user);
                 callback(user); // Executa o callback passando o usuário logado
                 if (user.email.includes("secretaria") || user.email.includes("leonidiosg")) {
-                    if (!window.location.href.includes("avaliacao_intitucional"))
-                        window.location.href = "/avaliacao_intitucional/visualizar_respostas.html"
-                    window.location.href = "visualizar_respostas.html";
-                }else{
-                    //if (!window.location.href.includes("avaliacao_intitucional"))
-                        //window.location.href = "/avaliacao_intitucional/index.html"
-                    //window.location.href = "index.html";
-                }
-                if (!window.location.href.includes("index.html")) {
-                    if (!window.location.href.includes("avaliacao_intitucional"))
-                        window.location.href = "/avaliacao_intitucional/index.html"
-                    window.location.href = "index.html";
+                    pages_redirect("visualizar_respostas")
+
+                } else {
+                    pages_redirect("index")
                 }
             } else {
                 console.log("Usuário não está logado");
-                
-                if (!window.location.href.includes("login.html")) {
-                    if (!window.location.href.includes("avaliacao_intitucional"))
-                        window.location.href = "/avaliacao_intitucional/login.html"
-                    window.location.href = "login.html";
-                }
+                pages_redirect("login")
                 callback(null);
-                
+
             }
         });
     }
 
     // Login com Google
     async loginWithGoogle() {
-        
+
         try {
             // Faz o login com o provedor Google
             const result = await signInWithPopup(auth, this.provider);
-        
+
             // Obtém o email do usuário autenticado
             const user = result.user
             const email = result.user.email;
             const domain = email.split("@")[1]; // Extrai o domínio do email
-        
+
             // Lista de domínios permitidos
             const allowedDomains = ["seminarioconcordia.com.br", "faculdadeluteranaconcordia.com.br"];
-        
+
             // Verifica se o domínio do email é permitido
             if (allowedDomains.includes(domain)) {
-              console.log("Autenticação bem-sucedida para:", email);
-              // Continue o fluxo da aplicação
-              return user
+                console.log("Autenticação bem-sucedida para:", email);
+                // Continue o fluxo da aplicação
+                return user
             } else {
-              // Se o domínio não for permitido, desloga o usuário
-              await signOut(auth);
-              console.error("Domínio não permitido:", domain);
-              alert("Seu domínio de email não é autorizado para login.");
+                // Se o domínio não for permitido, desloga o usuário
+                await signOut(auth);
+                console.error("Domínio não permitido:", domain);
+                alert("Seu domínio de email não é autorizado para login.");
             }
-          } catch (error) {
+        } catch (error) {
             console.error("Erro na autenticação:", error.message);
             alert("Erro ao fazer login. Tente novamente.");
-          }
+        }
     }
 
     // Logout
@@ -87,6 +83,7 @@ export class FirebaseAuth {
         try {
             await signOut(auth);
             console.log("Usuário deslogado com sucesso!");
+            pages_redirect("login")
         } catch (error) {
             console.error("Erro ao deslogar:", error);
         }

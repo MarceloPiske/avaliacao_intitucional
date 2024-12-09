@@ -466,9 +466,9 @@
                     <div class="progress-bar">
                         <div class="progress" style="width: ${discipline.status === 'completed' ? '100%' : '0%'}"></div>
                     </div>
-                    <button class="evaluate-btn">
-                        ${discipline.status === 'completed' ? 'Refazer Avaliação' : 'Avaliar Disciplina'}
-                    </button>`;
+                    
+                        ${discipline.status === 'completed' ? '' : '<button class="evaluate-btn">Avaliar Disciplina</button>'}
+                    `;
 
                 disciplinesGrid.appendChild(card);
             });
@@ -638,16 +638,16 @@
                     document.querySelector('.evaluation-form-overlay').style.display = 'block';
 
                     // Update card appearance
-                    card.classList.add('completed');
+                    /* card.classList.add('completed'); */
 
                     const progress = card.querySelector('.progress');
-                    progress.style.width = '100%';
-                    this.textContent = 'Refazer Avaliação';
+                    /* progress.style.width = '100%';
+                    this.textContent = 'Refazer Avaliação'; */
 
-                    card.querySelector('.status-icon').classList.remove('pending');
+                    /* card.querySelector('.status-icon').classList.remove('pending');
                     card.querySelector('.status-icon').style.background = '#4CAF50';
                     card.querySelector('.evaluation-status span').style.color = '#4CAF50';
-                    card.querySelector('.evaluation-status span').textContent = 'Avaliação Concluída';
+                    card.querySelector('.evaluation-status span').textContent = 'Avaliação Concluída'; */
                 });
             });
 
@@ -670,14 +670,10 @@
     // Logout
     document.getElementById("logoutButton").addEventListener("click", async () => {
         await authInstance.logout();
-        if (confirm('Deseja realmente sair?')) {
-            //console.log("Usuário deslogado.");
-            window.location.href = "login.html";
-        };
     });
 </script>
 
-<script type="module">
+<!-- <script type="module">
     import { FirebaseCRUD } from "./firestore_crud.js"
     async function test() {
         const usersCRUD = new FirebaseCRUD("diciplinas");
@@ -733,6 +729,6 @@
     };
 
     //test()
-</script>
+</script> -->
 
 </html>
