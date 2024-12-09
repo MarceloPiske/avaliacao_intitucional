@@ -27,9 +27,9 @@ export class FirebaseAuth {
                         window.location.href = "/avaliacao_intitucional/visualizar_respostas.html"
                     window.location.href = "visualizar_respostas.html";
                 }else{
-                    if (!window.location.href.includes("avaliacao_intitucional"))
-                        window.location.href = "/avaliacao_intitucional/index.html"
-                    window.location.href = "index.html";
+                    //if (!window.location.href.includes("avaliacao_intitucional"))
+                        //window.location.href = "/avaliacao_intitucional/index.html"
+                    //window.location.href = "index.html";
                 }
                 if (!window.location.href.includes("index.html")) {
                     if (!window.location.href.includes("avaliacao_intitucional"))
