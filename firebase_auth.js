@@ -22,6 +22,15 @@ export class FirebaseAuth {
             if (user) {
                 console.log("Usuário está logado:", user);
                 callback(user); // Executa o callback passando o usuário logado
+                if (user.email.includes("secretaria") || user.email.includes("leonidiosg")) {
+                    if (!window.location.href.includes("avaliacao_intitucional"))
+                        window.location.href = "/avaliacao_intitucional/visualizar_respostas.html"
+                    window.location.href = "visualizar_respostas.html";
+                }else{
+                    if (!window.location.href.includes("avaliacao_intitucional"))
+                        window.location.href = "/avaliacao_intitucional/index.html"
+                    window.location.href = "index.html";
+                }
                 if (!window.location.href.includes("index.html")) {
                     if (!window.location.href.includes("avaliacao_intitucional"))
                         window.location.href = "/avaliacao_intitucional/index.html"
@@ -29,7 +38,6 @@ export class FirebaseAuth {
                 }
             } else {
                 console.log("Usuário não está logado");
-                console.log(window.location.href);
                 
                 if (!window.location.href.includes("login.html")) {
                     if (!window.location.href.includes("avaliacao_intitucional"))
