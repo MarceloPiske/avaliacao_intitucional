@@ -31,7 +31,7 @@ export class FirebaseAuth {
             if (user) {
                 console.log("Usuário está logado:", user);
                 callback(user); // Executa o callback passando o usuário logado
-                if (user.email.includes("secretaria") || user.email.includes("leonidiosg")) {
+                if (user.email.includes("secretaria") || user.email.includes("leonidiosg") || user.email.includes("marcelohauch")) {
                     pages_redirect("visualizar_respostas")
 
                 } else {

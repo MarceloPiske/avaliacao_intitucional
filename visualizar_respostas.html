@@ -1,316 +1,455 @@
-<html>
-
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualização de Respostas - Sistema de Avaliação</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
             padding: 20px;
-            font-family: Arial, sans-serif;
-            background-color: #ffffff;
+            color: #334155;
         }
 
-        .tabs {
+        .page-header {
             display: flex;
-            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
-            border-bottom: 2px solid #e0e0e0;
-            padding-bottom: 10px;
-            overflow: auto;
+            padding: 0 20px;
         }
-
-        .tab {
-            padding: 12px 24px;
-            background-color: #f0f0f0;
-            border: none;
+        
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1e40af;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 500;
             cursor: pointer;
-            border-radius: 5px;
-            font-size: 16px;
             transition: all 0.3s ease;
-            
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-
-        .tab:hover {
-            background-color: #e0e0e0;
-        }
-
-        .tab.active {
-            background-color: #2196F3;
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
             color: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-outline {
+            background-color: white;
+            color: #3b82f6;
+            border: 1px solid #3b82f6;
+        }
+        
+        .btn-outline:hover {
+            background-color: #f0f7fc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15);
+        }
+        
+        .btn i {
+            margin-right: 8px;
         }
 
-        .tab-content {
-            display: none;
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        .filters-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
         }
 
-        .tab-content.active {
-            display: block;
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-grow: 1;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #334155;
+            min-width: 80px;
+        }
+
+        .filter-group select {
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #334155;
+            background-color: white;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            font-family: 'Poppins', sans-serif;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6' width='18px' height='18px'%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 30px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            background-color: #ffffff;
+            margin: 20px 0;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
-        th,
-        td {
-            border: 1px solid #e0e0e0;
-            padding: 12px 16px;
+        th, td {
+            padding: 15px;
             text-align: left;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         th {
-            background-color: #f5f5f5;
+            background-color: #f1f5f9;
+            color: #334155;
             font-weight: 600;
-            color: #333;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
         }
 
         tr:hover {
-            background-color: #f5f5f5;
+            background-color: #f8fafc;
         }
 
-        .evaluation-row {
+        .responses-section {
+            margin-bottom: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .responses-section h3 {
+            color: #1e40af;
+            margin-bottom: 20px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px 0;
+            color: #64748b;
+            font-style: italic;
+        }
+
+        /* Loading indicator */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+            backdrop-filter: blur(5px);
+        }
+        
+        .loading-content {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(59, 130, 246, 0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border-left-color: #3b82f6;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .rating-legend {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 0 auto 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .text-comments {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .text-comments:hover {
+            white-space: normal;
+            overflow: visible;
+            background-color: #f9f9f9;
+            position: relative;
+            z-index: 5;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            padding: 10px;
+        }
+        
+        .search-group {
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
-            padding: 10px;
-            background-color: #ffffff;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            gap: 12px;
+            flex-grow: 2;
         }
-
-        .question {
-            flex: 1;
-            padding-right: 20px;
+        
+        .search-group input {
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #334155;
+            background-color: white;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            font-family: 'Poppins', sans-serif;
         }
-
-        .response {
-            width: 60px;
-            text-align: center;
-            font-weight: bold;
-            background-color: #e3f2fd;
-            padding: 8px;
-            border-radius: 4px;
-        }
-
-        .header {
-            background-color: #2196F3;
-            color: white;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: 500;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        h3 {
-            color: #333;
-            margin: 25px 0 15px 0;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        body {
-            background-color: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-        }
-
-        table td[style*="text-align: center"] {
-            background-color: #e3f2fd;
-            font-weight: bold;
-            width: 80px;
+        
+        .search-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
     </style>
 </head>
 
 <body>
-    <button id="logoutButton">Sair</button>
-    <div class="container">
-        <button style="position: absolute; top: 1rem; right: 1rem;"><a href="./graficos.html">Gráficos</a></button>
-        <h2 id="toti">Total de respostas: </h2>
-        <div class="tabs">
-            
-        </div>
-
-        <div id="content">
+    <div class="page-header">
+        <h1 class="page-title">Respostas da Avaliação Institucional</h1>
+        <div class="action-buttons">
+            <button id="exportPdfBtn" class="btn btn-primary"><i class="fas fa-file-pdf"></i> Exportar PDF</button>
+            <a href="./graficos.html" class="btn btn-outline"><i class="fas fa-chart-bar"></i> Ver Gráficos</a>
         </div>
     </div>
+    
+    <div class="rating-legend">
+        <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 1.2em;">Legenda para Interpretação dos Dados</h3>
+        <p style="margin-bottom: 10px;">Os respondentes optaram em cada questão por uma das alternativas abaixo:</p>
+        <div style="display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: center;">
+            <div style="font-weight: bold; color: #34495e;">1</div>
+            <div>Discordo Totalmente</div>
+            <div style="font-weight: bold; color: #34495e;">2</div>
+            <div>Discordo</div>
+            <div style="font-weight: bold; color: #34495e;">3</div>
+            <div>Concordo Parcialmente</div>
+            <div style="font-weight: bold; color: #34495e;">4</div>
+            <div>Concordo</div>
+            <div style="font-weight: bold; color: #34495e;">5</div>
+            <div>Concordo Totalmente</div>
+        </div>
+    </div>
+    
+    <div class="filters-container">
+        <div class="filter-group">
+            <label for="professorFilter">Professor:</label>
+            <select id="professorFilter">
+                <option value="all">Todos os Professores</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="disciplineFilter">Disciplina:</label>
+            <select id="disciplineFilter">
+                <option value="all">Todas as Disciplinas</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="categoryFilter">Categoria:</label>
+            <select id="categoryFilter">
+                <option value="all">Todas as Categorias</option>
+                <option value="aluno">Aluno</option>
+                <option value="professor">Professor</option>
+                <option value="disciplina">Disciplina</option>
+            </select>
+        </div>
+        <div class="search-group">
+            <label for="searchInput">Buscar:</label>
+            <input type="text" id="searchInput" placeholder="Pesquisar por texto nas respostas...">
+        </div>
+    </div>
+
+    <div id="responses-container">
+        <!-- Responses will be loaded dynamically -->
+    </div>
+    
+    <div class="loading" id="loadingIndicator">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Processando...</p>
+        </div>
+    </div>
+
     <script type="module">
-        import { FirebaseAuth } from "./firebase_auth.js"
-        const authInstance = new FirebaseAuth();
-        // Logout
-        document.getElementById("logoutButton").addEventListener("click", async () => {
-            await authInstance.logout();
-        });
-    </script>
-    <script type="module">
+        import { FirebaseCRUD } from "./firestore_crud.js";
+        import { exportResponsesToPDF, exportChartsToPDF } from "./response_exporter.js";
+        import { ResponseVisualizer } from "./response_visualizer.js";
         
-        const EvaluationManager = {
-            evaluations: [],
-
-            init(initialData = []) {
-                this.evaluations = initialData;
-                this.render();
-                this.setupEventListeners();
-            },
-
-            addEvaluation(evaluation) {
-                this.evaluations.push(evaluation);
-                this.render();
-            },
-
-            removeEvaluation(id) {
-                this.evaluations = this.evaluations.filter(eva => eva.id !== id);
-                this.render();
-            },
-
-            updateEvaluation(id, newData) {
-                const index = this.evaluations.findIndex(eva => eva.id === id);
-                if (index !== -1) {
-                    this.evaluations[index] = { ...this.evaluations[index], ...newData };
-                    this.render();
-                }
-            },
-
-            render() {
-                const tabsContainer = document.querySelector('.tabs');
-                tabsContainer.innerHTML = this.evaluations.map((eva, index) => `
-                <button class="tab" data-index="${index}">Avaliação ${index + 1}</button>
-            `).join('');
-
-                if (this.evaluations.length > 0) {
-                    this.showTab(0);
-                }
-            },
-
-            setupEventListeners() {
-                document.querySelector('.tabs').addEventListener('click', (e) => {
-                    if (e.target.classList.contains('tab')) {
-                        const index = parseInt(e.target.dataset.index);
-                        this.showTab(index);
-                    }
-                });
-            },
-
-            showTab(index) {
-                const content = document.getElementById('content');
-                content.innerHTML = this.createEvaluationContent(this.evaluations[index]);
-
-                const tabs = document.querySelectorAll('.tab');
-                tabs.forEach((tab, i) => {
-                    if (i === index) {
-                        tab.classList.add('active');
-                    } else {
-                        tab.classList.remove('active');
-                    }
-                });
-            },
-
-            createEvaluationContent(evaluation) {
-                if (!evaluation) return '';
-
-                return `
-                <div class="header">ID da Avaliação: ${evaluation.id}</div>
+        const respostas_CRUD = new FirebaseCRUD("respostas");
+        let allResponses = [];
+        let responseVisualizer;
+        
+        // Initialize the page
+        async function init() {
+            document.getElementById('loadingIndicator').style.display = 'flex';
+            try {
+                // Fetch all responses
+                allResponses = await respostas_CRUD.readAll();
                 
-                <h3>Avaliação do Professor ${evaluation.professor_name ? evaluation.professor_name: ""}</h3>
-                ${this.createQuestionsTable(evaluation.professor)}
+                // Initialize response visualizer
+                responseVisualizer = new ResponseVisualizer();
+                responseVisualizer.initialize(allResponses, 'responses-container');
                 
-                <h3>Avaliação do Aluno</h3>
-                ${this.createQuestionsTable(evaluation.aluno)}
+                // Populate filters
+                populateFilters(allResponses);
                 
-                <h3>Avaliação da Disciplina ${evaluation.discipline_name ? evaluation.discipline_name : ""}</h3>
-                ${this.createQuestionsTable(evaluation.disciplina)}
-                
-                <h3>Comentários e Sugestões</h3>
-                <table>
-                    <tr>
-                        <th>Comentários</th>
-                        <td>${evaluation.comentarios}</td>
-                    </tr>
-                    <tr>
-                        <th>Sugestões</th>
-                        <td>${evaluation.sugestoes}</td>
-                    </tr>
-                </table>
-            `;
-            },
-
-            createQuestionsTable(section) {
-                if (!section) return '';
-
-                let rows = '';
-                for (let key in section) {
-                    const question = section[key];
-                    rows += `
-                    <tr>
-                        <td>${question.pergunta}</td>
-                        <td style="text-align: center; font-weight: bold;">${question.resposta}</td>
-                    </tr>
-                `;
-                }
-
-                return `
-                <table>
-                    <tr>
-                        <th>Pergunta</th>
-                        <th>Resposta</th>
-                    </tr>
-                    ${rows}
-                </table>
-            `;
+                // Setup event listeners
+                setupEventListeners();
+            } catch (error) {
+                console.error("Error initializing page:", error);
+                alert("Ocorreu um erro ao carregar os dados. Por favor, tente novamente.");
+            } finally {
+                document.getElementById('loadingIndicator').style.display = 'none';
             }
-        };
-        import { FirebaseCRUD } from "./firestore_crud.js"
-        // Initialize with existing data
-        window.onload = async () => {
-
-            const respostas_CRUD = new FirebaseCRUD("respostas");
-            const respostas = await respostas_CRUD.readAll()
-            //const data = await respostas_CRUD.readAll()
-            const distinctUserCount = new Set(respostas.map(r => r.user_id)).size;
-            //console.log(distinctUserCount);
-            document.getElementById("toti").innerText = "Total de Alunos que Responderam: "+distinctUserCount
+        }
+        
+        // Populate filter dropdowns
+        function populateFilters(responses) {
+            const professors = [...new Set(responses.map(r => r.professor_name))];
+            const disciplines = [...new Set(responses.map(r => r.discipline_name))];
             
-            await EvaluationManager.init(respostas);
-        };
-
-        // Example of adding a new evaluation
-        const newEvaluation = {
-            id: "newId123",
-            professor: { /* ... */ },
-            aluno: { /* ... */ },
-            disciplina: { /* ... */ },
-            comentarios: "Novo comentário",
-            sugestoes: "Nova sugestão"
-        };
-
-        EvaluationManager.addEvaluation(newEvaluation);
-
-        // Example of updating an evaluation
-        const updatedData = {
-            comentarios: "Comentário atualizado",
-            sugestoes: "Sugestão atualizada"
-        };
-
-        EvaluationManager.updateEvaluation("existingId", updatedData);
+            const professorSelect = document.getElementById('professorFilter');
+            const disciplineSelect = document.getElementById('disciplineFilter');
+            
+            // Clear existing options
+            professorSelect.innerHTML = '<option value="all">Todos os Professores</option>';
+            disciplineSelect.innerHTML = '<option value="all">Todas as Disciplinas</option>';
+            
+            // Add new options
+            professors.forEach(professor => {
+                const option = document.createElement('option');
+                option.value = professor;
+                option.textContent = professor;
+                professorSelect.appendChild(option);
+            });
+            
+            disciplines.forEach(discipline => {
+                const option = document.createElement('option');
+                option.value = discipline;
+                option.textContent = discipline;
+                disciplineSelect.appendChild(option);
+            });
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Filter change events
+            document.getElementById('professorFilter').addEventListener('change', handleFilterChange);
+            document.getElementById('disciplineFilter').addEventListener('change', handleFilterChange);
+            document.getElementById('categoryFilter').addEventListener('change', handleFilterChange);
+            
+            // Search input with debouncing
+            let debounceTimeout;
+            document.getElementById('searchInput').addEventListener('input', function() {
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(handleFilterChange, 300);
+            });
+            
+            // Export to PDF button
+            document.getElementById('exportPdfBtn').addEventListener('click', async () => {
+                try {
+                    document.getElementById('loadingIndicator').style.display = 'flex';
+                    
+                    const selectedProfessor = document.getElementById('professorFilter').value;
+                    const selectedDiscipline = document.getElementById('disciplineFilter').value;
+                    
+                    let filename = 'respostas_avaliacao';
+                    if (selectedProfessor !== 'all') {
+                        filename += `_prof_${selectedProfessor.replace(/\s+/g, '_')}`;
+                    }
+                    if (selectedDiscipline !== 'all') {
+                        filename += `_disc_${selectedDiscipline.replace(/\s+/g, '_')}`;
+                    }
+                    filename += '.pdf';
+                    
+                    await exportResponsesToPDF(filename, '#responses-container');
+                    
+                    document.getElementById('loadingIndicator').style.display = 'none';
+                } catch (error) {
+                    console.error('Error exporting PDF:', error);
+                    document.getElementById('loadingIndicator').style.display = 'none';
+                    alert('Ocorreu um erro ao exportar o PDF. Por favor, tente novamente.');
+                }
+            });
+        }
+        
+        // Handle filter changes
+        function handleFilterChange() {
+            const selectedProfessor = document.getElementById('professorFilter').value;
+            const selectedDiscipline = document.getElementById('disciplineFilter').value;
+            const selectedCategory = document.getElementById('categoryFilter').value;
+            const searchText = document.getElementById('searchInput').value;
+            
+            responseVisualizer.updateFilters({
+                professor: selectedProfessor,
+                discipline: selectedDiscipline,
+                category: selectedCategory,
+                searchText: searchText
+            });
+        }
+        
+        // Initialize when the page loads
+        document.addEventListener('DOMContentLoaded', init);
     </script>
-
 </body>
-
 </html>
