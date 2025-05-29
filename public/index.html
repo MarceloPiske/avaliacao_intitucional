@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avaliação Institucional</title>
+    <title>Avaliação das Disciplinas</title>
     <style>
         * {
             margin: 0;
@@ -368,7 +368,7 @@
     <div class="container">
         <button id="logoutButton">Sair</button>
         <div class="header">
-            <h1>Avaliação Institucional</h1>
+            <h1>Avaliação das Disciplinas</h1>
             <p>Avalie suas disciplinas do semestre atual</p>
         </div>
         <div class="disciplines-grid">
@@ -670,6 +670,13 @@
     // Logout
     document.getElementById("logoutButton").addEventListener("click", async () => {
         await authInstance.logout();
+    });
+    authInstance.check_login_status((user) => {
+        if (user) {
+            console.log("Usuário conectado:", user.email);
+        } else {
+            console.log("Nenhum usuário conectado.");
+        }
     });
 </script>
 

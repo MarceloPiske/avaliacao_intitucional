@@ -29,16 +29,16 @@ export class FirebaseAuth {
     check_login_status(callback) {
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                console.log("Usuário está logado:", user);
+                //console.log("Usuário está logado:", user);
                 callback(user); // Executa o callback passando o usuário logado
-                if (user.email.includes("secretaria") || user.email.includes("leonidiosg")) {
+                if (user.email.includes("secretaria") || user.email.includes("leonidiosg") || user.email.includes("marcelohauch")) {
                     pages_redirect("visualizar_respostas")
 
                 } else {
                     pages_redirect("index")
                 }
             } else {
-                console.log("Usuário não está logado");
+                //console.log("Usuário não está logado");
                 pages_redirect("login")
                 callback(null);
 
@@ -91,7 +91,7 @@ export class FirebaseAuth {
 }
 
 // Exemplo de uso
-(async () => {
+/* (async () => {
     const authInstance = new FirebaseAuth();
 
     // Verifica o status de login
@@ -102,4 +102,4 @@ export class FirebaseAuth {
             console.log("Nenhum usuário conectado.");
         }
     });
-})();
+})(); */
