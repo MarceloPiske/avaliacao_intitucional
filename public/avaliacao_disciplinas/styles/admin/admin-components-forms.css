@@ -1,0 +1,781 @@
+/* ========================================
+   FORM COMPONENTS & STUDENT MANAGEMENT
+   ======================================== */
+
+/* Questions Management */
+.questions-section {
+    background: var(--gray-50);
+    padding: var(--spacing-6);
+    border-radius: var(--radius-xl);
+    margin-top: var(--spacing-6);
+}
+
+.questions-section h4 {
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-4);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.question-item {
+    background: white;
+    padding: var(--spacing-4);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-3);
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.question-content {
+    flex: 1;
+}
+
+.question-text {
+    font-weight: 500;
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-1);
+}
+
+.question-meta {
+    font-size: 0.8rem;
+    color: var(--gray-600);
+}
+
+.question-actions {
+    display: flex;
+    gap: var(--spacing-2);
+}
+
+.add-question-btn {
+    background: var(--primary-100);
+    color: var(--primary-700);
+    border: 1px solid var(--primary-200);
+    padding: var(--spacing-3) var(--spacing-4);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all var(--transition-base);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-4);
+}
+
+.add-question-btn:hover {
+    background: var(--primary-200);
+    transform: translateY(-1px);
+}
+
+.add-question-btn .material-icons {
+    font-size: 1.2rem;
+}
+
+.question-form {
+    background: white;
+    padding: var(--spacing-6);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--gray-200);
+    margin-bottom: var(--spacing-4);
+}
+
+.question-form h5 {
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-4);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.question-form .form-group label {
+    color: var(--gray-700);
+    font-weight: 500;
+    margin-bottom: var(--spacing-2);
+    display: block;
+}
+
+.question-form .form-group input,
+.question-form .form-group select,
+.question-form .form-group textarea {
+    width: 100%;
+    padding: var(--spacing-3) var(--spacing-4);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-lg);
+    font-size: 0.875rem;
+    transition: all var(--transition-base);
+    background: white;
+    color: var(--gray-900);
+}
+
+.question-form .form-group input:focus,
+.question-form .form-group select:focus,
+.question-form .form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    color: var(--gray-900);
+}
+
+.question-form .form-group input::placeholder,
+.question-form .form-group textarea::placeholder {
+    color: var(--gray-500);
+}
+
+/* Enhanced Students Management */
+.students-management {
+    padding: var(--spacing-6);
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.students-management h4,
+.students-management h5,
+.students-management h6 {
+    color: var(--gray-800);
+}
+
+.students-management h4 {
+    margin-bottom: var(--spacing-6);
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-align: center;
+    padding-bottom: var(--spacing-4);
+    border-bottom: 2px solid var(--primary-200);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-4);
+    padding: var(--spacing-4);
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+}
+
+.section-header h5 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.students-stats,
+.enrolled-stats {
+    display: flex;
+    gap: var(--spacing-4);
+    align-items: center;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-1);
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-600);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--gray-600);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Enhanced Bulk Add Section */
+.bulk-add-section {
+    background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+    border: 1px solid var(--primary-200);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-6);
+    margin-bottom: var(--spacing-6);
+}
+
+.bulk-actions-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-4);
+}
+
+.search-container {
+    flex: 1;
+}
+
+.search-input {
+    width: 100%;
+    padding: var(--spacing-3) var(--spacing-4);
+    border: 1px solid var(--primary-300);
+    border-radius: var(--radius-lg);
+    font-size: 0.875rem;
+    background: white;
+    color: var(--gray-900);
+    transition: all var(--transition-base);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.search-results {
+    margin-top: var(--spacing-2);
+    font-size: 0.875rem;
+    color: var(--primary-700);
+    font-weight: 500;
+}
+
+.bulk-actions {
+    display: flex;
+    gap: var(--spacing-3);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.bulk-actions .btn {
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: 0.875rem;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+}
+
+.btn-outline {
+    background: white;
+    color: var(--primary-600);
+    border: 1px solid var(--primary-300);
+}
+
+.btn-outline:hover {
+    background: var(--primary-50);
+    border-color: var(--primary-400);
+}
+
+/* Bulk Add Section */
+.bulk-add-section {
+    background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+    border: 1px solid var(--primary-200);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-6);
+    margin-bottom: var(--spacing-6);
+}
+
+.student-search-container {
+    margin-bottom: var(--spacing-4);
+}
+
+.search-input-container {
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: var(--spacing-3) var(--spacing-4);
+    border: 1px solid var(--primary-300);
+    border-radius: var(--radius-lg);
+    font-size: 0.875rem;
+    background: white;
+    color: var(--gray-900);
+    transition: all var(--transition-base);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.search-stats {
+    margin-top: var(--spacing-2);
+    font-size: 0.875rem;
+    color: var(--primary-700);
+    font-weight: 500;
+}
+
+/* Enhanced Students Grid */
+.students-grid-container {
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--primary-200);
+    padding: var(--spacing-4);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.students-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-3);
+}
+
+.student-checkbox-item {
+    transition: all var(--transition-base);
+}
+
+.student-checkbox-label {
+    display: block;
+    cursor: pointer;
+    margin: 0;
+}
+
+.student-info-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-4);
+    background: var(--gray-50);
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-base);
+    position: relative;
+}
+
+.student-info-card:hover {
+    background: var(--primary-50);
+    border-color: var(--primary-300);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.student-checkbox {
+    position: absolute;
+    top: var(--spacing-2);
+    left: var(--spacing-2);
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+.student-checkbox-label:has(.student-checkbox:checked) .student-info-card {
+    background: var(--primary-100);
+    border-color: var(--primary-500);
+    box-shadow: var(--shadow-lg);
+}
+
+.student-checkbox-label:has(.student-checkbox:checked) .selection-indicator {
+    opacity: 1;
+}
+
+.selection-indicator {
+    position: absolute;
+    top: var(--spacing-2);
+    right: var(--spacing-2);
+    color: var(--primary-600);
+    opacity: 0;
+    transition: all var(--transition-base);
+}
+
+.student-avatar {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary-600), var(--primary-400));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.student-details {
+    flex: 1;
+    min-width: 0;
+    margin-left: var(--spacing-4);
+}
+
+.student-name {
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: var(--spacing-1);
+    font-size: 0.95rem;
+}
+
+.student-email {
+    color: var(--gray-600);
+    font-size: 0.85rem;
+    margin-bottom: var(--spacing-2);
+    word-break: break-word;
+}
+
+.student-uid {
+    color: var(--gray-500);
+    font-size: 0.75rem;
+    font-family: 'Courier New', monospace;
+}
+
+.student-actions {
+    display: flex;
+    gap: var(--spacing-1);
+}
+
+.btn-xs {
+    padding: var(--spacing-1) var(--spacing-2);
+    font-size: 0.75rem;
+    min-height: 28px;
+}
+
+.btn-xs .material-icons {
+    font-size: 1rem;
+}
+
+.no-students-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: var(--spacing-12);
+    color: var(--gray-500);
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+    border: 2px dashed var(--gray-300);
+}
+
+.no-students-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-4);
+    color: var(--gray-400);
+}
+
+.no-students-message h4 {
+    color: var(--gray-700);
+    margin-bottom: var(--spacing-2);
+    font-size: 1.1rem;
+}
+
+.no-students-message p {
+    color: var(--gray-600);
+    font-size: 0.9rem;
+}
+
+/* Enhanced Enrolled Students Section */
+.enrolled-students-section {
+    background: linear-gradient(135deg, var(--success-50), var(--success-100));
+    border: 1px solid var(--success-200);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-6);
+}
+
+.enrolled-students-container {
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--success-200);
+    padding: var(--spacing-4);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.enrolled-students-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-3);
+}
+
+.enrolled-student-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-4);
+    border: 1px solid var(--success-200);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.enrolled-student-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--success-300);
+}
+
+.enrolled-student-card .student-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    flex: 1;
+}
+
+.enrolled-student-card .student-avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--success-600), var(--success-400));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.enrolled-student-card .student-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.enrolled-student-card .student-name {
+    color: var(--gray-900);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: var(--spacing-1);
+}
+
+.enrolled-student-card .student-email {
+    color: var(--gray-700);
+    font-size: 0.8rem;
+    margin-bottom: var(--spacing-1);
+}
+
+.enrolled-student-card .student-uid {
+    color: var(--gray-500);
+    font-size: 0.75rem;
+    font-family: 'Courier New', monospace;
+}
+
+.enrolled-student-card .student-actions {
+    display: flex;
+    gap: var(--spacing-1);
+}
+
+.no-enrolled-students {
+    text-align: center;
+    padding: var(--spacing-12);
+    color: var(--gray-500);
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+    border: 2px dashed var(--gray-300);
+}
+
+.no-enrolled-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-4);
+    color: var(--gray-400);
+}
+
+.no-enrolled-students h4 {
+    color: var(--gray-700);
+    margin-bottom: var(--spacing-2);
+    font-size: 1.1rem;
+}
+
+.no-enrolled-students p {
+    color: var(--gray-600);
+    font-size: 0.9rem;
+}
+
+/* Enhanced Missing Students Alert */
+.missing-students-alert {
+    background: linear-gradient(135deg, rgba(249, 168, 37, 0.1), rgba(245, 101, 101, 0.1));
+    border: 1px solid rgba(249, 168, 37, 0.3);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-6);
+    margin-bottom: var(--spacing-4);
+}
+
+.alert-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-3);
+}
+
+.alert-header .material-icons {
+    color: #d97706;
+    font-size: 1.2rem;
+}
+
+.alert-header h6 {
+    color: #d97706;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.missing-students-alert p {
+    color: #92400e;
+    margin-bottom: var(--spacing-3);
+    font-size: 0.9rem;
+}
+
+.missing-students-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-4);
+}
+
+.missing-students-list code {
+    background: rgba(249, 168, 37, 0.2);
+    color: #92400e;
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-md);
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+}
+
+.alert-actions {
+    display: flex;
+    gap: var(--spacing-2);
+}
+
+/* Success Notification */
+.success-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--success-600);
+    color: white;
+    padding: var(--spacing-4) var(--spacing-6);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    animation: slideInNotification 0.3s ease-out;
+}
+
+@keyframes slideInNotification {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Success Message Animation */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.success-message {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+    .students-management {
+        padding: var(--spacing-4);
+    }
+    
+    .add-student-section,
+    .enrolled-students-section {
+        padding: var(--spacing-4);
+    }
+    
+    .create-student-form {
+        padding: var(--spacing-4);
+    }
+    
+    .create-student-form .form-group input {
+        min-height: 44px;
+        font-size: 1rem;
+    }
+    
+    .question-form {
+        padding: var(--spacing-4);
+    }
+    
+    .question-form .form-group input,
+    .question-form .form-group select,
+    .question-form .form-group textarea {
+        min-height: 44px;
+        font-size: 1rem;
+    }
+    
+    .students-grid {
+        grid-template-columns: 1fr;
+        max-height: 300px;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        gap: var(--spacing-3);
+        align-items: stretch;
+    }
+    
+    .bulk-actions {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .student-info-card {
+        padding: var(--spacing-4);
+    }
+    
+    .student-checkbox {
+        position: static;
+        margin-bottom: var(--spacing-2);
+        transform: scale(1.4);
+    }
+    
+    .enrolled-student-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-3);
+    }
+    
+    .enrolled-student-item .action-btn {
+        align-self: flex-end;
+        width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .students-management {
+        padding: var(--spacing-4);
+    }
+    
+    .bulk-add-section,
+    .individual-add-section,
+    .enrolled-students-section {
+        padding: var(--spacing-4);
+    }
+    
+    .students-grid {
+        max-height: 250px;
+    }
+    
+    .student-avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+    
+    .student-name {
+        font-size: 0.85rem;
+    }
+    
+    .student-email {
+        font-size: 0.75rem;
+    }
+}

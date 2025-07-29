@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Avaliação de Disciplinas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="styles/login/login.css">
+    <meta name="description" content="Acesse o sistema de avaliação de disciplinas com suas credenciais acadêmicas">
+</head>
+<body>
+    <header class="login-header-top">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="32" height="32" rx="8" fill="url(#logoGradient)"/>
+                        <path d="M8 12L16 8L24 12V20C24 21.1046 23.1046 22 22 22H10C8.89543 22 8 21.1046 8 20V12Z" fill="white"/>
+                        <path d="M12 16H20M12 19H18" stroke="url(#logoGradient)" stroke-width="2" stroke-linecap="round"/>
+                        <defs>
+                            <linearGradient id="logoGradient" x1="0" y1="0" x2="32" y2="32">
+                                <stop offset="0%" stop-color="#0ea5e9"/>
+                                <stop offset="100%" stop-color="#3b82f6"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h3>Sistema de Avaliação</h3>
+                    <p>de Disciplinas</p>
+                </div>
+            </div>
+            <div class="header-nav">
+                <a href="#sobre" class="nav-link">Sobre</a>
+                <a href="#suporte" class="nav-link">Suporte</a>
+                <a href="#contato" class="nav-link">Contato</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="login-container">
+        <div class="login-form-container">
+            <div class="login-form-wrapper">
+                <div class="login-header">
+                    <h1>Bem-vindo(a)</h1>
+                    <p>Acesse o sistema com suas credenciais acadêmicas</p>
+                </div>
+                
+                <div class="login-mode-selector">
+                    <button type="button" class="mode-btn active" data-mode="student">
+                        <span class="mode-icon material-icons">school</span>
+                        <span class="mode-text">Aluno</span>
+                    </button>
+                    <button type="button" class="mode-btn" data-mode="admin">
+                        <span class="mode-icon material-icons">admin_panel_settings</span>
+                        <span class="mode-text">Administrador</span>
+                    </button>
+                </div>
+                
+                <div id="errorAlert" class="alert alert-danger" role="alert" aria-live="polite"></div>
+                <div id="successAlert" class="alert alert-success" role="alert" aria-live="polite"></div>
+                
+                <form id="loginForm" class="login-form" novalidate>
+                    <div class="login-mode-content">
+                        <div class="mode-description" id="modeDescription">
+                            <div class="mode-info student-mode active">
+                                <h3>Acesso do Aluno</h3>
+                                <p>Avalie suas disciplinas e contribua para a melhoria do ensino</p>
+                            </div>
+                            <div class="mode-info admin-mode">
+                                <h3>Acesso Administrativo</h3>
+                                <p>Gerencie usuários, disciplinas e visualize relatórios</p>
+                            </div>
+                        </div>
+                        
+                        <button type="button" id="googleLoginButton" class="btn btn-primary" aria-describedby="login-help">
+                            <span class="btn-icon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M10 8.5V11.5H14.5C14.3 12.5 13.5 13.8 12 14.5L14.5 16.5C16.2 15 17 12.8 17 10.3C17 9.8 16.95 9.35 16.9 8.9H10V8.5Z" fill="white"/>
+                                    <path d="M6.5 12L5.8 14.5L3.3 14.6C2.5 13.2 2 11.7 2 10C2 8.3 2.5 6.8 3.3 5.4H6L6.5 8C6.2 8.9 6.2 9.9 6.5 10.8V12Z" fill="white"/>
+                                    <path d="M10 4C11.4 4 12.6 4.5 13.5 5.3L15.8 3C14.2 1.5 12.2 0.5 10 0.5C7.2 0.5 4.8 2.2 3.3 5.4L6 7.8C6.8 5.7 8.3 4 10 4Z" fill="white"/>
+                                </svg>
+                            </span>
+                            <span class="btn-text">Entrar com Google</span>
+                            <div class="loader" id="googleLoader" aria-hidden="true"></div>
+                        </button>
+                        
+                        <div id="login-help" class="sr-only">
+                            Use seu email institucional para fazer login no sistema
+                        </div>
+                    </div>
+                </form>
+                
+                <div class="login-footer">
+                    <div class="security-info">
+                        <span class="material-icons">security</span>
+                        <span>Conexão segura e criptografada</span>
+                    </div>
+                    <div class="help-links">
+                        <a href="#ajuda" class="help-link">Precisa de ajuda?</a>
+                        <a href="#politica" class="help-link">Política de Privacidade</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="illustration-container" aria-hidden="true">
+            <div class="illustration-bg"></div>
+            <div class="illustration-content">
+                <div class="floating-card card-1">
+                    <div class="card-header"></div>
+                    <div class="card-body">
+                        <div class="card-line long"></div>
+                        <div class="card-line medium"></div>
+                        <div class="card-line short"></div>
+                    </div>
+                </div>
+                <div class="floating-card card-2">
+                    <div class="card-icon"></div>
+                    <div class="card-content">
+                        <div class="card-title"></div>
+                        <div class="card-subtitle"></div>
+                    </div>
+                </div>
+                <div class="floating-card card-3">
+                    <div class="chart-container">
+                        <div class="chart-bar" style="height: 60%"></div>
+                        <div class="chart-bar" style="height: 80%"></div>
+                        <div class="chart-bar" style="height: 40%"></div>
+                        <div class="chart-bar" style="height: 90%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="login-footer-bottom">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Sistema de Avaliação</h4>
+                <p>Plataforma moderna para avaliação acadêmica e feedback institucional</p>
+            </div>
+            <div class="footer-section">
+                <h5>Recursos</h5>
+                <ul>
+                    <li><a href="#avaliacoes">Avaliações</a></li>
+                    <li><a href="#relatorios">Relatórios</a></li>
+                    <li><a href="#analytics">Analytics</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h5>Suporte</h5>
+                <ul>
+                    <li><a href="#documentacao">Documentação</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#contato">Contato</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h5>Institucional</h5>
+                <ul>
+                    <li><a href="#sobre">Sobre Nós</a></li>
+                    <li><a href="#privacidade">Privacidade</a></li>
+                    <li><a href="#termos">Termos de Uso</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Sistema de Avaliação de Disciplinas. Todos os direitos reservados.</p>
+            <div class="footer-links">
+                <a href="#status">Status do Sistema</a>
+                <a href="#api">API</a>
+                <a href="#changelog">Changelog</a>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="login.js"></script>
+</body>
+</html>

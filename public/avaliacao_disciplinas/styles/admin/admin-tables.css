@@ -1,0 +1,168 @@
+/* ========================================
+   TABLE STYLES
+   ======================================== */
+
+/* Data Tables */
+.data-table-container {
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    min-width: 600px;
+}
+
+.data-table th {
+    background: var(--gray-50);
+    padding: var(--spacing-4) var(--spacing-6);
+    text-align: left;
+    font-weight: 600;
+    color: var(--gray-800);
+    border-bottom: 2px solid var(--gray-200);
+    white-space: nowrap;
+}
+
+.data-table td {
+    padding: var(--spacing-4) var(--spacing-6);
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-900);
+    vertical-align: middle;
+}
+
+.data-table tr:hover {
+    background: var(--gray-50);
+}
+
+.data-table .action-btn {
+    padding: var(--spacing-2) var(--spacing-3);
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: all var(--transition-base);
+    margin-right: var(--spacing-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+}
+
+.action-btn.edit {
+    background: var(--primary-100);
+    color: var(--primary-800);
+    border: 1px solid var(--primary-200);
+}
+
+.action-btn.edit:hover {
+    background: var(--primary-200);
+    color: var(--primary-900);
+}
+
+.action-btn.delete {
+    background: var(--danger-100);
+    color: var(--danger-800);
+    border: 1px solid var(--danger-200);
+}
+
+.action-btn.delete:hover {
+    background: var(--danger-200);
+    color: var(--danger-900);
+}
+
+.action-btn.view {
+    background: var(--gray-100);
+    color: var(--gray-800);
+    border: 1px solid var(--gray-200);
+}
+
+.action-btn.view:hover {
+    background: var(--gray-200);
+    color: var(--gray-900);
+}
+
+.action-btn.questions {
+    background: var(--warning-100);
+    color: var(--warning-800);
+    border: 1px solid var(--warning-200);
+}
+
+.action-btn.questions:hover {
+    background: var(--warning-200);
+    color: var(--warning-900);
+}
+
+.action-btn.duplicate {
+    background: var(--success-100);
+    color: var(--success-800);
+    border: 1px solid var(--success-200);
+}
+
+.action-btn.duplicate:hover {
+    background: var(--success-200);
+    color: var(--success-900);
+}
+
+/* Checkbox styles */
+.user-checkbox,
+#selectAllUsers {
+    transform: scale(1.2);
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Mobile responsive tables */
+@media (max-width: 768px) {
+    .data-table-container {
+        margin: 0 -var(--spacing-4);
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+    
+    .data-table {
+        font-size: 0.8rem;
+        min-width: 700px;
+    }
+    
+    .data-table th,
+    .data-table td {
+        padding: var(--spacing-3) var(--spacing-4);
+    }
+    
+    .data-table .action-btn {
+        padding: var(--spacing-1) var(--spacing-2);
+        font-size: 0.7rem;
+        margin-right: var(--spacing-1);
+        min-height: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .data-table {
+        min-width: 800px;
+    }
+    
+    .data-table th,
+    .data-table td {
+        padding: var(--spacing-2) var(--spacing-3);
+    }
+    
+    .action-btn.edit,
+    .action-btn.delete,
+    .action-btn.view,
+    .action-btn.questions {
+        font-size: 0.65rem;
+        padding: var(--spacing-1);
+        margin-right: var(--spacing-1);
+        min-height: 24px;
+        min-width: 24px;
+    }
+}

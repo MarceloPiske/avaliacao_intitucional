@@ -12,13 +12,37 @@
         "destination": "/avaliacao_institucional/index.html"
       },
       {
-        "source": "/",
-        "destination": "/index.html"
+        "source": "/institucional",
+        "destination": "/avaliacao_institucional/index.html"
+      },
+      {
+        "source": "/disciplinas/**",
+        "destination": "/avaliacao_disciplinas/login.html"
       },
       {
         "source": "/disciplinas",
-        "destination": "/index.html"
+        "destination": "/avaliacao_disciplinas/login.html"
+      },
+      {
+        "source": "/",
+        "destination": "/avaliacao_disciplinas/login.html"
       }
     ]
-  }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint"
+      ]
+    }
+  ]
 }

@@ -1,0 +1,4 @@
+/* Evaluation page styles - imports all components */
+@import url('../../evaluation-base.css');
+@import url('../../evaluation-components.css');
+

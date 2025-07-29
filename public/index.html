@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avaliação das Disciplinas</title>
-    <style>
+    <!-- <style>
         * {
             margin: 0;
             padding: 0;
@@ -361,7 +361,7 @@
             min-height: 100px;
             padding: 5px;
         }
-    </style>
+    </style> -->
 </head>
 
 <body>
@@ -679,63 +679,5 @@
         }
     });
 </script>
-
-<!-- <script type="module">
-    import { FirebaseCRUD } from "./firestore_crud.js"
-    async function test() {
-        const usersCRUD = new FirebaseCRUD("diciplinas");
-
-        // Create Multiple
-        const users = [
-            {
-                "name": "Formação e pessoa do teólogo",
-                "professor": "Görl",
-                "status": "pending"
-            },
-            {
-                "name": "Bíblia II: Introdução aos livros do Novo Testamento",
-                "professor": "Linden",
-                "status": "pending"
-            },
-            {
-                "name": "Sistemática I – Introdução à Teologia",
-                "professor": "Francis",
-                "status": "pending"
-            },
-            {
-                "name": "Língua Portuguesa",
-                "professor": "Carla",
-                "status": "pending"
-            },
-            {
-                "name": "Bíblia I: Introdução aos livros do Antigo Testamento",
-                "professor": "Graff",
-                "status": "pending"
-            },
-            {
-                "name": "Metodologia e pesquisa científica",
-                "professor": "Graff",
-                "status": "pending"
-            },
-            {
-                "name": "Lógica e Linguagem",
-                "professor": "Gedrat",
-                "status": "pending"
-            },
-            {
-                "name": "Introdução à Sociologia",
-                "professor": "Prunzel",
-                "status": "pending"
-            }
-        ];
-        await usersCRUD.createMultiple(users);
-
-        // Read All
-        const allUsers = await usersCRUD.readAll();
-        //console.log(allUsers);
-    };
-
-    //test()
-</script> -->
 
 </html>

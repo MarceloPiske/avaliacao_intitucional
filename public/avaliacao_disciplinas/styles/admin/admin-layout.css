@@ -1,0 +1,190 @@
+/* ========================================
+   LAYOUT STYLES
+   ======================================== */
+
+/* Sidebar Layout */
+.admin-sidebar {
+    width: var(--admin-sidebar-width);
+    background: linear-gradient(135deg, var(--gray-900), var(--gray-800));
+    color: white;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: var(--shadow-2xl);
+}
+
+.sidebar-header {
+    padding: var(--spacing-8) var(--spacing-6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+}
+
+.sidebar-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-1);
+    background: linear-gradient(135deg, var(--primary-400), var(--primary-200));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.sidebar-header p {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+}
+
+.sidebar-nav {
+    list-style: none;
+    padding: var(--spacing-4) 0;
+    margin: 0;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-4) var(--spacing-6);
+    margin: var(--spacing-1) var(--spacing-4);
+    border-radius: var(--radius-xl);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left var(--transition-slow);
+}
+
+.nav-item:hover::before {
+    left: 100%;
+}
+
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(8px);
+}
+
+.nav-item.active {
+    background: linear-gradient(135deg, var(--primary-600), var(--primary-500));
+    box-shadow: var(--shadow-lg);
+}
+
+.nav-icon {
+    font-size: 1.2rem;
+    margin-right: var(--spacing-3);
+    width: 24px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.nav-item.active .nav-icon {
+    color: white;
+}
+
+.nav-text {
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--spacing-6);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.logout-btn {
+    width: 100%;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+    padding: var(--spacing-3) var(--spacing-4);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    font-weight: 500;
+}
+
+.logout-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.5);
+    transform: translateY(-2px);
+}
+
+.logout-btn .material-icons {
+    font-size: 1.2rem;
+}
+
+/* Main Content Layout */
+.admin-main {
+    flex: 1;
+    margin-left: var(--admin-sidebar-width);
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-header {
+    height: var(--admin-header-height);
+    background: white;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--spacing-8);
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.admin-header h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: var(--spacing-3);
+}
+
+.admin-content {
+    flex: 1;
+    padding: var(--spacing-8);
+    overflow-y: auto;
+}
+
+.content-section {
+    display: none;
+}
+
+.content-section.active {
+    display: block;
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+    .nav-icon {
+        font-size: 1rem;
+        margin-right: var(--spacing-2);
+    }
+}

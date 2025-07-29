@@ -1,0 +1,326 @@
+{
+  "0D55blIbHl4LbCXP1yZ2": {
+    "id": 10,
+    "texto": "Existe a intenção de disponibilizar cursos de nivelamento?",
+    "dimensao": "Eixo 3 - Dimensão 2",
+    "grupos": [
+      "professores"
+    ]
+  },
+  "0GdGQS0qogUuJyjWhIUU": {
+    "id": 5,
+    "texto": "As ações de Extensão, Pesquisa e Ensino contribuem para a qualidade de vida da população na região onde está inserida?",
+    "dimensao": "Eixo 2 - Dimensão 3",
+    "grupos": [
+      "alunos",
+      "professores",
+      "tecnicos"
+    ]
+  },
+  "4q5o4h45PBfauQSRlBuX": {
+    "id": 27,
+    "texto": "A Instituição oferece a possibilidade de participar de Conselhos, Comissões, Colegiados, Grupos de Trabalho e /ou Lideranças Estudantis para discussão dos processos decisórios?",
+    "dimensao": "Eixo 4 - Dimensão 6",
+    "grupos": [
+      "alunos"
+    ]
+  },
+  "5IVjNmX2iAsJX8M9gDuw": {
+    "id": 26,
+    "texto": "A Instituição oferece a possibilidade de participar de Conselhos, Comissões, Colegiados e/ou Grupos de Trabalho para discussão dos processos decisórios?",
+    "dimensao": "Eixo 4 - Dimensão 6",
+    "grupos": [
+      "professores",
+      "tecnicos"
+    ]
+  },
+  "6SnFrPuOaZZWtml51DFX": {
+    "id": 6,
+    "texto": "O curso possibilita estabelecer a relação entre a teoria da formação acadêmica com a prática profissional?",
+    "dimensao": "Eixo 3 - Dimensão 2",
+    "grupos": [
+      "alunos",
+      "professores"
+    ]
+  },
+  "9v2TSAJWrAJJcWg6QHfa": {
+    "id": 18,
+    "texto": "A Instituição incentiva a participação de professores em atividades de pesquisa e desenvolvimento tecnológico/inovação?",
+    "dimensao": "Eixo 3 - Dimensão 2",
+    "grupos": [
+      "professores"
+    ]
+  },
+  "EelSKk15QTw1Gsclj5ID": {
+    "id": 11,
+    "texto": "O curso incentiva através de horas complementares a participação em projetos, cursos, palestras, lives, seminários, atividades comunitárias, semanas acadêmicas, etc.?",
+    "dimensao": "Eixo 3 - Dimensão 2",
+    "grupos": [
+      "alunos",
+      "professores"
+    ]
+  },
+  "G7W6ecnOuPEE4ZPDwBqB": {
+    "id": 4,
+    "texto": "A missão expressa no PDI é evidenciada nas ações da Instituição?",
+    "dimensao": "Eixo 2 - Dimensão 1",
+    "grupos": [
+      "alunos",
+      "professores",
+      "tecnicos"
+    ]
+  },
+  "GfKmBfHzOP1QKHpO7y7C": {
+    "id": 3,
+    "texto": "O Plano de Desenvolvimento Institucional (PDI) é divulgado nas ações/eventos da Instituição?",
+    "dimensao": "Eixo 2 - Dimensão 1",
+    "grupos": [
+      "alunos",
+      "professores",
+      "tecnicos"
+    ]
+  },
+  "HCVRqBfyh4M88gZCXXuI": {
+    "id": 33,
+    "texto": "A biblioteca da Instituição atende as necessidades de formação acadêmica?",
+    "dimensao": "Eixo 5 - Dimensão 7",
+    "grupos": [
+      "alunos",
+      "professores"
+    ]
+  },
+  "IoYB8rAzRto8PqoiUM4p": {
+    "id": 35,
+    "texto": "O espaço físico e os recursos materiais, tais como móveis, máquinas, equipamentos e materiais de escritório, etc., destinados ao desenvolvimento das atividades administrativas, são adequados?",
+    "dimensao": "Eixo 5 - Dimensão 7",
+    "grupos": [
+      "alunos",
+      "professores",
+      "tecnicos"
+    ]
+  },
+  "KlMnauIYu1TZEOT6FnC2": {
+    "id": 1,
+    "texto": "A CPA é conhecida na Instituição? Os resultados da pesquisa (Autoavaliação Institucional) são percebidos nas ações de melhoria realizadas pela Instituição? (A partir da 2ª pesquisa.)",
+    "dimensao": "Eixo 1 - Dimensão 8",
+    "grupos": [
+      "alunos",
+      "professores",
+      "tecnicos"
+    ]
+  },
+  "L7YqMlRfvSIOfBFBzkd3": {
+    "id": 8,
+    "texto": "O uso de metodologias diversificadas e inovadoras aplicadas no curso (pesquisas, seminários, estudos de caso, atividades interativas por meio de aulas, etc.) contribuem para qualificar a aprendizagem?",
+    "dimensao": "Eixo 3 - Dimensão 2",
+    "grupos": [
+      "alunos",
+      "professores"
+    ]
+  },
+  "MagLVCU4vbFUCPejdzSD": {
+    "id": 9,
+    "texto": "As atividades avaliativas, tais como provas, trabalhos e outras, contribuem para qualificar a aprendizagem?",
+    "dimensao": "Eixo 3 - Dimensão 2",
+    "grupos": [
+      "alunos",
+      "professores"
+    ]
+  },
+  "NiysXiQ0aOVCY0FtnAvw": {
+    "id": 14,
+    "texto": "A Instituição incentiva a participação em atividades culturais e artísticas?",
+    "dimensao": "Eixo 3 - Dimensão 2",
+    "grupos": [
+      "alunos",
+      "professores",
+      "tecnicos"
+    ]
+  },
+  "QcqpCwFIcyLa1dOzyWLe": {
+    "id": 23,
+    "texto": "Os instrumentos de comunicação utilizados pela Instituição (páginas e perfis nas redes sociais, aplicativos de mensagens, e-mails marketing, vídeos, publicações, boletins informativos, murais, faixas e folheteria), são eficazes na comunicação com toda a Instituição?",
+    "dimensao": "Eixo 4 - Dimensão 4",
+    "grupos": [
+      "alunos",
+      "professores",
+      "tecnicos"
+    ]
+  },
+  "RHu5jlSe7zePtCpPhU0R": {
+    "id": 7,
+    "texto": "O curso proporciona organização em relação aos estudos desenvolvendo a autonomia e protagonismo do acadêmico, na perspectiva do desenvolvimento das competências necessárias ao contexto atual?",
+    "dimensao": "Eixo 3 - Dimensão 2",
+    "grupos": [
+      "alunos",
+      "professores"
+    ]
+  },
+  "XDKcpSKOAUeshUfhuTzP": {
+    "id": 20,
+    "texto": "O atendimento às pessoas com deficiência e/ou mobilidade reduzida contempla as necessidades da comunidade acadêmica?",
+    "dimensao": "Eixo 4 - Dimensão 9",
+    "grupos": [
+      "alunos",
+      "professores",
+      "tecnicos"
+    ]
+  },
+  "XxUXrnoHBmLwX0RbXov3": {
+    "id": 12,
+    "texto": "É oportunizada a participação do acadêmico e do professor, como bolsista ou como voluntário, nas atividades de Programas de Pesquisa e Extensão?",
+    "dimensao": "Eixo 3 - Dimensão 2",
+    "grupos": [
+      "alunos",
+      "professores"
+    ]
+  },
+  "Y346TJlgMinNJGl555lK": {
+    "id": 16,
+    "texto": "As atividades a distância e/ou híbridas auxiliam na organização dos estudos, aprendizagem e demais atividades acadêmicas?",
+    "dimensao": "Eixo 3 - Dimensão 2",
+    "grupos": [
+      "alunos",
+      "professores"
+    ]
+  },
+  "aNdoPMoMk2dGF9DAlzKs": {
+    "id": 25,
+    "texto": "As capacitações e formações pedagógicas oferecidas pela Instituição contribuem para a qualificação do trabalho docente?",
+    "dimensao": "Eixo 4 - Dimensão 5",
+    "grupos": [
+      "professores"
+    ]
+  },
+  "dKyFI0uqRnxU2pgMpsQq": {
+    "id": 15,
+    "texto": "A frequência e a qualidade da interação dos professores atendem às necessidades acadêmicas?",
+    "dimensao": "Eixo 3 - Dimensão 2",
+    "grupos": [
+      "alunos"
+    ]
+  },
+  "eSIiuybCZSjISRdd0F7z": {
+    "id": 21,
+    "texto": "A Instituição incentiva oportunidades de intercâmbios?",
+    "dimensao": "Eixo 4 - Dimensão 9",
+    "grupos": [
+      "alunos",
+      "professores"
+    ]
+  },
+  "eXwxEP4BQoWX7xK8oNGY": {
+    "id": 31,
+    "texto": "Os serviços de segurança atendem as necessidades da Instituição?",
+    "dimensao": "Eixo 5 - Dimensão 7",
+    "grupos": [
+      "alunos",
+      "professores",
+      "tecnicos"
+    ]
+  },
+  "j63e14oiK74KtaPd3KrL": {
+    "id": 19,
+    "texto": "O apoio pedagógico, psicológico, pastoral e de acessibilidade oferecido pelo Coordenador da Pastoral do Campus atende as necessidades da Instituição?",
+    "dimensao": "Eixo 4 - Dimensão 9",
+    "grupos": [
+      "alunos",
+      "professores",
+      "tecnicos"
+    ]
+  },
+  "jruPKmgwOiWNviP4yZAB": {
+    "id": 28,
+    "texto": "O auxílio da Coordenação de Curso na orientação e esclarecimento de dúvidas sobre o curso atende as necessidades dos acadêmicos?",
+    "dimensao": "Eixo 4 - Dimensão 6",
+    "grupos": [
+      "alunos"
+    ]
+  },
+  "ktnu9bfXJhBgKFddtlgi": {
+    "id": 24,
+    "texto": "A Instituição incentiva o corpo técnico-administrativo a buscar capacitação e aperfeiçoamento de suas práticas profissionais?",
+    "dimensao": "Eixo 4 - Dimensão 5",
+    "grupos": [
+      "tecnicos"
+    ]
+  },
+  "nHuvcQguwytrFHcdPLC3": {
+    "id": 13,
+    "texto": "Há incentivo institucional para dar continuidade aos estudos (Educação Continuada) em nível de Cursos de Pós-Graduação tais como Especialização, Mestrado e Doutorado.",
+    "dimensao": "Eixo 3 - Dimensão 2",
+    "grupos": [
+      "alunos",
+      "professores",
+      "tecnicos"
+    ]
+  },
+  "oA6394RB22Yxi2LgSSRj": {
+    "id": 34,
+    "texto": "Os equipamentos, materiais e infraestrutura de apoio do curso (memorial, instalações esportivas, entre outros) contribuem para o processo de aprendizagem?",
+    "dimensao": "Eixo 5 - Dimensão 7",
+    "grupos": [
+      "alunos",
+      "professores"
+    ]
+  },
+  "qQlK94XkYRIWQFTFO83i": {
+    "id": 22,
+    "texto": "O site da Instituição fornece, com clareza, informações sobre a mesma, serviços e funcionamento institucional?",
+    "dimensao": "Eixo 4 - Dimensão 4",
+    "grupos": [
+      "alunos",
+      "professores",
+      "tecnicos"
+    ]
+  },
+  "tZahgGYlIW6iFgju9FRR": {
+    "id": 29,
+    "texto": "A ouvidoria atende as necessidades da Instituição?",
+    "dimensao": "Eixo 4 - Dimensão 10",
+    "grupos": [
+      "alunos",
+      "professores",
+      "tecnicos"
+    ]
+  },
+  "xXwo6JKiWRskgKxSjB1r": {
+    "id": 17,
+    "texto": "O Projeto Pedagógico do Curso (PPC) é conhecido e se concretiza nas ações do respectivo curso?",
+    "dimensao": "Eixo 3 - Dimensão 2",
+    "grupos": [
+      "alunos",
+      "professores"
+    ]
+  },
+  "y1KI362h8ODAFxJUCbk2": {
+    "id": 32,
+    "texto": "As instalações da Instituição em relação à higiene, limpeza e segurança sanitária atendem as necessidades institucionais?",
+    "dimensao": "Eixo 5 - Dimensão 7",
+    "grupos": [
+      "alunos",
+      "professores",
+      "tecnicos"
+    ]
+  },
+  "yV49118SYp9qYqnGwfVj": {
+    "id": 30,
+    "texto": "A Instituição promove diálogo e participação em seus processos de gestão?",
+    "dimensao": "Eixo 4 - Dimensão 10",
+    "grupos": [
+      "alunos",
+      "professores",
+      "tecnicos"
+    ]
+  },
+  "zXA69tap6BK9HDVNLKh5": {
+    "id": 2,
+    "texto": "A Instituição oferece a possibilidade de participar da discussão do Plano de Desenvolvimento Institucional (PDI)?",
+    "dimensao": "Eixo 2 - Dimensão 1",
+    "grupos": [
+      "alunos",
+      "professores",
+      "tecnicos"
+    ]
+  }
+}

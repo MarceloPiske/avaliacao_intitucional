@@ -1,0 +1,132 @@
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 1024px) {
+    .admin-sidebar {
+        width: 240px;
+    }
+    
+    .admin-main {
+        margin-left: 240px;
+    }
+    
+    .dashboard-cards {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-sidebar {
+        width: 100%;
+        position: relative;
+        height: auto;
+    }
+    
+    .admin-main {
+        margin-left: 0;
+    }
+    
+    .admin-content {
+        padding: var(--spacing-4);
+    }
+    
+    .admin-header {
+        padding: 0 var(--spacing-4);
+    }
+    
+    .section-filters {
+        flex-direction: column;
+        gap: var(--spacing-3);
+    }
+    
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .data-table-container {
+        overflow-x: auto;
+    }
+    
+    .modal-container {
+        margin: var(--spacing-4);
+        max-width: none;
+    }
+    
+    .analytics-header {
+        flex-direction: column;
+        gap: var(--spacing-4);
+        text-align: center;
+    }
+    
+    .filter-row {
+        flex-direction: column;
+        gap: var(--spacing-3);
+    }
+    
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .tab-nav {
+        flex-direction: column;
+    }
+    
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-sidebar {
+        font-size: 0.9rem;
+    }
+    
+    .nav-item {
+        padding: var(--spacing-3) var(--spacing-4);
+    }
+    
+    .nav-icon {
+        font-size: 1rem;
+        margin-right: var(--spacing-2);
+    }
+    
+    .admin-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .dashboard-card {
+        padding: var(--spacing-6);
+    }
+    
+    .card-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+    }
+    
+    .modal-body {
+        padding: var(--spacing-4);
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .analytics-filters {
+        padding: var(--spacing-4);
+    }
+    
+    .summary-card {
+        padding: var(--spacing-4);
+    }
+    
+    .chart-container {
+        padding: var(--spacing-4);
+    }
+    
+    .analysis-item {
+        padding: var(--spacing-3);
+    }
+}
+

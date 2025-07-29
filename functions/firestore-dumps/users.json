@@ -1,0 +1,61 @@
+{
+  "AVsAxNeUecU7W0S41eH8goxBUXO2": {
+    "email": "marcelohauch@seminarioconcordia.com.br",
+    "role": "aluno",
+    "displayName": "Marcelo Hauch Piske",
+    "created_at": {
+      "_seconds": 1747059498,
+      "_nanoseconds": 181000000
+    },
+    "submitted": true,
+    "submitted_at": {
+      "_seconds": 1747061286,
+      "_nanoseconds": 208000000
+    }
+  },
+  "AvWliEqI9mY2UNVFanMWAF2IP6B2": {
+    "email": "damal@seminarioconcordia.com.br",
+    "displayName": "Damal Seminário",
+    "created_at": {
+      "_seconds": 1746021369,
+      "_nanoseconds": 715000000
+    },
+    "submitted": true,
+    "submitted_at": {
+      "_seconds": 1746021395,
+      "_nanoseconds": 42000000
+    },
+    "role": "professor"
+  },
+  "S97sTwYzOLZJ9ZjdbivcHVNeVZ52": {
+    "email": "leonidiosg@seminarioconcordia.com.br",
+    "displayName": "Leonidio Schulz Görl",
+    "submitted": false,
+    "created_at": {
+      "_seconds": 1746033519,
+      "_nanoseconds": 35000000
+    },
+    "role": "professor"
+  },
+  "hA8QutsvtrfTtUNeWtcp": {
+    "tipo": "tecnicos",
+    "dataCriacao": {
+      "_seconds": 1748872301,
+      "_nanoseconds": 685000000
+    },
+    "codigo": "936924",
+    "nome": "Técnico Administrativo Teste",
+    "email": "tectest@gmai.com",
+    "senha": "1234"
+  },
+  "z2if0pj7k1gldcboOEwrGeXvdY13": {
+    "email": "cpa@faculdadeluteranaconcordia.com.br",
+    "role": "aluno",
+    "displayName": "CPA cpa",
+    "submitted": false,
+    "created_at": {
+      "_seconds": 1747059592,
+      "_nanoseconds": 229000000
+    }
+  }
+}

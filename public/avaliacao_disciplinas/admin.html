@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - Sistema de Avaliação</title>
+    <meta name="description" content="Painel de administração para gerenciar usuários, disciplinas, formulários e avaliações">
+    <meta name="theme-color" content="#0ea5e9">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/admin/admin.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- ========================================
+             SIDEBAR NAVIGATION
+             ======================================== -->
+        <nav class="admin-sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Panel</h2>
+                <p>Sistema de Avaliação</p>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <li class="nav-item active" data-section="dashboard">
+                    <span class="nav-icon material-icons">dashboard</span>
+                    <span class="nav-text">Dashboard</span>
+                </li>
+                <li class="nav-item" data-section="usuarios">
+                    <span class="nav-icon material-icons">people</span>
+                    <span class="nav-text">Usuários</span>
+                </li>
+                <li class="nav-item" data-section="disciplinas">
+                    <span class="nav-icon material-icons">book</span>
+                    <span class="nav-text">Disciplinas</span>
+                </li>
+                <li class="nav-item" data-section="turmas">
+                    <span class="nav-icon material-icons">school</span>
+                    <span class="nav-text">Turmas</span>
+                </li>
+                <li class="nav-item" data-section="formularios">
+                    <span class="nav-icon material-icons">assignment</span>
+                    <span class="nav-text">Formulários</span>
+                </li>
+                <li class="nav-item" data-section="avaliacoes">
+                    <span class="nav-icon material-icons">analytics</span>
+                    <span class="nav-text">Avaliações</span>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <button id="logoutButton" class="logout-btn">
+                    <span class="material-icons">logout</span>
+                    Sair
+                </button>
+            </div>
+        </nav>
+        
+        <!-- ========================================
+             MAIN CONTENT AREA
+             ======================================== -->
+        <main class="admin-main">
+            <!-- Header -->
+            <header class="admin-header">
+                <h1 id="pageTitle">Dashboard</h1>
+                <div class="header-actions">
+                    <button id="addButton" class="btn btn-primary" style="display: none;">
+                        <span class="material-icons">add</span>
+                        Adicionar
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Content Container -->
+            <div class="admin-content">
+                <!-- ========================================
+                     DASHBOARD SECTION
+                     ======================================== -->
+                <section id="dashboard-section" class="content-section active">
+                    <div class="dashboard-cards">
+                        <div class="dashboard-card">
+                            <div class="card-icon"><span class="material-icons">people</span></div>
+                            <div class="card-content">
+                                <h3>Usuários</h3>
+                                <p class="card-number" id="usuarios-count">0</p>
+                                <span class="card-label">Total cadastrados</span>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="card-icon"><span class="material-icons">book</span></div>
+                            <div class="card-content">
+                                <h3>Disciplinas</h3>
+                                <p class="card-number" id="disciplinas-count">0</p>
+                                <span class="card-label">Total cadastradas</span>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="card-icon"><span class="material-icons">school</span></div>
+                            <div class="card-content">
+                                <h3>Turmas</h3>
+                                <p class="card-number" id="turmas-count">0</p>
+                                <span class="card-label">Semestre atual</span>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="card-icon"><span class="material-icons">analytics</span></div>
+                            <div class="card-content">
+                                <h3>Avaliações</h3>
+                                <p class="card-number" id="avaliacoes-count">0</p>
+                                <span class="card-label">Total realizadas</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- ========================================
+                     USUÁRIOS SECTION
+                     ======================================== -->
+                <section id="usuarios-section" class="content-section">
+                    <!-- Filters -->
+                    <div class="section-filters">
+                        <div class="filter-group">
+                            <label for="userTypeFilter">Tipo de Usuário:</label>
+                            <select id="userTypeFilter">
+                                <option value="">Todos</option>
+                                <option value="aluno">Aluno</option>
+                                <option value="professor">Professor</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="userSearchFilter">Buscar:</label>
+                            <input type="text" id="userSearchFilter" placeholder="Nome ou email...">
+                        </div>
+                    </div>
+                    
+                    <!-- Users Table -->
+                    <div class="data-table-container">
+                        <table class="data-table" id="usuarios-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px; text-align: center;">
+                                        <!-- Select all checkbox will be added here -->
+                                    </th>
+                                    <th>Nome</th>
+                                    <th>Email</th>
+                                    <th>Tipos</th>
+                                    <th>Data Criação</th>
+                                    <th style="width: 150px;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data will be loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- ========================================
+                     DISCIPLINAS SECTION
+                     ======================================== -->
+                <section id="disciplinas-section" class="content-section">
+                    <!-- Filters -->
+                    <div class="section-filters">
+                        <div class="filter-group">
+                            <label for="disciplinaSearchFilter">Buscar:</label>
+                            <input type="text" id="disciplinaSearchFilter" placeholder="Nome ou código...">
+                        </div>
+                    </div>
+                    
+                    <!-- Disciplinas Table -->
+                    <div class="data-table-container">
+                        <table class="data-table" id="disciplinas-table">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Código</th>
+                                    <th>Data Criação</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data will be loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- ========================================
+                     TURMAS SECTION
+                     ======================================== -->
+                <section id="turmas-section" class="content-section">
+                    <!-- Filters -->
+                    <div class="section-filters">
+                        <div class="filter-group">
+                            <label for="turmasSemestreFilter">Semestre:</label>
+                            <select id="turmasSemestreFilter">
+                                <option value="">Todos</option>
+                                <option value="2024.2">2024.2</option>
+                                <option value="2025.1">2025.1</option>
+                                <option value="2025.2">2025.2</option>
+                                <option value="2026.1">2026.1</option>
+                                <option value="2026.2">2026.2</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="turmasStatusFilter">Status:</label>
+                            <select id="turmasStatusFilter">
+                                <option value="">Todos</option>
+                                <option value="planejada">Planejada</option>
+                                <option value="aberta">Aberta</option>
+                                <option value="fechada">Fechada</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="turmasSearchFilter">Buscar:</label>
+                            <input type="text" id="turmasSearchFilter" placeholder="Disciplina ou professor...">
+                        </div>
+                    </div>
+                    
+                    <!-- Turmas Table -->
+                    <div class="data-table-container">
+                        <table class="data-table" id="turmas-table">
+                            <thead>
+                                <tr>
+                                    <th>Disciplina</th>
+                                    <th>Professor</th>
+                                    <th>Semestre</th>
+                                    <th>Status</th>
+                                    <th>Formulário</th>
+                                    <th>Alunos</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data will be loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- ========================================
+                     FORMULÁRIOS SECTION
+                     ======================================== -->
+                <section id="formularios-section" class="content-section">
+                    <!-- Formulários Table -->
+                    <div class="data-table-container">
+                        <table class="data-table" id="formularios-table">
+                            <thead>
+                                <tr>
+                                    <th>Título</th>
+                                    <th>Ativo</th>
+                                    <th>Questões</th>
+                                    <th>Data Criação</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data will be loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- ========================================
+                     AVALIAÇÕES SECTION (ANALYTICS)
+                     ======================================== -->
+                <section id="avaliacoes-section" class="content-section">
+                    <!-- Analytics Header -->
+                    <div class="analytics-header">
+                        <div class="analytics-title">
+                            <h2><span class="material-icons">analytics</span> Dashboard de Avaliações</h2>
+                            <p>Análise completa das respostas e relatórios estatísticos</p>
+                        </div>
+                        <div class="analytics-actions">
+                            <button id="exportAnalyticsBtn" class="btn btn-primary">
+                                <span class="material-icons">file_download</span>
+                                Exportar Relatório
+                            </button>
+                            <button id="refreshAnalyticsBtn" class="btn btn-secondary">
+                                <span class="material-icons">refresh</span>
+                                Atualizar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Analytics Filters -->
+                    <div class="analytics-filters">
+                        <div class="filter-header">
+                            <h3>Filtros de Análise</h3>
+                            <div class="filter-actions">
+                                <button id="advancedFiltersToggle" class="btn btn-secondary">
+                                    <span class="material-icons">expand_more</span>
+                                    Filtros Avançados
+                                </button>
+                                <button id="clearFiltersBtn" class="btn btn-secondary">
+                                    <span class="material-icons">clear</span>
+                                    Limpar Filtros
+                                </button>
+                                <span id="activeFiltersCount" class="filter-count" style="display: none;">0</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Basic Filters -->
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label for="yearFilter">Ano:</label>
+                                <select id="yearFilter">
+                                    <option value="all">Todos os Anos</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="semesterFilter">Semestre:</label>
+                                <select id="semesterFilter">
+                                    <option value="all">Todos os Semestres</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="formularioAnalyticsFilter">Formulário:</label>
+                                <select id="formularioAnalyticsFilter">
+                                    <option value="all">Todos os Formulários</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="professorAnalyticsFilter">Professor:</label>
+                                <select id="professorAnalyticsFilter">
+                                    <option value="all">Todos os Professores</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="disciplinaAnalyticsFilter">Disciplina:</label>
+                                <select id="disciplinaAnalyticsFilter">
+                                    <option value="all">Todas as Disciplinas</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Advanced Filters -->
+                        <div id="advancedFiltersSection" class="filter-section" style="display: none;">
+                            <div class="filter-row">
+                                <div class="filter-group">
+                                    <label for="statusTurmaFilter">Status da Turma:</label>
+                                    <select id="statusTurmaFilter">
+                                        <option value="all">Todos os Status</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="categoryAnalyticsFilter">Categoria:</label>
+                                    <select id="categoryAnalyticsFilter">
+                                        <option value="all">Todas as Categorias</option>
+                                        <option value="disciplina">Sobre a Disciplina</option>
+                                        <option value="aluno">Sobre o Aluno</option>
+                                        <option value="professor">Sobre o Professor</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="filter-row">
+                                <div class="filter-group">
+                                    <label for="dateRangeStart">Data Início:</label>
+                                    <input type="date" id="dateRangeStart">
+                                </div>
+                                <div class="filter-group">
+                                    <label for="dateRangeEnd">Data Fim:</label>
+                                    <input type="date" id="dateRangeEnd">
+                                </div>
+                                <div class="filter-group search-group">
+                                    <label for="searchAnalyticsInput">Buscar:</label>
+                                    <input type="text" id="searchAnalyticsInput" placeholder="Pesquisar questões...">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Analytics Summary Cards -->
+                    <div class="analytics-summary">
+                        <div class="summary-cards">
+                            <div class="summary-card">
+                                <div class="card-icon"><span class="material-icons">analytics</span></div>
+                                <div class="card-content">
+                                    <h4>Total de Avaliações</h4>
+                                    <p class="card-number" id="totalAvaliacoes">0</p>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="card-icon"><span class="material-icons">people</span></div>
+                                <div class="card-content">
+                                    <h4>Alunos Participantes</h4>
+                                    <p class="card-number" id="totalAlunos">0</p>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="card-icon"><span class="material-icons">school</span></div>
+                                <div class="card-content">
+                                    <h4>Total de Turmas</h4>
+                                    <p class="card-number" id="totalTurmas">0</p>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="card-icon"><span class="material-icons">person</span></div>
+                                <div class="card-content">
+                                    <h4>Professores Avaliados</h4>
+                                    <p class="card-number" id="totalProfessores">0</p>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="card-icon"><span class="material-icons">book</span></div>
+                                <div class="card-content">
+                                    <h4>Disciplinas Avaliadas</h4>
+                                    <p class="card-number" id="totalDisciplinas">0</p>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="card-icon"><span class="material-icons">star</span></div>
+                                <div class="card-content">
+                                    <h4>Média Geral</h4>
+                                    <p class="card-number" id="mediaGeral">0</p>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="card-icon"><span class="material-icons">trending_up</span></div>
+                                <div class="card-content">
+                                    <h4>Taxa de Participação</h4>
+                                    <p class="card-number" id="taxaParticipacao">0%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Analytics Tabs -->
+                    <div class="analytics-tabs">
+                        <!-- Tab Navigation -->
+                        <div class="tab-nav">
+                            <button class="tab-btn active" data-tab="overview">
+                                <span class="material-icons">dashboard</span> Visão Geral
+                            </button>
+                            <button class="tab-btn" data-tab="students">
+                                <span class="material-icons">school</span> Por Alunos
+                            </button>
+                            <button class="tab-btn" data-tab="professors">
+                                <span class="material-icons">person</span> Por Professor
+                            </button>
+                            <button class="tab-btn" data-tab="disciplines">
+                                <span class="material-icons">book</span> Por Disciplina
+                            </button>
+                            <button class="tab-btn" data-tab="questions">
+                                <span class="material-icons">help</span> Por Questões
+                            </button>
+                            <button class="tab-btn" data-tab="comments">
+                                <span class="material-icons">chat</span> Comentários
+                            </button>
+                        </div>
+
+                        <!-- Tab Content: Overview -->
+                        <div class="tab-content active" id="overview-tab">
+                            <div class="charts-grid">
+                                <div class="chart-container">
+                                    <h3>Distribuição de Respostas por Categoria</h3>
+                                    <canvas id="categoryChart"></canvas>
+                                </div>
+                                <div class="chart-container">
+                                    <h3>Média por Semestre</h3>
+                                    <canvas id="semesterChart"></canvas>
+                                </div>
+                                <div class="chart-container">
+                                    <h3>Distribuição de Notas</h3>
+                                    <canvas id="distributionChart"></canvas>
+                                </div>
+                                <div class="chart-container">
+                                    <h3>Evolução Temporal</h3>
+                                    <canvas id="timelineChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab Content: Students -->
+                        <div class="tab-content" id="students-tab">
+                            <div class="students-analysis">
+                                <h3>Análise por Alunos</h3>
+                                <div id="studentsAnalysisContainer"></div>
+                            </div>
+                        </div>
+
+                        <!-- Tab Content: Professors -->
+                        <div class="tab-content" id="professors-tab">
+                            <div class="professors-analysis">
+                                <h3>Análise por Professor</h3>
+                                <div id="professorsAnalysisContainer"></div>
+                            </div>
+                        </div>
+
+                        <!-- Tab Content: Disciplines -->
+                        <div class="tab-content" id="disciplines-tab">
+                            <div class="disciplines-analysis">
+                                <h3>Análise por Disciplina</h3>
+                                <div id="disciplinesAnalysisContainer"></div>
+                            </div>
+                        </div>
+
+                        <!-- Tab Content: Questions -->
+                        <div class="tab-content" id="questions-tab">
+                            <div class="questions-analysis">
+                                <h3>Análise por Questões</h3>
+                                <div id="questionsAnalysisContainer"></div>
+                            </div>
+                        </div>
+
+                        <!-- Tab Content: Comments -->
+                        <div class="tab-content" id="comments-tab">
+                            <div class="comments-analysis">
+                                <h3>Comentários dos Alunos</h3>
+                                <div id="commentsContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <!-- ========================================
+         MODAL OVERLAY
+         ======================================== -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modal-title">Título do Modal</h3>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- ========================================
+         SCRIPTS
+         ======================================== -->
+    <script>
+        // Global function for missing students form
+        window.openMissingStudentsForm = async (missingStudentIds) => {
+            const turmasManager = new (await import('./modules/admin/turmas-manager.js')).TurmasManager();
+            await turmasManager.openMissingStudentsForm(missingStudentIds);
+        };
+    </script>
+    <script type="module" src="admin.js"></script>
+</body>
+</html>

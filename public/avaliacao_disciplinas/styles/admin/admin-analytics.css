@@ -1,0 +1,918 @@
+/* ========================================
+   ANALYTICS DASHBOARD STYLES
+   ======================================== */
+
+.analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-6);
+    padding: var(--spacing-6);
+    background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--primary-200);
+}
+
+.analytics-title h2 {
+    color: var(--primary-700);
+    margin-bottom: var(--spacing-1);
+    font-size: 1.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.analytics-title h2 .material-icons {
+    font-size: 2rem;
+}
+
+.analytics-title p {
+    color: var(--primary-600);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.analytics-actions {
+    display: flex;
+    gap: var(--spacing-3);
+}
+
+.analytics-actions .btn .material-icons {
+    font-size: 1.1rem;
+}
+
+.analytics-filters {
+    background: white;
+    padding: var(--spacing-6);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--spacing-6);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-200);
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-4);
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.filter-header h3 {
+    color: var(--gray-800);
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.filter-actions {
+    display: flex;
+    gap: var(--spacing-3);
+    align-items: center;
+}
+
+.filter-count {
+    background: var(--primary-600);
+    color: white;
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-2xl);
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 20px;
+    text-align: center;
+}
+
+.filter-row {
+    display: flex;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-4);
+    flex-wrap: wrap;
+}
+
+.filter-row:last-child {
+    margin-bottom: 0;
+}
+
+.filter-section {
+    background: var(--gray-50);
+    padding: var(--spacing-4);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    margin-top: var(--spacing-4);
+}
+
+.search-group {
+    flex: 2;
+}
+
+.search-group input {
+    width: 100%;
+    padding: var(--spacing-3) var(--spacing-4);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    font-size: 0.875rem;
+    transition: all var(--transition-base);
+}
+
+.search-group input:focus {
+    outline: none;
+    border-color: var(--primary-400);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.analytics-summary {
+    margin-bottom: var(--spacing-6);
+}
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-4);
+}
+
+.summary-card {
+    background: white;
+    padding: var(--spacing-6);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    transition: all var(--transition-base);
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.summary-card .card-icon {
+    font-size: 2rem;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary-100), var(--primary-50));
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--primary-600);
+}
+
+.summary-card .card-icon .material-icons {
+    font-size: 2rem;
+}
+
+.summary-card .card-content h4 {
+    color: var(--gray-700);
+    margin-bottom: var(--spacing-1);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.summary-card .card-number {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary-600);
+    margin: 0;
+}
+
+.analytics-tabs {
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+}
+
+.tab-nav {
+    display: flex;
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+    overflow-x: auto;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: var(--spacing-4) var(--spacing-6);
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    transition: all var(--transition-base);
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    background: var(--gray-100);
+    color: var(--gray-800);
+}
+
+.tab-btn.active {
+    background: white;
+    color: var(--primary-600);
+    border-bottom-color: var(--primary-600);
+}
+
+.tab-btn .material-icons {
+    font-size: 1.1rem;
+    margin-right: var(--spacing-1);
+}
+
+.tab-content {
+    display: none;
+    padding: var(--spacing-8);
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.view-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-6);
+    padding: var(--spacing-4);
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+}
+
+.view-mode-selector {
+    display: flex;
+    gap: var(--spacing-2);
+}
+
+.view-mode-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    border: 1px solid var(--gray-300);
+    background: white;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+.view-mode-btn:hover {
+    background: var(--gray-100);
+    border-color: var(--gray-400);
+}
+
+.view-mode-btn.active {
+    background: var(--primary-100);
+    border-color: var(--primary-500);
+    color: var(--primary-700);
+}
+
+.view-mode-btn .material-icons {
+    font-size: 1.1rem;
+}
+
+.sort-controls select {
+    padding: var(--spacing-2) var(--spacing-3);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    background: white;
+    color: var(--gray-700);
+}
+
+/* Students Grid */
+.students-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-4);
+}
+
+.student-analytics-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-6);
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+    cursor: pointer;
+}
+
+.student-analytics-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-300);
+}
+
+.student-avatar {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary-600), var(--primary-400));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: var(--spacing-4);
+}
+
+.student-info h4 {
+    color: var(--gray-900);
+    margin-bottom: var(--spacing-1);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.student-info p {
+    color: var(--gray-600);
+    font-size: 0.875rem;
+    margin-bottom: var(--spacing-4);
+}
+
+.student-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-4);
+}
+
+.metric {
+    text-align: center;
+    padding: var(--spacing-2);
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+}
+
+.metric-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-600);
+    margin-bottom: var(--spacing-1);
+}
+
+.metric-label {
+    font-size: 0.75rem;
+    color: var(--gray-600);
+    font-weight: 500;
+}
+
+.student-tags {
+    display: flex;
+    gap: var(--spacing-2);
+    flex-wrap: wrap;
+}
+
+.tag {
+    background: var(--primary-100);
+    color: var(--primary-700);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Professors Grid */
+.professors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-4);
+}
+
+.professor-analytics-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-6);
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+    cursor: pointer;
+}
+
+.professor-analytics-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-300);
+}
+
+.professor-avatar {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--success-600), var(--success-400));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: var(--spacing-4);
+}
+
+.professor-info h4 {
+    color: var(--gray-900);
+    margin-bottom: var(--spacing-4);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.professor-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-4);
+}
+
+.rating-indicator {
+    text-align: center;
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: var(--radius-lg);
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-1);
+}
+
+.rating-indicator.excellent {
+    background: var(--success-100);
+    color: var(--success-700);
+}
+
+.rating-indicator.good {
+    background: var(--warning-100);
+    color: var(--warning-700);
+}
+
+.rating-indicator.needs-improvement {
+    background: var(--danger-100);
+    color: var(--danger-700);
+}
+
+/* Disciplines Grid */
+.disciplines-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--spacing-4);
+}
+
+.discipline-analytics-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-6);
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+    cursor: pointer;
+}
+
+.discipline-analytics-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-300);
+}
+
+.discipline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-4);
+}
+
+.discipline-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--warning-600), var(--warning-400));
+    color: white;
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.discipline-icon .material-icons {
+    font-size: 1.5rem;
+}
+
+.discipline-code {
+    background: var(--gray-100);
+    color: var(--gray-700);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: monospace;
+}
+
+.discipline-info h4 {
+    color: var(--gray-900);
+    margin-bottom: var(--spacing-4);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.discipline-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-4);
+}
+
+.professor-comparison {
+    margin-top: var(--spacing-4);
+}
+
+.professor-comparison h6 {
+    color: var(--gray-700);
+    margin-bottom: var(--spacing-2);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.mini-chart {
+    display: flex;
+    gap: var(--spacing-1);
+    align-items: end;
+    height: 30px;
+}
+
+.mini-bar {
+    flex: 1;
+    background: var(--gray-200);
+    border-radius: var(--radius-sm);
+    position: relative;
+    min-width: 8px;
+}
+
+.mini-bar-fill {
+    background: linear-gradient(135deg, var(--primary-600), var(--primary-400));
+    border-radius: var(--radius-sm);
+    width: 100%;
+    transition: height var(--transition-base);
+}
+
+/* Detailed Views */
+.detailed-students-list,
+.detailed-professors-list,
+.detailed-disciplines-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+}
+
+.detailed-student-item,
+.detailed-professor-item,
+.detailed-discipline-item {
+    background: white;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.student-header,
+.professor-header,
+.discipline-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-6);
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.student-basic-info,
+.professor-basic-info,
+.discipline-basic-info {
+    flex: 1;
+}
+
+.quick-stats {
+    display: flex;
+    gap: var(--spacing-2);
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    margin-top: var(--spacing-1);
+}
+
+.rating-badge {
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.rating-badge.excellent {
+    background: var(--success-100);
+    color: var(--success-700);
+}
+
+.rating-badge.good {
+    background: var(--warning-100);
+    color: var(--warning-700);
+}
+
+.rating-badge.needs-improvement {
+    background: var(--danger-100);
+    color: var(--danger-700);
+}
+
+.expand-btn {
+    background: none;
+    border: none;
+    padding: var(--spacing-2);
+    cursor: pointer;
+    color: var(--gray-600);
+    border-radius: 50%;
+    transition: all var(--transition-base);
+}
+
+.expand-btn:hover {
+    background: var(--gray-200);
+    color: var(--gray-800);
+}
+
+.expand-btn .material-icons {
+    font-size: 1.5rem;
+}
+
+.student-expanded-content,
+.professor-expanded-content,
+.discipline-expanded-content {
+    padding: var(--spacing-6);
+}
+
+.expanded-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+}
+
+.metric-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+.metric-group h5 {
+    color: var(--gray-800);
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.discipline-list,
+.professor-list,
+.semester-list {
+    display: flex;
+    gap: var(--spacing-2);
+    flex-wrap: wrap;
+}
+
+.discipline-tag,
+.professor-tag,
+.semester-tag {
+    background: var(--primary-100);
+    color: var(--primary-700);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.category-analysis {
+    background: var(--gray-50);
+    padding: var(--spacing-4);
+    border-radius: var(--radius-lg);
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-3);
+}
+
+.category-metric {
+    background: white;
+    padding: var(--spacing-3);
+    border-radius: var(--radius-md);
+    text-align: center;
+}
+
+.category-name {
+    font-size: 0.875rem;
+    color: var(--gray-700);
+    font-weight: 500;
+    margin-bottom: var(--spacing-1);
+}
+
+.category-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-600);
+    margin-bottom: var(--spacing-2);
+}
+
+.category-bar {
+    height: 6px;
+    background: var(--gray-200);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.category-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-600), var(--primary-400));
+    transition: width var(--transition-base);
+}
+
+.professor-performance {
+    background: var(--gray-50);
+    padding: var(--spacing-4);
+    border-radius: var(--radius-lg);
+}
+
+.professor-performance-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+.professor-performance-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    background: white;
+    padding: var(--spacing-3);
+    border-radius: var(--radius-md);
+}
+
+.professor-name {
+    font-weight: 500;
+    color: var(--gray-800);
+    min-width: 120px;
+}
+
+.performance-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--gray-200);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.performance-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-600), var(--primary-400));
+    transition: width var(--transition-base);
+}
+
+.performance-value {
+    font-weight: 600;
+    color: var(--primary-600);
+    min-width: 40px;
+    text-align: right;
+}
+
+.comments-preview {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.comment-preview {
+    background: white;
+    padding: var(--spacing-3);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--primary-400);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.comment-preview strong {
+    color: var(--primary-700);
+}
+
+.comment-item {
+    background: white;
+    padding: var(--spacing-4);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-3);
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+}
+
+.comment-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-2);
+    font-size: 0.8rem;
+    color: var(--gray-600);
+}
+
+.comment-text {
+    color: var(--gray-800);
+    line-height: 1.6;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: var(--spacing-4);
+}
+
+.chart-container {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-6);
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    height: 350px;
+    min-height: 350px;
+    max-height: 350px;
+    overflow: hidden;
+}
+
+.chart-container h3 {
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-4);
+    font-size: 1.125rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.chart-container canvas {
+    max-width: 100% !important;
+    max-height: 280px !important;
+    height: 280px !important;
+    width: 100% !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .analytics-header {
+        flex-direction: column;
+        gap: var(--spacing-4);
+        text-align: center;
+    }
+    
+    .filter-row {
+        flex-direction: column;
+        gap: var(--spacing-3);
+    }
+    
+    .view-controls {
+        flex-direction: column;
+        gap: var(--spacing-3);
+        align-items: stretch;
+    }
+    
+    .students-grid,
+    .professors-grid,
+    .disciplines-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .student-header,
+    .professor-header,
+    .discipline-header {
+        flex-direction: column;
+        gap: var(--spacing-3);
+        align-items: flex-start;
+    }
+    
+    .quick-stats {
+        flex-direction: column;
+        gap: var(--spacing-1);
+    }
+    
+    .category-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .professor-performance-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-2);
+    }
+    
+    .professor-name {
+        min-width: auto;
+        text-align: center;
+    }
+    
+    .performance-value {
+        text-align: center;
+    }
+}
