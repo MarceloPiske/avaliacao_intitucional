@@ -3,7 +3,7 @@
     "id": 1,
     "eixo": "1",
     "dimensao": "8",
-    "texto": "A CPA é conhecida na Instituição? Os resultados da pesquisa (Autoavaliação Institucional) são percebidos nas ações de melhoria realizadas pela Instituição? (A partir da 2ª pesquisa.)",
+    "texto": "A CPA é conhecida na Instituição.",
     "aluno": true,
     "professor": true,
     "funcionario": true
@@ -12,7 +12,7 @@
     "id": 2,
     "eixo": "2",
     "dimensao": "1",
-    "texto": "A Instituição oferece a possibilidade de participar da discussão do Plano de Desenvolvimento Institucional (PDI)?",
+    "texto": "A Instituição oferece a possibilidade de participar da discussão do Plano de Desenvolvimento Institucional (PDI).",
     "aluno": true,
     "professor": true,
     "funcionario": true
@@ -21,7 +21,7 @@
     "id": 3,
     "eixo": "2",
     "dimensao": "1",
-    "texto": "O Plano de Desenvolvimento Institucional (PDI) é divulgado nas ações/eventos da Instituição?",
+    "texto": "O Plano de Desenvolvimento Institucional (PDI) é divulgado nas ações/eventos da Instituição.",
     "aluno": true,
     "professor": true,
     "funcionario": true
@@ -30,7 +30,7 @@
     "id": 4,
     "eixo": "2",
     "dimensao": "1",
-    "texto": "A missão expressa no PDI é evidenciada nas ações da Instituição?",
+    "texto": "A missão expressa no PDI é evidenciada nas ações da Instituição.",
     "aluno": true,
     "professor": true,
     "funcionario": true
@@ -39,7 +39,7 @@
     "id": 5,
     "eixo": "2",
     "dimensao": "3",
-    "texto": "As ações de Extensão, Pesquisa e Ensino contribuem para a qualidade de vida da população na região onde está inserida?",
+    "texto": "As ações de Extensão, Pesquisa e Ensino contribuem para a qualidade de vida da população na região onde está inserida.",
     "aluno": true,
     "professor": true,
     "funcionario": true
@@ -48,7 +48,7 @@
     "id": 6,
     "eixo": "3",
     "dimensao": "2",
-    "texto": "O curso possibilita estabelecer a relação entre a teoria da formação acadêmica com a prática profissional?",
+    "texto": "O curso possibilita estabelecer a relação entre a teoria da formação acadêmica com a prática profissional.",
     "aluno": true,
     "professor": true,
     "funcionario": false
@@ -57,7 +57,7 @@
     "id": 7,
     "eixo": "3",
     "dimensao": "2",
-    "texto": "O curso proporciona organização em relação aos estudos desenvolvendo a autonomia e protagonismo do acadêmico, na perspectiva do desenvolvimento das competências necessárias ao contexto atual?",
+    "texto": "O curso proporciona organização em relação aos estudos desenvolvendo a autonomia e protagonismo do acadêmico, na perspectiva do desenvolvimento das competências necessárias ao contexto atual.",
     "aluno": true,
     "professor": true,
     "funcionario": false
@@ -66,7 +66,7 @@
     "id": 8,
     "eixo": "3",
     "dimensao": "2",
-    "texto": "O uso de metodologias diversificadas e inovadoras aplicadas no curso (pesquisas, seminários, estudos de caso, atividades interativas por meio de aulas, etc.) contribuem para qualificar a aprendizagem?",
+    "texto": "O uso de metodologias diversificadas e inovadoras aplicadas no curso (pesquisas, seminários, estudos de caso, atividades interativas por meio de aulas, etc.) contribuem para qualificar a aprendizagem.",
     "aluno": true,
     "professor": true,
     "funcionario": false
@@ -75,7 +75,7 @@
     "id": 9,
     "eixo": "3",
     "dimensao": "2",
-    "texto": "As atividades avaliativas, tais como provas, trabalhos e outras, contribuem para qualificar a aprendizagem?",
+    "texto": "As atividades avaliativas, tais como provas, trabalhos e outras, contribuem para qualificar a aprendizagem.",
     "aluno": true,
     "professor": true,
     "funcionario": false
@@ -84,7 +84,7 @@
     "id": 10,
     "eixo": "3",
     "dimensao": "2",
-    "texto": "Existe a intenção de disponibilizar cursos de nivelamento?",
+    "texto": "Existe a intenção de disponibilizar cursos de nivelamento.",
     "aluno": false,
     "professor": true,
     "funcionario": false
@@ -93,7 +93,7 @@
     "id": 11,
     "eixo": "3",
     "dimensao": "2",
-    "texto": "O curso incentiva através de horas complementares a participação em projetos, cursos, palestras, lives, seminários, atividades comunitárias, semanas acadêmicas, etc.?",
+    "texto": "O curso incentiva através de horas complementares a participação em projetos, cursos, palestras, lives, seminários, atividades comunitárias, semanas acadêmicas, etc.",
     "aluno": true,
     "professor": true,
     "funcionario": false
@@ -102,7 +102,7 @@
     "id": 12,
     "eixo": "3",
     "dimensao": "2",
-    "texto": "É oportunizada a participação do acadêmico e do professor, como bolsista ou como voluntário, nas atividades de Programas de Pesquisa e Extensão?",
+    "texto": "É oportunizada a participação do acadêmico e do professor, como bolsista ou como voluntário, nas atividades de Programas de Pesquisa e Extensão.",
     "aluno": true,
     "professor": true,
     "funcionario": false
@@ -120,7 +120,7 @@
     "id": 14,
     "eixo": "3",
     "dimensao": "2",
-    "texto": "A Instituição incentiva a participação em atividades culturais e artísticas?",
+    "texto": "A Instituição incentiva a participação em atividades culturais e artísticas.",
     "aluno": true,
     "professor": true,
     "funcionario": true
@@ -129,7 +129,7 @@
     "id": 15,
     "eixo": "3",
     "dimensao": "2",
-    "texto": "A frequência e a qualidade da interação dos professores atendem às necessidades acadêmicas?",
+    "texto": "A frequência e a qualidade da interação dos professores atendem às necessidades acadêmicas.",
     "aluno": true,
     "professor": false,
     "funcionario": false
@@ -138,7 +138,7 @@
     "id": 16,
     "eixo": "3",
     "dimensao": "2",
-    "texto": "As atividades a distância e/ou híbridas auxiliam na organização dos estudos, aprendizagem e demais atividades acadêmicas?",
+    "texto": "As atividades a distância e/ou híbridas auxiliam na organização dos estudos, aprendizagem e demais atividades acadêmicas.",
     "aluno": true,
     "professor": true,
     "funcionario": false
@@ -147,7 +147,7 @@
     "id": 17,
     "eixo": "3",
     "dimensao": "2",
-    "texto": "O Projeto Pedagógico do Curso (PPC) é conhecido e se concretiza nas ações do respectivo curso?",
+    "texto": "O Projeto Pedagógico do Curso (PPC) é conhecido e se concretiza nas ações do respectivo curso.",
     "aluno": true,
     "professor": true,
     "funcionario": false
@@ -156,7 +156,7 @@
     "id": 18,
     "eixo": "3",
     "dimensao": "2",
-    "texto": "A Instituição incentiva a participação de professores em atividades de pesquisa e desenvolvimento tecnológico/inovação?",
+    "texto": "A Instituição incentiva a participação de professores em atividades de pesquisa e desenvolvimento tecnológico/inovação.",
     "aluno": false,
     "professor": true,
     "funcionario": false
@@ -165,7 +165,7 @@
     "id": 19,
     "eixo": "4",
     "dimensao": "9",
-    "texto": "O apoio pedagógico, psicológico, pastoral e de acessibilidade oferecido pelo Coordenador da Pastoral do Campus atende as necessidades da Instituição?",
+    "texto": "O apoio pedagógico, psicológico, pastoral e de acessibilidade oferecido pelo Núcleo de apoio Psicológico, Pedagógico e Pastoral atende as necessidades da Instituição.",
     "aluno": true,
     "professor": true,
     "funcionario": true
@@ -174,7 +174,7 @@
     "id": 20,
     "eixo": "4",
     "dimensao": "9",
-    "texto": "O atendimento às pessoas com deficiência e/ou mobilidade reduzida contempla as necessidades da comunidade acadêmica?",
+    "texto": "O atendimento às pessoas com deficiência e/ou mobilidade reduzida contempla as necessidades da comunidade acadêmica.",
     "aluno": true,
     "professor": true,
     "funcionario": true
@@ -183,7 +183,7 @@
     "id": 21,
     "eixo": "4",
     "dimensao": "9",
-    "texto": "A Instituição incentiva oportunidades de intercâmbios?",
+    "texto": "A Instituição incentiva oportunidades de intercâmbios.",
     "aluno": true,
     "professor": true,
     "funcionario": false
@@ -192,7 +192,7 @@
     "id": 22,
     "eixo": "4",
     "dimensao": "4",
-    "texto": "O site da Instituição fornece, com clareza, informações sobre a mesma, serviços e funcionamento institucional?",
+    "texto": "O site da Instituição fornece, com clareza, informações sobre a mesma, serviços e funcionamento institucional.",
     "aluno": true,
     "professor": true,
     "funcionario": true
@@ -201,7 +201,7 @@
     "id": 23,
     "eixo": "4",
     "dimensao": "4",
-    "texto": "Os instrumentos de comunicação utilizados pela Instituição (páginas e perfis nas redes sociais, aplicativos de mensagens, e-mails marketing, vídeos, publicações, boletins informativos, murais, faixas e folheteria), são eficazes na comunicação com toda a Instituição?",
+    "texto": "Os instrumentos de comunicação utilizados pela Instituição (páginas e perfis nas redes sociais, aplicativos de mensagens, e-mails marketing, vídeos, publicações, boletins informativos, murais, faixas e folheteria), são eficazes na comunicação com toda a Instituição.",
     "aluno": true,
     "professor": true,
     "funcionario": true
@@ -210,7 +210,7 @@
     "id": 24,
     "eixo": "4",
     "dimensao": "5",
-    "texto": "A Instituição incentiva o corpo técnico-administrativo a buscar capacitação e aperfeiçoamento de suas práticas profissionais?",
+    "texto": "A Instituição incentiva o corpo técnico-administrativo a buscar capacitação e aperfeiçoamento de suas práticas profissionais.",
     "aluno": false,
     "professor": false,
     "funcionario": true
@@ -219,7 +219,7 @@
     "id": 25,
     "eixo": "4",
     "dimensao": "5",
-    "texto": "As capacitações e formações pedagógicas oferecidas pela Instituição contribuem para a qualificação do trabalho docente?",
+    "texto": "As capacitações e formações pedagógicas oferecidas pela Instituição contribuem para a qualificação do trabalho docente.",
     "aluno": false,
     "professor": true,
     "funcionario": false
@@ -228,7 +228,7 @@
     "id": 26,
     "eixo": "4",
     "dimensao": "6",
-    "texto": "A Instituição oferece a possibilidade de participar de Conselhos, Comissões, Colegiados e/ou Grupos de Trabalho para discussão dos processos decisórios?",
+    "texto": "A Instituição oferece a possibilidade de participar de Conselhos, Comissões, Colegiados e/ou Grupos de Trabalho para discussão dos processos decisórios.",
     "aluno": false,
     "professor": true,
     "funcionario": true
@@ -237,7 +237,7 @@
     "id": 27,
     "eixo": "4",
     "dimensao": "6",
-    "texto": "A Instituição oferece a possibilidade de participar de Conselhos, Comissões, Colegiados, Grupos de Trabalho e /ou Lideranças Estudantis para discussão dos processos decisórios?",
+    "texto": "A Instituição oferece a possibilidade de participar de Conselhos, Comissões, Colegiados e/ou Grupos de Trabalho para discussão dos processos decisórios.",
     "aluno": true,
     "professor": false,
     "funcionario": false
@@ -246,7 +246,7 @@
     "id": 28,
     "eixo": "4",
     "dimensao": "6",
-    "texto": "O auxílio da Coordenação de Curso na orientação e esclarecimento de dúvidas sobre o curso atende as necessidades dos acadêmicos?",
+    "texto": "O auxílio da Coordenação de Curso na orientação e esclarecimento de dúvidas sobre o curso atende as necessidades dos acadêmicos.",
     "aluno": true,
     "professor": false,
     "funcionario": false
@@ -255,7 +255,7 @@
     "id": 29,
     "eixo": "4",
     "dimensao": "10",
-    "texto": "A ouvidoria atende as necessidades da Instituição?",
+    "texto": "A ouvidoria atende as necessidades da Instituição.",
     "aluno": true,
     "professor": true,
     "funcionario": true
@@ -264,7 +264,7 @@
     "id": 30,
     "eixo": "4",
     "dimensao": "10",
-    "texto": "A Instituição promove diálogo e participação em seus processos de gestão?",
+    "texto": "A Instituição promove diálogo e participação em seus processos de gestão.",
     "aluno": true,
     "professor": true,
     "funcionario": true
@@ -273,7 +273,7 @@
     "id": 31,
     "eixo": "5",
     "dimensao": "7",
-    "texto": "Os serviços de segurança atendem as necessidades da Instituição?",
+    "texto": "Sinto segurança na continuidade dos serviços oferecidos pela Instituição, considerando sua gestão.",
     "aluno": true,
     "professor": true,
     "funcionario": true
@@ -282,7 +282,7 @@
     "id": 32,
     "eixo": "5",
     "dimensao": "7",
-    "texto": "As instalações da Instituição em relação à higiene, limpeza e segurança sanitária atendem as necessidades institucionais?",
+    "texto": "Os mecanismos de apoio financeiro (bolsas e descontos) são acessíveis.",
     "aluno": true,
     "professor": true,
     "funcionario": true
@@ -291,25 +291,43 @@
     "id": 33,
     "eixo": "5",
     "dimensao": "7",
-    "texto": "A biblioteca da Instituição atende as necessidades de formação acadêmica?",
+    "texto": "Os serviços de segurança atendem as necessidades da Instituição.",
     "aluno": true,
     "professor": true,
-    "funcionario": false
+    "funcionario": true
   },
   {
     "id": 34,
     "eixo": "5",
     "dimensao": "7",
-    "texto": "Os equipamentos, materiais e infraestrutura de apoio do curso (memorial, instalações esportivas, entre outros) contribuem para o processo de aprendizagem?",
+    "texto": "As instalações da Instituição em relação à higiene, limpeza e segurança sanitária atendem as necessidades institucionais.",
     "aluno": true,
     "professor": true,
-    "funcionario": false
+    "funcionario": true
   },
   {
     "id": 35,
     "eixo": "5",
     "dimensao": "7",
-    "texto": "O espaço físico e os recursos materiais, tais como móveis, máquinas, equipamentos e materiais de escritório, etc., destinados ao desenvolvimento das atividades administrativas, são adequados?",
+    "texto": "A biblioteca da Instituição atende as necessidades de formação acadêmica.",
+    "aluno": true,
+    "professor": true,
+    "funcionario": false
+  },
+  {
+    "id": 36,
+    "eixo": "5",
+    "dimensao": "7",
+    "texto": "Os equipamentos, materiais e infraestrutura de apoio do curso (memorial, instalações esportivas, entre outros) contribuem para o processo de aprendizagem.",
+    "aluno": true,
+    "professor": true,
+    "funcionario": false
+  },
+  {
+    "id": 37,
+    "eixo": "5",
+    "dimensao": "7",
+    "texto": "O espaço físico e os recursos materiais, tais como móveis, máquinas, equipamentos e materiais de escritório, etc., destinados ao desenvolvimento das atividades administrativas, são adequados.",
     "aluno": true,
     "professor": true,
     "funcionario": true
