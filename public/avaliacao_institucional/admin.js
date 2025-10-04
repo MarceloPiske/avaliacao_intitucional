@@ -1,10 +1,8 @@
-import { initializeFirebase } from './modules/firebaseConfig.js';
 import { setupAdminAuth } from './modules/adminAuth.js';
 import { setupAdminPanel } from './modules/adminPanel.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize Firebase
-    initializeFirebase();
+    // Firebase is initialized in firebaseConfig.js
     
     // Initialize authentication for admin page
     setupAdminAuth();

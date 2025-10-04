@@ -1,3 +1,6 @@
+import { db } from './firebaseConfig.js';
+import { collection, getDocs, doc, updateDoc, addDoc, deleteDoc, where, query, serverTimestamp } from "firebase/firestore";
+
 export function setupUsersSection() {
     const userSearch = document.getElementById('user-search');
     const userTypeFilter = document.getElementById('user-type-filter');
@@ -27,13 +30,17 @@ export function setupUsersSection() {
     generateCodeBtn.addEventListener('click', generateAccessCode);
 
     function loadUsers() {
-        const db = firebase.firestore();
-        
-        // Load all users from a single "usuarios" collection
-        db.collection('users').get()
+        const usersCol = collection(db, 'users');
+        getDocs(usersCol)
             .then((querySnapshot) => {
                 users = querySnapshot.docs.map(doc => {
-                    return { id: doc.id, ...doc.data() };
+                    const data = doc.data();
+                    return { 
+                        id: doc.id, 
+                        nome: data.nome || data.name,
+                        email: data.email,
+                        tipo: data.tipo || data.type
+                    };
                 });
                 displayUsers();
             })
@@ -206,7 +213,7 @@ export function setupUsersSection() {
         userFormContainer.style.display = 'block';
     }
 
-    function saveUser(event) {
+    async function saveUser(event) {
         event.preventDefault();
 
         // Get form values
@@ -226,8 +233,10 @@ export function setupUsersSection() {
         // Get conditional fields if applicable
         let userData = {
             nome: userName,
+            name: userName,
             email: userEmail,
-            tipo: userType
+            tipo: userType,
+            type: userType
         };
         
         if (userType === 'tecnicos') {
@@ -251,79 +260,69 @@ export function setupUsersSection() {
                 userData.senha = userPassword;
             }
         }
-
-        const db = firebase.firestore();
         
         if (editingUserId) {
             // Update existing user
-            db.collection('users').doc(editingUserId).update(userData)
-                .then(() => {
-                    alert('Usuário atualizado com sucesso!');
-                    loadUsers();
-                    hideUserForm();
-                })
-                .catch((error) => {
-                    console.error("Error updating user: ", error);
-                    alert('Erro ao atualizar usuário: ' + error.message);
-                });
+            const userDoc = doc(db, 'users', editingUserId);
+            try {
+                await updateDoc(userDoc, userData);
+                alert('Usuário atualizado com sucesso!');
+                loadUsers();
+                hideUserForm();
+            } catch (error) {
+                console.error("Error updating user: ", error);
+                alert('Erro ao atualizar usuário: ' + error.message);
+            }
         } else {
             // Check if email already exists
-            db.collection('users').where('email', '==', userEmail).get()
-                .then((querySnapshot) => {
-                    if (!querySnapshot.empty) {
-                        alert('Este email já está registrado.');
-                        return;
-                    }
-                    
-                    // For technical staff, check if code already exists
-                    if (userType === 'tecnicos') {
-                        return db.collection('users')
-                            .where('codigo', '==', userData.codigo)
-                            .where('tipo', '==', 'tecnicos')
-                            .get()
-                            .then((codeSnapshot) => {
-                                if (!codeSnapshot.empty) {
-                                    alert('Este código de acesso já está em uso. Por favor, gere outro código.');
-                                    return Promise.reject('Código duplicado');
-                                }
-                                return Promise.resolve();
-                            });
-                    }
-                    
-                    return Promise.resolve();
-                })
-                .then(() => {
-                    // Add new user
-                    return db.collection('users').add({
-                        ...userData,
-                        dataCriacao: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                })
-                .then(() => {
-                    alert('Usuário adicionado com sucesso!');
-                    loadUsers();
-                    hideUserForm();
-                })
-                .catch((error) => {
-                    if (error === 'Código duplicado') return;
-                    console.error("Error adding user: ", error);
-                    alert('Erro ao adicionar usuário: ' + error.message);
+            const qEmail = query(collection(db, 'users'), where('email', '==', userEmail));
+            const emailSnapshot = await getDocs(qEmail);
+
+            if (!emailSnapshot.empty) {
+                alert('Este email já está registrado.');
+                return;
+            }
+            
+            // For technical staff, check if code already exists
+            if (userType === 'tecnicos') {
+                const qCode = query(
+                    collection(db, 'users'),
+                    where('codigo', '==', userData.codigo)
+                );
+                const codeSnapshot = await getDocs(qCode);
+                if (!codeSnapshot.empty) {
+                    alert('Este código de acesso já está em uso. Por favor, gere outro código.');
+                    return;
+                }
+            }
+
+            // Add new user
+            try {
+                await addDoc(collection(db, 'users'), {
+                    ...userData,
+                    dataCriacao: serverTimestamp()
                 });
+                alert('Usuário adicionado com sucesso!');
+                loadUsers();
+                hideUserForm();
+            } catch (error) {
+                console.error("Error adding user: ", error);
+                alert('Erro ao adicionar usuário: ' + error.message);
+            }
         }
     }
 
-    function deleteUser(id) {
+    async function deleteUser(id) {
         if (confirm('Tem certeza que deseja excluir este usuário?')) {
-            const db = firebase.firestore();
-            db.collection('users').doc(id).delete()
-                .then(() => {
-                    alert('Usuário excluído com sucesso!');
-                    loadUsers();
-                })
-                .catch((error) => {
-                    console.error("Error deleting user: ", error);
-                    alert('Erro ao excluir usuário: ' + error.message);
-                });
+            const userDoc = doc(db, 'users', id);
+            try {
+                await deleteDoc(userDoc);
+                alert('Usuário excluído com sucesso!');
+                loadUsers();
+            } catch (error) {
+                console.error("Error deleting user: ", error);
+                alert('Erro ao excluir usuário: ' + error.message);
+            }
         }
     }
 }

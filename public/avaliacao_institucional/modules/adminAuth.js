@@ -1,3 +1,7 @@
+import { auth, db, googleProvider } from './firebaseConfig.js';
+import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
+import { collection, query, where, getDocs } from "firebase/firestore";
+
 export function setupAdminAuth() {
     const googleLoginButton = document.getElementById('google-login-button');
     const logoutButton = document.getElementById('logout-button');
@@ -12,14 +16,12 @@ export function setupAdminAuth() {
 
     // Handle Google login
     googleLoginButton.addEventListener('click', () => {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        
         // Only allow specific domains
-        provider.setCustomParameters({
+        googleProvider.setCustomParameters({
             hd: 'seminarioconcordia.com.br,faculdadeluterananconcordia.com.br'
         });
         
-        firebase.auth().signInWithPopup(provider)
+        signInWithPopup(auth, googleProvider)
             .then((result) => {
                 // Get user email
                 const email = result.user.email;
@@ -36,7 +38,7 @@ export function setupAdminAuth() {
     // Handle logout
     logoutButton.addEventListener('click', () => {
         // Sign out from Firebase
-        firebase.auth().signOut().then(() => {
+        signOut(auth).then(() => {
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('userType');
             localStorage.removeItem('userId');
@@ -49,29 +51,30 @@ export function setupAdminAuth() {
     });
 
     // Check if user is an admin
-    function checkIfAdmin(uid, email) {
-        firebase.firestore().collection('admins')
-            .where('email', '==', email)
-            .get()
-            .then((querySnapshot) => {
-                if (!querySnapshot.empty) {
-                    // User is an admin
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('userType', 'admin');
-                    localStorage.setItem('userId', uid);
-                    localStorage.setItem('userName', querySnapshot.docs[0].data().nome || 'Administrador');
-                    localStorage.setItem('isAdmin', 'true');
-                    showAdminPanel();
-                } else {
-                    // User is not an admin
-                    firebase.auth().signOut();
-                    loginError.textContent = 'Você não tem permissão para acessar o painel administrativo.';
-                }
-            })
-            .catch((error) => {
-                console.error("Error checking admin status:", error);
-                loginError.textContent = 'Erro ao verificar status de administrador: ' + error.message;
-            });
+    async function checkIfAdmin(uid, email) {
+        try {
+            const adminsCol = collection(db, 'admins');
+            const q = query(adminsCol, where('email', '==', email));
+            const querySnapshot = await getDocs(q);
+            
+            if (!querySnapshot.empty) {
+                // User is an admin
+                const adminData = querySnapshot.docs[0].data();
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userType', 'admin');
+                localStorage.setItem('userId', uid);
+                localStorage.setItem('userName', adminData.nome || adminData.name || 'Administrador');
+                localStorage.setItem('isAdmin', 'true');
+                showAdminPanel();
+            } else {
+                // User is not an admin
+                await signOut(auth);
+                loginError.textContent = 'Você não tem permissão para acessar o painel administrativo.';
+            }
+        } catch (error) {
+            console.error("Error checking admin status:", error);
+            loginError.textContent = 'Erro ao verificar status de administrador: ' + error.message;
+        }
     }
 
     function showAdminPanel() {

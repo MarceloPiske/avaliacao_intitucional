@@ -1,3 +1,6 @@
+import { db } from './firebaseConfig.js';
+import { collection, getDocs, doc, updateDoc, addDoc, deleteDoc, where, query, serverTimestamp } from "firebase/firestore";
+
 export function setupAdminsSection() {
     const adminSearch = document.getElementById('admin-search');
     const addAdminBtn = document.getElementById('add-admin-btn');
@@ -19,8 +22,8 @@ export function setupAdminsSection() {
     loadAdmins();
 
     function loadAdmins() {
-        const db = firebase.firestore();
-        db.collection('admins').get()
+        const adminsCol = collection(db, 'admins');
+        getDocs(adminsCol)
             .then((querySnapshot) => {
                 admins = querySnapshot.docs.map(doc => {
                     return { id: doc.id, ...doc.data() };
@@ -149,7 +152,7 @@ export function setupAdminsSection() {
         adminFormContainer.style.display = 'block';
     }
 
-    function saveAdmin(event) {
+    async function saveAdmin(event) {
         event.preventDefault();
 
         // Get form values
@@ -167,54 +170,47 @@ export function setupAdminsSection() {
             return;
         }
 
-        const db = firebase.firestore();
-        
         if (editingAdminId) {
             // Update existing admin
-            db.collection('admins').doc(editingAdminId).update({
-                nome: adminName,
-                email: adminEmail,
-                ultimaAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
-            })
-            .then(() => {
+            const adminDoc = doc(db, 'admins', editingAdminId);
+            try {
+                await updateDoc(adminDoc, {
+                    nome: adminName,
+                    email: adminEmail,
+                    ultimaAtualizacao: serverTimestamp()
+                });
                 alert('Administrador atualizado com sucesso!');
                 loadAdmins();
                 hideAdminForm();
-            })
-            .catch((error) => {
+            } catch (error) {
                 console.error("Error updating admin: ", error);
                 alert('Erro ao atualizar administrador: ' + error.message);
-            });
+            }
         } else {
             // Check if email already exists
-            db.collection('admins').where('email', '==', adminEmail).get()
-                .then((querySnapshot) => {
-                    if (!querySnapshot.empty) {
-                        alert('Este email já está registrado como administrador.');
-                        return;
-                    }
-                    
-                    // Add new admin
-                    db.collection('admins').add({
-                        nome: adminName,
-                        email: adminEmail,
-                        tipo: 'admin',
-                        dataCriacao: firebase.firestore.FieldValue.serverTimestamp()
-                    })
-                    .then(() => {
-                        alert('Administrador adicionado com sucesso!');
-                        loadAdmins();
-                        hideAdminForm();
-                    })
-                    .catch((error) => {
-                        console.error("Error adding admin: ", error);
-                        alert('Erro ao adicionar administrador: ' + error.message);
-                    });
-                })
-                .catch((error) => {
-                    console.error("Error checking email: ", error);
-                    alert('Erro ao verificar email: ' + error.message);
+            const q = query(collection(db, 'admins'), where('email', '==', adminEmail));
+            const querySnapshot = await getDocs(q);
+            
+            if (!querySnapshot.empty) {
+                alert('Este email já está registrado como administrador.');
+                return;
+            }
+            
+            // Add new admin
+            try {
+                await addDoc(collection(db, 'admins'), {
+                    nome: adminName,
+                    email: adminEmail,
+                    tipo: 'admin',
+                    dataCriacao: serverTimestamp()
                 });
+                alert('Administrador adicionado com sucesso!');
+                loadAdmins();
+                hideAdminForm();
+            } catch (error) {
+                console.error("Error adding admin: ", error);
+                alert('Erro ao adicionar administrador: ' + error.message);
+            }
         }
     }
 
@@ -223,17 +219,16 @@ export function setupAdminsSection() {
         return re.test(String(email).toLowerCase());
     }
 
-    function deleteAdmin(id) {
+    async function deleteAdmin(id) {
         if (confirm('Tem certeza que deseja excluir este administrador?')) {
-            const db = firebase.firestore();
-            db.collection('admins').doc(id).delete()
-                .then(() => {
-                    loadAdmins();
-                })
-                .catch((error) => {
-                    console.error("Error deleting admin: ", error);
-                    alert('Erro ao excluir administrador: ' + error.message);
-                });
+            const adminDoc = doc(db, 'admins', id);
+            try {
+                await deleteDoc(adminDoc);
+                loadAdmins();
+            } catch (error) {
+                console.error("Error deleting admin: ", error);
+                alert('Erro ao excluir administrador: ' + error.message);
+            }
         }
     }
 }

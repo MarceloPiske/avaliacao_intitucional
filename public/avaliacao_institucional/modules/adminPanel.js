@@ -1,77 +1,109 @@
 export function setupAdminPanel() {
-    const viewDashboardBtn = document.getElementById('view-dashboard-btn');
-    const viewResultsBtn = document.getElementById('view-results-btn');
+    const viewAnalyticsBtn = document.getElementById('view-analytics-btn');
     const manageQuestionsBtn = document.getElementById('manage-questions-btn');
     const manageUsersBtn = document.getElementById('manage-users-btn');
     const manageAdminsBtn = document.getElementById('manage-admins-btn');
 
-    // Use unique IDs for each page
-    const dashboardSection = document.getElementById('dashboard-section-admin') || document.getElementById('dashboard-section');
-    const resultsSection = document.getElementById('results-section-admin') || document.getElementById('results-section');
+    const analyticsSection = document.getElementById('analytics-section');
     const questionsSection = document.getElementById('questions-section');
     const usersSection = document.getElementById('users-section');
     const adminsSection = document.getElementById('admins-section');
 
-    // Only proceed if elements are found
-    if (!dashboardSection || !viewDashboardBtn) {
+    if (!analyticsSection || !viewAnalyticsBtn || !questionsSection || !manageQuestionsBtn || !usersSection || !manageUsersBtn || !adminsSection || !manageAdminsBtn) {
         console.error('Admin panel elements not found in DOM');
         return;
     }
 
-    // Initialize sections
-    import('./dashboardSection.js').then(module => module.setupDashboardSection());
-    import('./resultsSection.js').then(module => module.setupResultsSection());
-    import('./questionsSection.js').then(module => module.setupQuestionsSection());
-    import('./usersSection.js').then(module => module.setupUsersSection());
-    import('./adminsSection.js').then(module => module.setupAdminsSection());
+    const sections = {
+        analytics: {
+            element: analyticsSection,
+            button: viewAnalyticsBtn,
+            path: './sections/analytics.html',
+            setup: async () => {
+                const { setupAnalyticsSection } = await import('./analyticsSection.js');
+                setupAnalyticsSection();
+            },
+            loaded: false
+        },
+        questions: {
+            element: questionsSection,
+            button: manageQuestionsBtn,
+            path: './sections/questions.html',
+            setup: async () => {
+                const { setupQuestionsSection } = await import('./questionsSection.js');
+                setupQuestionsSection();
+            },
+            loaded: false
+        },
+        users: {
+            element: usersSection,
+            button: manageUsersBtn,
+            path: './sections/users.html',
+            setup: async () => {
+                const { setupUsersSection } = await import('./usersSection.js');
+                setupUsersSection();
+            },
+            loaded: false
+        },
+        admins: {
+            element: adminsSection,
+            button: manageAdminsBtn,
+            path: './sections/admins.html',
+            setup: async () => {
+                const { setupAdminsSection } = await import('./adminsSection.js');
+                setupAdminsSection();
+            },
+            loaded: false
+        }
+    };
 
-    // Navigation buttons
-    viewDashboardBtn.addEventListener('click', () => {
-        showSection(dashboardSection);
-        setActiveButton(viewDashboardBtn);
-    });
-    
-    viewResultsBtn.addEventListener('click', () => {
-        showSection(resultsSection);
-        setActiveButton(viewResultsBtn);
-    });
+    async function showSection(sectionKey) {
+        const sectionConfig = sections[sectionKey];
 
-    manageQuestionsBtn.addEventListener('click', () => {
-        showSection(questionsSection);
-        setActiveButton(manageQuestionsBtn);
-    });
-
-    manageUsersBtn.addEventListener('click', () => {
-        showSection(usersSection);
-        setActiveButton(manageUsersBtn);
-    });
-
-    manageAdminsBtn.addEventListener('click', () => {
-        showSection(adminsSection);
-        setActiveButton(manageAdminsBtn);
-    });
-
-    function showSection(section) {
         // Hide all sections
-        dashboardSection.style.display = 'none';
-        resultsSection.style.display = 'none';
-        questionsSection.style.display = 'none';
-        usersSection.style.display = 'none';
-        adminsSection.style.display = 'none';
+        for (const key in sections) {
+            sections[key].element.style.display = 'none';
+        }
 
-        // Show selected section
-        section.style.display = 'block';
+        // Load content if not already loaded
+        if (!sectionConfig.loaded) {
+            try {
+                sectionConfig.element.innerHTML = '<div class="loading-spinner"></div>';
+                sectionConfig.element.style.display = 'block';
+
+                const response = await fetch(sectionConfig.path);
+                if (!response.ok) throw new Error(`Failed to load ${sectionConfig.path}`);
+                
+                const html = await response.text();
+                sectionConfig.element.innerHTML = html;
+                await sectionConfig.setup();
+                sectionConfig.loaded = true;
+            } catch (error) {
+                console.error(`Error loading section ${sectionKey}:`, error);
+                sectionConfig.element.innerHTML = `<p class="error-message">Error loading content for this section.</p>`;
+            }
+        }
+
+        // Show the target section
+        sectionConfig.element.style.display = 'block';
+        setActiveButton(sectionConfig.button);
     }
 
     function setActiveButton(button) {
-        // Remove active class from all buttons
-        viewDashboardBtn.classList.remove('active');
-        viewResultsBtn.classList.remove('active');
+        viewAnalyticsBtn.classList.remove('active');
         manageQuestionsBtn.classList.remove('active');
         manageUsersBtn.classList.remove('active');
         manageAdminsBtn.classList.remove('active');
 
-        // Add active class to selected button
         button.classList.add('active');
     }
+
+    // Event listeners
+    viewAnalyticsBtn.addEventListener('click', () => showSection('analytics'));
+    manageQuestionsBtn.addEventListener('click', () => showSection('questions'));
+    manageUsersBtn.addEventListener('click', () => showSection('users'));
+    manageAdminsBtn.addEventListener('click', () => showSection('admins'));
+
+    // Show initial section
+    showSection('analytics');
 }
