@@ -1,0 +1,26 @@
+<h2>Gerenciar Administradores</h2>
+<div class="users-container">
+    <div class="users-filter">
+        <input type="text" id="admin-search" placeholder="Pesquisar administrador...">
+        <button id="add-admin-btn">Adicionar Novo Administrador</button>
+    </div>
+    <div id="admins-list"></div>
+    
+    <div id="admin-form-container" style="display: none;">
+        <h3 id="admin-form-title">Novo Administrador</h3>
+        <form id="admin-form">
+            <div class="form-group">
+                <label for="admin-name">Nome:</label>
+                <input type="text" id="admin-name" required>
+            </div>
+            <div class="form-group">
+                <label for="admin-email">Email:</label>
+                <input type="email" id="admin-email" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" id="save-admin-btn">Salvar</button>
+                <button type="button" id="cancel-admin-btn">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>

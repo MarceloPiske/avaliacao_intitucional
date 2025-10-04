@@ -1,0 +1,89 @@
+<h2>Análise de Resultados</h2>
+
+<div class="filter-options">
+    <div>
+        <span class="filter-label">Dimensão:</span>
+        <select id="dimension-filter-admin">
+            <option value="all">Todas as Dimensões</option>
+        </select>
+    </div>
+    <div>
+        <span class="filter-label">Ano:</span>
+        <select id="year-filter-admin">
+            <option value="all">Todos os Anos</option>
+            <option value="2023">2023</option>
+            <option value="2022">2022</option>
+            <option value="2021">2021</option>
+        </select>
+    </div>
+    <div>
+        <span class="filter-label">Grupo:</span>
+        <select id="group-filter-admin">
+            <option value="all">Todos os Grupos</option>
+            <option value="alunos">Discentes</option>
+            <option value="professores">Docentes</option>
+            <option value="tecnicos">Técnicos Administrativos</option>
+        </select>
+    </div>
+    <div>
+        <span class="filter-label">Eixo:</span>
+        <select id="axis-filter-admin">
+            <option value="all">Todos os Eixos</option>
+        </select>
+    </div>
+</div>
+
+<div class="dashboard-cards">
+    <div class="dashboard-card">
+        <div class="card-value" id="total-responses">0</div>
+        <div class="card-label">Total de Respostas</div>
+    </div>
+    <div class="dashboard-card">
+        <div class="card-value" id="total-users">0</div>
+        <div class="card-label">Total de Usuários</div>
+    </div>
+    <div class="dashboard-card">
+        <div class="card-value" id="participation-rate">0%</div>
+        <div class="card-label">Taxa de Participação</div>
+    </div>
+    <div class="dashboard-card">
+        <div class="card-value" id="average-rating">0.0</div>
+        <div class="card-label">Avaliação Média</div>
+    </div>
+</div>
+
+<div class="export-options">
+    <div class="export-section">
+        <h3>Exportar Relatório</h3>
+        <div class="export-buttons">
+            <button id="export-pdf-btn" class="secondary">
+                <i class="fas fa-file-pdf"></i> PDF
+            </button>
+            <button id="export-excel-btn" class="secondary">
+                <i class="fas fa-file-excel"></i> Excel
+            </button>
+        </div>
+    </div>
+    
+    <div class="export-settings">
+        <h3>Configurações do Relatório</h3>
+        <div class="export-options-list">
+            <label>
+                <input type="checkbox" name="export-option-admin" value="graphs" checked> Incluir Gráficos
+            </label>
+            <label>
+                <input type="checkbox" name="export-option-admin" value="tables" checked> Incluir Tabelas
+            </label>
+            <label>
+                <input type="checkbox" name="export-option-admin" value="summaries" checked> Incluir Resumos
+            </label>
+            <label>
+                <input type="checkbox" name="export-option-admin" value="comments" checked> Incluir Comentários
+            </label>
+        </div>
+    </div>
+</div>
+
+<div id="charts-container" class="charts-grid">
+    <div class="loading-spinner"></div>
+</div>

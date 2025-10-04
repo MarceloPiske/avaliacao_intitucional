@@ -1,0 +1,56 @@
+<h2>Gerenciar Usuários</h2>
+<div class="users-container">
+    <div class="users-filter">
+        <input type="text" id="user-search" placeholder="Pesquisar usuário...">
+        <select id="user-type-filter">
+            <option value="all">Todos os Tipos</option>
+            <option value="alunos">Discentes</option>
+            <option value="professores">Docentes</option>
+            <option value="tecnicos">Técnicos Administrativos</option>
+            <option value="admin">Administradores</option>
+        </select>
+        <button id="add-user-btn">Adicionar Novo Usuário</button>
+    </div>
+    <div id="users-list"></div>
+    
+    <div id="user-form-container" style="display: none;">
+        <h3 id="user-form-title">Novo Usuário</h3>
+        <form id="user-form">
+            <div class="form-group">
+                <label for="user-name">Nome:</label>
+                <input type="text" id="user-name" required>
+            </div>
+            <div class="form-group">
+                <label for="user-email">Email:</label>
+                <input type="email" id="user-email" required>
+            </div>
+            <div class="form-group">
+                <label for="user-type">Tipo de Usuário:</label>
+                <select id="user-type" required>
+                    <option value="">Selecione o Tipo</option>
+                    <option value="alunos">Aluno</option>
+                    <option value="professores">Professor</option>
+                    <option value="tecnicos">Técnico Administrativo</option>
+                    <option value="admin">Administrador</option>
+                </select>
+            </div>
+            <div id="staff-code-group" class="form-group" style="display: none;">
+                <label for="user-code">Código de Acesso:</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="user-code" readonly>
+                    <button type="button" id="generate-code-btn" class="secondary">
+                        <i class="fas fa-key"></i> Gerar Código
+                    </button>
+                </div>
+            </div>
+            <div id="user-password-group" class="form-group" style="display: none;">
+                <label for="user-password">Senha:</label>
+                <input type="password" id="user-password">
+            </div>
+            <div class="form-actions">
+                <button type="submit" id="save-user-btn">Salvar</button>
+                <button type="button" id="cancel-user-btn" class="secondary">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,44 @@
+<h2>Gerenciar Perguntas</h2>
+<div class="questions-container">
+    <div class="questions-filter">
+        <select id="dimension-select">
+            <option value="all">Todas as Dimensões</option>
+        </select>
+        <select id="group-select">
+            <option value="all">Todos os Grupos</option>
+            <option value="alunos">Discentes</option>
+            <option value="professores">Docentes</option>
+            <option value="tecnicos">Técnicos Administrativos</option>
+        </select>
+        <button id="add-question-btn">Adicionar Nova Pergunta</button>
+    </div>
+    <div id="questions-list"></div>
+    
+    <div id="question-form-container" style="display: none;">
+        <h3 id="question-form-title">Nova Pergunta</h3>
+        <form id="question-form">
+            <div class="form-group">
+                <label for="question-text">Texto da Pergunta:</label>
+                <textarea id="question-text" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="question-dimension">Dimensão:</label>
+                <select id="question-dimension" required>
+                    <option value="">Selecione a Dimensão</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Grupo(s) Aplicável:</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="question-group" value="alunos"> Discentes</label>
+                    <label><input type="checkbox" name="question-group" value="professores"> Docentes</label>
+                    <label><input type="checkbox" name="question-group" value="tecnicos"> Técnicos Administrativos</label>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" id="save-question-btn">Salvar</button>
+                <button type="button" id="cancel-question-btn">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
