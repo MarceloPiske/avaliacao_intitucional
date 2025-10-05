@@ -1,306 +1,276 @@
-export function setupQuestionsSection() {
-    const dimensionSelect = document.getElementById('dimension-select');
-    const groupSelect = document.getElementById('group-select');
-    const addQuestionBtn = document.getElementById('add-question-btn');
-    const questionsList = document.getElementById('questions-list');
-    const questionFormContainer = document.getElementById('question-form-container');
-    const questionForm = document.getElementById('question-form');
-    const cancelQuestionBtn = document.getElementById('cancel-question-btn');
-    const questionDimensionSelect = document.getElementById('question-dimension');
+export function initQuestionsSection() {
+    const section = document.getElementById('questions-section');
     
-    let questions = [];
-    let editingQuestionId = null;
+    section.innerHTML = `
+        <div class="section-content">
+            <h2>Gerenciar Perguntas</h2>
+            
+            <div class="info-legend">
+                <h4><i class="fas fa-info-circle"></i> Legenda da Escala de Avaliação</h4>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <span class="legend-number">1</span>
+                        <span class="legend-text">Discordo Totalmente</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-number">2</span>
+                        <span class="legend-text">Discordo Parcialmente</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-number">3</span>
+                        <span class="legend-text">Neutro</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-number">4</span>
+                        <span class="legend-text">Concordo Parcialmente</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-number">5</span>
+                        <span class="legend-text">Concordo Totalmente</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-container">
+                <h3 id="question-form-title">Adicionar Pergunta</h3>
+                <input type="hidden" id="edit-question-id">
+                <div class="form-group">
+                    <label for="question-text">Texto da Pergunta</label>
+                    <textarea id="question-text" placeholder="Digite o texto da pergunta" required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="question-eixo">Eixo (1-5)</label>
+                        <input type="text" id="question-eixo" placeholder="Ex: 1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="question-dimensao">Dimensão (1-10)</label>
+                        <input type="text" id="question-dimensao" placeholder="Ex: 8" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label style="font-weight: 500; display: block; margin-bottom: 10px;">Aplicável para:</label>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="question-aluno">
+                            <span>Aluno</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="question-professor">
+                            <span>Professor</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="question-funcionario">
+                            <span>Técnico Administrativo</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button id="save-question-btn"><i class="fas fa-save"></i> Salvar Pergunta</button>
+                    <button id="cancel-question-btn" class="secondary" style="display: none;"><i class="fas fa-times"></i> Cancelar</button>
+                </div>
+            </div>
+            <div id="questions-list"></div>
+        </div>
+    `;
 
-    // Load questions
+    document.getElementById('save-question-btn').addEventListener('click', saveQuestion);
+    document.getElementById('cancel-question-btn').addEventListener('click', cancelQuestionEdit);
+
     loadQuestions();
+}
 
-    // Load dimensions
-    loadDimensions();
-
-    // Event listeners
-    dimensionSelect.addEventListener('change', filterQuestions);
-    groupSelect.addEventListener('change', filterQuestions);
-    addQuestionBtn.addEventListener('click', showAddQuestionForm);
-    cancelQuestionBtn.addEventListener('click', hideQuestionForm);
-    questionForm.addEventListener('submit', saveQuestion);
-
-    async function loadQuestions() {
-        try {
-            const db = firebase.firestore();
-            const questionsRef = db.collection('perguntas');
-            const snapshot = await questionsRef.get();
-            
-            if (snapshot.empty) {
-                // If no questions in Firestore, try to load from JSON
-                try {
-                    const response = await fetch('avaliacao_cpa_perguntas.json');
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch JSON file');
-                    }
-                    questions = await response.json();
-                    
-                    // Convert the JSON structure to the expected format
-                    questions = questions.map(q => {
-                        return {
-                            id: q.id,
-                            texto: q.texto,
-                            dimensao: `Eixo ${q.eixo} - Dimensão ${q.dimensao}`,
-                            grupos: [
-                                ...(q.aluno ? ['alunos'] : []),
-                                ...(q.professor ? ['professores'] : []),
-                                ...(q.funcionario ? ['tecnicos'] : [])
-                            ]
-                        };
-                    });
-                    
-                    // Store questions in Firestore for future use
-                    questions.forEach(q => {
-                        db.collection('perguntas').add({
-                            id: q.id,
-                            texto: q.texto,
-                            dimensao: q.dimensao,
-                            grupos: q.grupos
-                        }).catch(err => console.error('Error adding question to Firestore:', err));
-                    });
-                } catch (jsonError) {
-                    console.error('Error loading questions from JSON:', jsonError);
-                    questionsList.innerHTML = '<p>Erro ao carregar perguntas do arquivo JSON. Verifique se o arquivo existe.</p>';
-                    return;
-                }
-            } else {
-                // Use questions from Firestore
-                questions = snapshot.docs.map(doc => {
-                    return { id: doc.id, ...doc.data() };
-                });
-            }
-            
-            displayQuestions();
-        } catch (error) {
-            console.error('Erro ao carregar perguntas:', error);
-            questionsList.innerHTML = '<p>Erro ao carregar perguntas. Tente novamente mais tarde.</p>';
-        }
-    }
-
-    async function loadDimensions() {
-        try {
-            // Clear existing options first (except the "all" option)
-            while (dimensionSelect.options.length > 1) {
-                dimensionSelect.remove(1);
-            }
-            
-            while (questionDimensionSelect.options.length > 1) {
-                questionDimensionSelect.remove(1);
-            }
-            
-            // Try to get dimensions from Firestore first
-            const db = firebase.firestore();
-            const questionsRef = db.collection('perguntas');
-            const snapshot = await questionsRef.get();
-            
-            let dimensions = [];
-            
-            if (snapshot.empty) {
-                // If no questions in Firestore, try to load from JSON
-                const response = await fetch('avaliacao_cpa_perguntas.json');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch JSON file');
-                }
-                const jsonQuestions = await response.json();
-                
-                // Extract unique dimensions from JSON
-                const dimensionSet = new Set();
-                jsonQuestions.forEach(q => {
-                    dimensionSet.add(`Eixo ${q.eixo} - Dimensão ${q.dimensao}`);
-                });
-                dimensions = [...dimensionSet];
-            } else {
-                // Extract dimensions from Firestore data
-                const dimensionSet = new Set();
-                snapshot.docs.forEach(doc => {
-                    const data = doc.data();
-                    if (data.dimensao) {
-                        dimensionSet.add(data.dimensao);
-                    }
-                });
-                dimensions = [...dimensionSet];
-            }
-            
-            // Add dimensions to both selects
-            dimensions.forEach(dimension => {
-                // For filter select
-                const option1 = document.createElement('option');
-                option1.value = dimension;
-                option1.textContent = dimension;
-                dimensionSelect.appendChild(option1);
-                
-                // For form select
-                const option2 = document.createElement('option');
-                option2.value = dimension;
-                option2.textContent = dimension;
-                questionDimensionSelect.appendChild(option2);
-            });
-        } catch (error) {
-            console.error('Erro ao carregar dimensões:', error);
-        }
-    }
-
-    function filterQuestions() {
-        displayQuestions();
-    }
-
-    function displayQuestions() {
-        // Get filter values
-        const dimensionFilter = dimensionSelect.value;
-        const groupFilter = groupSelect.value;
-
-        // Filter questions
-        const filteredQuestions = questions.filter(question => {
-            if (dimensionFilter !== 'all' && question.dimensao !== dimensionFilter) return false;
-            if (groupFilter !== 'all' && !question.grupos.includes(groupFilter)) return false;
-            return true;
-        });
-
-        // Clear previous questions
-        questionsList.innerHTML = '';
-
-        // Display filtered questions
-        if (filteredQuestions.length === 0) {
-            questionsList.innerHTML = '<p>Nenhuma pergunta encontrada para os filtros selecionados.</p>';
-            return;
-        }
-
-        filteredQuestions.forEach(question => {
-            const questionItem = document.createElement('div');
-            questionItem.className = 'question-item';
-            questionItem.dataset.id = question.id;
-
-            const questionHeader = document.createElement('div');
-            questionHeader.className = 'question-header';
-
-            const questionContent = document.createElement('div');
-            questionContent.className = 'question-content';
-
-            const questionText = document.createElement('p');
-            questionText.className = 'question-text';
-            questionText.textContent = question.texto;
-            questionContent.appendChild(questionText);
-
-            const questionMeta = document.createElement('p');
-            questionMeta.className = 'question-meta';
-            questionMeta.textContent = `Dimensão: ${question.dimensao} | Grupos: ${question.grupos.join(', ')}`;
-            questionContent.appendChild(questionMeta);
-
-            const questionActions = document.createElement('div');
-            questionActions.className = 'question-actions';
-
-            const editBtn = document.createElement('button');
-            editBtn.className = 'edit-btn';
-            editBtn.textContent = 'Editar';
-            editBtn.addEventListener('click', () => editQuestion(question.id));
-            questionActions.appendChild(editBtn);
-
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'delete-btn';
-            deleteBtn.textContent = 'Excluir';
-            deleteBtn.addEventListener('click', () => deleteQuestion(question.id));
-            questionActions.appendChild(deleteBtn);
-
-            questionHeader.appendChild(questionContent);
-            questionHeader.appendChild(questionActions);
-            questionItem.appendChild(questionHeader);
-            questionsList.appendChild(questionItem);
-        });
-    }
-
-    function showAddQuestionForm() {
-        // Reset form
-        questionForm.reset();
-        document.getElementById('question-form-title').textContent = 'Nova Pergunta';
-        editingQuestionId = null;
+async function loadQuestions() {
+    const db = firebase.firestore();
+    const snapshot = await db.collection('perguntas_avaliacao_institucional').get();
+    
+    const listDiv = document.getElementById('questions-list');
+    listDiv.innerHTML = `
+        <h3>Lista de Perguntas</h3>
+        <div class="questions-table-container">
+            <table class="users-table questions-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th class="question-text-col">Texto</th>
+                        <th>Eixo</th>
+                        <th>Dimensão</th>
+                        <th>Público</th>
+                        <th class="actions-col">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="questions-tbody"></tbody>
+            </table>
+        </div>
+        <div id="questions-cards" class="questions-cards"></div>
+    `;
+    
+    const tbody = document.getElementById('questions-tbody');
+    const cardsContainer = document.getElementById('questions-cards');
+    
+    const questions = [];
+    snapshot.forEach(doc => {
+        questions.push({ id: doc.id, ...doc.data() });
+    });
+    
+    questions.sort((a, b) => (a.id || 0) - (b.id || 0));
+    
+    questions.forEach(q => {
+        const publico = [];
+        if (q.aluno) publico.push('Aluno');
+        if (q.professor) publico.push('Professor');
+        if (q.funcionario) publico.push('Técnico');
         
-        // Show form
-        questionFormContainer.style.display = 'block';
-    }
-
-    function hideQuestionForm() {
-        questionFormContainer.style.display = 'none';
-    }
-
-    function editQuestion(id) {
-        // Find question by id
-        const question = questions.find(q => q.id === id);
-        if (!question) return;
-
-        // Fill form with question data
-        document.getElementById('question-text').value = question.texto;
-        document.getElementById('question-dimension').value = question.dimensao;
+        // Table row for desktop
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><span class="question-id-badge">${q.id || '-'}</span></td>
+            <td class="question-text-col">${q.texto || ''}</td>
+            <td><span class="badge badge-eixo">Eixo ${q.eixo || ''}</span></td>
+            <td><span class="badge badge-dimensao">Dim. ${q.dimensao || ''}</span></td>
+            <td><div class="publico-tags">${publico.map(p => `<span class="publico-tag">${p}</span>`).join('')}</div></td>
+            <td class="actions-col">
+                <button class="edit-btn" data-id="${q.id}"><i class="fas fa-edit"></i> Editar</button>
+                <button class="delete-btn" data-id="${q.id}"><i class="fas fa-trash"></i> Excluir</button>
+            </td>
+        `;
+        tbody.appendChild(row);
         
-        // Check appropriate group checkboxes
-        const groupCheckboxes = document.getElementsByName('question-group');
-        groupCheckboxes.forEach(checkbox => {
-            checkbox.checked = question.grupos.includes(checkbox.value);
-        });
+        // Card for mobile
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.innerHTML = `
+            <div class="question-card-header">
+                <span class="question-id-badge">ID: ${q.id || '-'}</span>
+                <div class="question-card-meta">
+                    <span class="badge badge-eixo">Eixo ${q.eixo || ''}</span>
+                    <span class="badge badge-dimensao">Dim. ${q.dimensao || ''}</span>
+                </div>
+            </div>
+            <div class="question-card-text">${q.texto || ''}</div>
+            <div class="question-card-footer">
+                <div class="publico-tags">${publico.map(p => `<span class="publico-tag">${p}</span>`).join('')}</div>
+                <div class="question-card-actions">
+                    <button class="edit-btn" data-id="${q.id}"><i class="fas fa-edit"></i></button>
+                    <button class="delete-btn" data-id="${q.id}"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        `;
+        cardsContainer.appendChild(card);
+    });
 
-        // Set form title and editing id
-        document.getElementById('question-form-title').textContent = 'Editar Pergunta';
-        editingQuestionId = id;
+    // Add event listeners for both table and cards
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', () => editQuestion(btn.dataset.id));
+    });
+    
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => deleteQuestion(btn.dataset.id));
+    });
+}
 
-        // Show form
-        questionFormContainer.style.display = 'block';
+async function saveQuestion() {
+    const db = firebase.firestore();
+    const questionId = document.getElementById('edit-question-id').value;
+    const text = document.getElementById('question-text').value.trim();
+    const eixo = document.getElementById('question-eixo').value.trim();
+    const dimensao = document.getElementById('question-dimensao').value.trim();
+    const aluno = document.getElementById('question-aluno').checked;
+    const professor = document.getElementById('question-professor').checked;
+    const funcionario = document.getElementById('question-funcionario').checked;
+
+    if (!text || !eixo || !dimensao) {
+        alert('Por favor, preencha todos os campos obrigatórios.');
+        return;
     }
 
-    function saveQuestion(event) {
-        event.preventDefault();
+    if (!aluno && !professor && !funcionario) {
+        alert('Por favor, selecione pelo menos um tipo de público.');
+        return;
+    }
 
-        // Get form values
-        const questionText = document.getElementById('question-text').value;
-        const questionDimension = document.getElementById('question-dimension').value;
-        const groupCheckboxes = document.getElementsByName('question-group');
-        const selectedGroups = Array.from(groupCheckboxes)
-            .filter(checkbox => checkbox.checked)
-            .map(checkbox => checkbox.value);
+    const questionData = {
+        texto: text,
+        eixo: eixo,
+        dimensao: dimensao,
+        aluno: aluno,
+        professor: professor,
+        funcionario: funcionario
+    };
 
-        if (selectedGroups.length === 0) {
-            alert('Selecione pelo menos um grupo.');
-            return;
-        }
-
-        if (editingQuestionId) {
-            // Update existing question
-            const index = questions.findIndex(q => q.id === editingQuestionId);
-            if (index !== -1) {
-                questions[index] = {
-                    ...questions[index],
-                    texto: questionText,
-                    dimensao: questionDimension,
-                    grupos: selectedGroups
-                };
-            }
+    try {
+        if (questionId) {
+            await db.collection('perguntas_avaliacao_institucional').doc(questionId).update(questionData);
+            alert('Pergunta atualizada com sucesso!');
         } else {
-            // Add new question
-            const newId = Math.max(...questions.map(q => q.id), 0) + 1;
-            questions.push({
-                id: newId,
-                texto: questionText,
-                dimensao: questionDimension,
-                grupos: selectedGroups
+            const snapshot = await db.collection('perguntas_avaliacao_institucional').get();
+            let maxId = 0;
+            snapshot.forEach(doc => {
+                const docId = parseInt(doc.id);
+                if (!isNaN(docId) && docId > maxId) {
+                    maxId = docId;
+                }
             });
-        }
-
-        // In a real app, we would save to server here
-        // For now, just update the display
-        displayQuestions();
-        hideQuestionForm();
-    }
-
-    function deleteQuestion(id) {
-        if (confirm('Tem certeza que deseja excluir esta pergunta?')) {
-            // Remove question from array
-            questions = questions.filter(q => q.id !== id);
             
-            // In a real app, we would delete from server here
-            // For now, just update the display
-            displayQuestions();
+            const newId = (maxId + 1).toString();
+            await db.collection('perguntas_avaliacao_institucional').doc(newId).set(questionData);
+            alert('Pergunta adicionada com sucesso!');
         }
+        
+        clearQuestionForm();
+        loadQuestions();
+    } catch (error) {
+        console.error('Error saving question:', error);
+        alert('Erro ao salvar pergunta: ' + error.message);
     }
+}
+
+async function editQuestion(id) {
+    const db = firebase.firestore();
+    const doc = await db.collection('perguntas_avaliacao_institucional').doc(id).get();
+    const question = doc.data();
+
+    document.getElementById('edit-question-id').value = id;
+    document.getElementById('question-form-title').textContent = 'Editar Pergunta';
+    document.getElementById('question-text').value = question.texto || '';
+    document.getElementById('question-eixo').value = question.eixo || '';
+    document.getElementById('question-dimensao').value = question.dimensao || '';
+    document.getElementById('question-aluno').checked = question.aluno || false;
+    document.getElementById('question-professor').checked = question.professor || false;
+    document.getElementById('question-funcionario').checked = question.funcionario || false;
+    
+    document.getElementById('cancel-question-btn').style.display = 'inline-block';
+    document.getElementById('question-text').focus();
+}
+
+async function deleteQuestion(id) {
+    if (!confirm('Tem certeza que deseja excluir esta pergunta?')) {
+        return;
+    }
+
+    const db = firebase.firestore();
+    try {
+        await db.collection('perguntas_avaliacao_institucional').doc(id).delete();
+        alert('Pergunta excluída com sucesso!');
+        loadQuestions();
+    } catch (error) {
+        console.error('Error deleting question:', error);
+        alert('Erro ao excluir pergunta: ' + error.message);
+    }
+}
+
+function cancelQuestionEdit() {
+    clearQuestionForm();
+}
+
+function clearQuestionForm() {
+    document.getElementById('edit-question-id').value = '';
+    document.getElementById('question-form-title').textContent = 'Adicionar Pergunta';
+    document.getElementById('question-text').value = '';
+    document.getElementById('question-eixo').value = '';
+    document.getElementById('question-dimensao').value = '';
+    document.getElementById('question-aluno').checked = false;
+    document.getElementById('question-professor').checked = false;
+    document.getElementById('question-funcionario').checked = false;
+    document.getElementById('cancel-question-btn').style.display = 'none';
 }

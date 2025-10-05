@@ -1,329 +1,144 @@
-export function setupUsersSection() {
-    const userSearch = document.getElementById('user-search');
-    const userTypeFilter = document.getElementById('user-type-filter');
-    const addUserBtn = document.getElementById('add-user-btn');
-    const usersList = document.getElementById('users-list');
-    const userFormContainer = document.getElementById('user-form-container');
-    const userForm = document.getElementById('user-form');
-    const cancelUserBtn = document.getElementById('cancel-user-btn');
-    const userTypeSelect = document.getElementById('user-type');
-    const staffCodeGroup = document.getElementById('staff-code-group');
-    const userPasswordGroup = document.getElementById('user-password-group');
-    const generateCodeBtn = document.getElementById('generate-code-btn');
+export function initUsersSection() {
+    const section = document.getElementById('users-section');
     
-    let users = [];
-    let editingUserId = null;
+    section.innerHTML = `
+        <div class="section-content">
+            <h2>Gerenciar Usuários</h2>
+            <div class="form-container">
+                <h3 id="user-form-title">Adicionar Usuário</h3>
+                <input type="hidden" id="edit-user-id">
+                <input type="text" id="user-name" placeholder="Nome" required>
+                <input type="email" id="user-email" placeholder="Email" required>
+                <select id="user-role" required>
+                    <option value="">Selecione o tipo</option>
+                    <option value="aluno">Aluno</option>
+                    <option value="professor">Professor</option>
+                    <option value="tecnico">Técnico Administrativo</option>
+                    <option value="admin">Administrador</option>
+                </select>
+                <div style="display: flex; gap: 10px;">
+                    <button id="save-user-btn">Salvar Usuário</button>
+                    <button id="cancel-user-btn" class="secondary">Cancelar</button>
+                </div>
+            </div>
+            <div id="users-list"></div>
+        </div>
+    `;
 
-    // Load users
+    document.getElementById('save-user-btn').addEventListener('click', saveUser);
+    document.getElementById('cancel-user-btn').addEventListener('click', cancelEdit);
+
     loadUsers();
+}
 
-    // Event listeners
-    userSearch.addEventListener('input', filterUsers);
-    userTypeFilter.addEventListener('change', filterUsers);
-    addUserBtn.addEventListener('click', showAddUserForm);
-    cancelUserBtn.addEventListener('click', hideUserForm);
-    userForm.addEventListener('submit', saveUser);
-    userTypeSelect.addEventListener('change', toggleUserTypeFields);
-    generateCodeBtn.addEventListener('click', generateAccessCode);
+async function loadUsers() {
+    const db = firebase.firestore();
+    const snapshot = await db.collection('users').get();
+    
+    const listDiv = document.getElementById('users-list');
+    listDiv.innerHTML = '<h3>Lista de Usuários</h3><table class="users-table"><thead><tr><th>Nome</th><th>Email</th><th>Tipo</th><th>Ações</th></tr></thead><tbody id="users-tbody"></tbody></table>';
+    
+    const tbody = document.getElementById('users-tbody');
+    
+    snapshot.forEach(doc => {
+        const user = doc.data();
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${user.nome || ''}</td>
+            <td>${user.email || ''}</td>
+            <td>${user.role || ''}</td>
+            <td>
+                <button class="edit-btn" data-id="${doc.id}">Editar</button>
+                <button class="delete-btn" data-id="${doc.id}">Excluir</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
 
-    function loadUsers() {
-        const db = firebase.firestore();
-        
-        // Load all users from a single "usuarios" collection
-        db.collection('users').get()
-            .then((querySnapshot) => {
-                users = querySnapshot.docs.map(doc => {
-                    return { id: doc.id, ...doc.data() };
-                });
-                displayUsers();
-            })
-            .catch((error) => {
-                console.error("Error loading users: ", error);
-                usersList.innerHTML = '<p>Erro ao carregar usuários. Tente novamente mais tarde.</p>';
-            });
+    tbody.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', () => editUser(btn.dataset.id));
+    });
+    
+    tbody.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => deleteUser(btn.dataset.id));
+    });
+}
+
+async function saveUser() {
+    const db = firebase.firestore();
+    const userId = document.getElementById('edit-user-id').value;
+    const name = document.getElementById('user-name').value.trim();
+    const email = document.getElementById('user-email').value.trim();
+    const role = document.getElementById('user-role').value;
+
+    if (!name || !email || !role) {
+        alert('Por favor, preencha todos os campos.');
+        return;
     }
 
-    function filterUsers() {
-        displayUsers();
-    }
+    const userData = {
+        nome: name,
+        email: email,
+        role: role
+    };
 
-    function displayUsers() {
-        // Get filter values
-        const searchTerm = userSearch.value.toLowerCase();
-        const typeFilter = userTypeFilter.value;
-
-        // Filter users
-        const filteredUsers = users.filter(user => {
-            if (searchTerm && !user.nome?.toLowerCase().includes(searchTerm) && 
-                !user.email?.toLowerCase().includes(searchTerm)) {
-                return false;
-            }
-            if (typeFilter !== 'all' && user.tipo !== typeFilter) return false;
-            return true;
-        });
-
-        // Clear previous users
-        usersList.innerHTML = '';
-
-        // Display filtered users
-        if (filteredUsers.length === 0) {
-            usersList.innerHTML = '<p>Nenhum usuário encontrado para os filtros selecionados.</p>';
-            return;
-        }
-
-        // Create a table for better display
-        const table = document.createElement('table');
-        table.className = 'users-table';
-        
-        // Add table header
-        const thead = document.createElement('thead');
-        const headerRow = document.createElement('tr');
-        ['Nome', 'Email', 'Tipo', 'Ações'].forEach(text => {
-            const th = document.createElement('th');
-            th.textContent = text;
-            headerRow.appendChild(th);
-        });
-        thead.appendChild(headerRow);
-        table.appendChild(thead);
-        
-        // Add table body
-        const tbody = document.createElement('tbody');
-        
-        filteredUsers.forEach(user => {
-            const row = document.createElement('tr');
-            
-            // Name cell
-            const nameCell = document.createElement('td');
-            nameCell.textContent = user.nome || 'N/A';
-            row.appendChild(nameCell);
-            
-            // Email cell
-            const emailCell = document.createElement('td');
-            emailCell.textContent = user.email || 'N/A';
-            row.appendChild(emailCell);
-            
-            // Type cell
-            const typeCell = document.createElement('td');
-            typeCell.textContent = getUserTypeName(user.tipo);
-            row.appendChild(typeCell);
-            
-            // Actions cell
-            const actionsCell = document.createElement('td');
-            
-            const editBtn = document.createElement('button');
-            editBtn.className = 'edit-btn';
-            editBtn.innerHTML = '<i class="fas fa-edit"></i> Editar';
-            editBtn.addEventListener('click', () => editUser(user.id));
-            actionsCell.appendChild(editBtn);
-            
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'delete-btn';
-            deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Excluir';
-            deleteBtn.addEventListener('click', () => deleteUser(user.id));
-            actionsCell.appendChild(deleteBtn);
-            
-            row.appendChild(actionsCell);
-            tbody.appendChild(row);
-        });
-        
-        table.appendChild(tbody);
-        usersList.appendChild(table);
-    }
-
-    function getUserTypeName(type) {
-        const types = {
-            'alunos': 'Aluno',
-            'professores': 'Professor',
-            'tecnicos': 'Técnico Administrativo',
-            'admin': 'Administrador'
-        };
-        return types[type] || type;
-    }
-
-    function showAddUserForm() {
-        // Reset form
-        userForm.reset();
-        document.getElementById('user-form-title').textContent = 'Novo Usuário';
-        editingUserId = null;
-        
-        // Hide conditional fields initially
-        staffCodeGroup.style.display = 'none';
-        userPasswordGroup.style.display = 'none';
-        
-        // Show form
-        userFormContainer.style.display = 'block';
-    }
-
-    function hideUserForm() {
-        userFormContainer.style.display = 'none';
-    }
-
-    function toggleUserTypeFields() {
-        const userType = userTypeSelect.value;
-        
-        // Show/hide code and password fields based on user type
-        if (userType === 'tecnicos') {
-            staffCodeGroup.style.display = 'block';
-            userPasswordGroup.style.display = 'block';
+    try {
+        if (userId) {
+            await db.collection('users').doc(userId).update(userData);
+            alert('Usuário atualizado com sucesso!');
         } else {
-            staffCodeGroup.style.display = 'none';
-            userPasswordGroup.style.display = 'none';
-        }
-    }
-
-    function generateAccessCode() {
-        // Generate a random 6-digit code
-        const code = Math.floor(100000 + Math.random() * 900000).toString();
-        document.getElementById('user-code').value = code;
-    }
-
-    function editUser(id) {
-        // Find user by id
-        const user = users.find(u => u.id === id);
-        if (!user) return;
-
-        // Fill form with user data
-        document.getElementById('user-name').value = user.nome || '';
-        document.getElementById('user-email').value = user.email || '';
-        document.getElementById('user-type').value = user.tipo || '';
-        
-        // Handle conditional fields
-        if (user.tipo === 'tecnicos') {
-            staffCodeGroup.style.display = 'block';
-            userPasswordGroup.style.display = 'block';
-            document.getElementById('user-code').value = user.codigo || '';
-            document.getElementById('user-password').value = ''; // For security, don't show password
-        } else {
-            staffCodeGroup.style.display = 'none';
-            userPasswordGroup.style.display = 'none';
-        }
-
-        // Set form title and editing id
-        document.getElementById('user-form-title').textContent = 'Editar Usuário';
-        editingUserId = id;
-
-        // Show form
-        userFormContainer.style.display = 'block';
-    }
-
-    function saveUser(event) {
-        event.preventDefault();
-
-        // Get form values
-        const userName = document.getElementById('user-name').value;
-        const userEmail = document.getElementById('user-email').value;
-        const userType = document.getElementById('user-type').value;
-        
-        // Validate email for professors and students
-        if (userType === 'alunos' || userType === 'professores') {
-            if (!userEmail.endsWith('@seminarioconcordia.com.br') && 
-                !userEmail.endsWith('@faculdadeluterananconcordia.com.br')) {
-                alert('Para alunos e professores, o email deve ser um email institucional válido (@seminarioconcordia.com.br ou @faculdadeluterananconcordia.com.br).');
-                return;
-            }
+            userData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            await db.collection('users').add(userData);
+            alert('Usuário criado com sucesso!');
         }
         
-        // Get conditional fields if applicable
-        let userData = {
-            nome: userName,
-            email: userEmail,
-            tipo: userType
-        };
-        
-        if (userType === 'tecnicos') {
-            const userCode = document.getElementById('user-code').value;
-            const userPassword = document.getElementById('user-password').value;
-            
-            if (!userCode) {
-                alert('Por favor, gere um código de acesso para o funcionário.');
-                return;
-            }
-            
-            if (!userPassword && !editingUserId) {
-                alert('Por favor, defina uma senha para o funcionário.');
-                return;
-            }
-            
-            userData.codigo = userCode;
-            
-            // Only include password if it was changed
-            if (userPassword) {
-                userData.senha = userPassword;
-            }
-        }
-
-        const db = firebase.firestore();
-        
-        if (editingUserId) {
-            // Update existing user
-            db.collection('users').doc(editingUserId).update(userData)
-                .then(() => {
-                    alert('Usuário atualizado com sucesso!');
-                    loadUsers();
-                    hideUserForm();
-                })
-                .catch((error) => {
-                    console.error("Error updating user: ", error);
-                    alert('Erro ao atualizar usuário: ' + error.message);
-                });
-        } else {
-            // Check if email already exists
-            db.collection('users').where('email', '==', userEmail).get()
-                .then((querySnapshot) => {
-                    if (!querySnapshot.empty) {
-                        alert('Este email já está registrado.');
-                        return;
-                    }
-                    
-                    // For technical staff, check if code already exists
-                    if (userType === 'tecnicos') {
-                        return db.collection('users')
-                            .where('codigo', '==', userData.codigo)
-                            .where('tipo', '==', 'tecnicos')
-                            .get()
-                            .then((codeSnapshot) => {
-                                if (!codeSnapshot.empty) {
-                                    alert('Este código de acesso já está em uso. Por favor, gere outro código.');
-                                    return Promise.reject('Código duplicado');
-                                }
-                                return Promise.resolve();
-                            });
-                    }
-                    
-                    return Promise.resolve();
-                })
-                .then(() => {
-                    // Add new user
-                    return db.collection('users').add({
-                        ...userData,
-                        dataCriacao: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                })
-                .then(() => {
-                    alert('Usuário adicionado com sucesso!');
-                    loadUsers();
-                    hideUserForm();
-                })
-                .catch((error) => {
-                    if (error === 'Código duplicado') return;
-                    console.error("Error adding user: ", error);
-                    alert('Erro ao adicionar usuário: ' + error.message);
-                });
-        }
-    }
-
-    function deleteUser(id) {
-        if (confirm('Tem certeza que deseja excluir este usuário?')) {
-            const db = firebase.firestore();
-            db.collection('users').doc(id).delete()
-                .then(() => {
-                    alert('Usuário excluído com sucesso!');
-                    loadUsers();
-                })
-                .catch((error) => {
-                    console.error("Error deleting user: ", error);
-                    alert('Erro ao excluir usuário: ' + error.message);
-                });
-        }
+        clearForm();
+        loadUsers();
+    } catch (error) {
+        console.error('Error saving user:', error);
+        alert('Erro ao salvar usuário: ' + error.message);
     }
 }
+
+async function editUser(id) {
+    const db = firebase.firestore();
+    const doc = await db.collection('users').doc(id).get();
+    const user = doc.data();
+
+    document.getElementById('edit-user-id').value = id;
+    document.getElementById('user-form-title').textContent = 'Editar Usuário';
+    document.getElementById('user-name').value = user.nome || '';
+    document.getElementById('user-email').value = user.email || '';
+    document.getElementById('user-role').value = user.role || '';
+    
+    document.getElementById('user-name').focus();
+}
+
+async function deleteUser(id) {
+    if (!confirm('Tem certeza que deseja excluir este usuário?')) {
+        return;
+    }
+
+    const db = firebase.firestore();
+    try {
+        await db.collection('users').doc(id).delete();
+        alert('Usuário excluído com sucesso!');
+        loadUsers();
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        alert('Erro ao excluir usuário: ' + error.message);
+    }
+}
+
+function cancelEdit() {
+    clearForm();
+}
+
+function clearForm() {
+    document.getElementById('edit-user-id').value = '';
+    document.getElementById('user-form-title').textContent = 'Adicionar Usuário';
+    document.getElementById('user-name').value = '';
+    document.getElementById('user-email').value = '';
+    document.getElementById('user-role').value = '';
+}
+

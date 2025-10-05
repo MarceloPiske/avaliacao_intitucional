@@ -16,128 +16,35 @@ body {
     min-height: 100vh;
 }
 
-/* Login Container */
-#login-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
-    padding: 20px;
-}
+/* removed #login-container */
 
-#login-container h1 {
-    color: white;
-    margin-bottom: 30px;
-    text-align: center;
-    font-size: 2.5rem;
-    font-weight: 300;
-    letter-spacing: 0.5px;
-}
+/* removed #login-container h1 */
 
-#login-form {
-    background: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-}
+/* removed #login-form */
 
-#login-tabs {
-    display: flex;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
-}
+/* removed #login-tabs */
 
-.login-tab {
-    background: transparent;
-    color: #555;
-    border: none;
-    padding: 12px 20px;
-    font-size: 0.95rem;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.3s;
-    font-weight: 500;
-}
+/* removed .login-tab */
 
-.login-tab.active {
-    color: #4b6cb7;
-    border-bottom: 2px solid #4b6cb7;
-}
+/* removed .login-tab.active */
 
-.login-method {
-    margin-bottom: 20px;
-}
+/* removed .login-method */
 
-.login-method p {
-    margin-bottom: 15px;
-    color: #555;
-}
+/* removed .login-method p */
 
-.google-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 12px;
-    background: #fff;
-    color: #444;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s;
-    margin: 15px 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
+/* removed .google-btn */
 
-.google-btn:hover {
-    background: #f9f9f9;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
+/* removed .google-btn:hover */
 
-.google-btn img {
-    width: 18px;
-    height: 18px;
-    margin-right: 10px;
-}
+/* removed .google-btn img */
 
-#login-form input {
-    display: block;
-    width: 100%;
-    padding: 12px 15px;
-    margin-bottom: 15px;
-    border: 1px solid #e1e1e1;
-    border-radius: 4px;
-    font-size: 1rem;
-    transition: border 0.3s, box-shadow 0.3s;
-}
+/* removed #login-form input */
 
-#login-form input:focus {
-    outline: none;
-    border-color: #4b6cb7;
-    box-shadow: 0 0 0 2px rgba(75, 108, 183, 0.1);
-}
+/* removed #login-form input:focus */
 
-#code-login-button, #login-button {
-    width: 100%;
-    padding: 12px;
-    background: #4b6cb7;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s;
-    font-weight: 500;
-}
+/* removed #code-login-button, #login-button */
 
-#code-login-button:hover, #login-button:hover {
-    background: #3a5a96;
-}
+/* removed #code-login-button:hover, #login-button:hover */
 
 .error-message {
     color: #e74c3c;
@@ -146,40 +53,19 @@ body {
     font-size: 0.9rem;
 }
 
-.login-info {
-    font-size: 0.85rem;
-    color: #777;
-    text-align: center;
-    margin-top: 10px;
-}
+/* removed .login-info */
 
-.admin-access {
-    margin-top: 20px;
-    text-align: center;
-}
+/* removed .admin-access */
 
-.admin-btn {
-    display: inline-block;
-    padding: 10px 20px;
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    font-weight: 500;
-    transition: background 0.3s;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-}
+/* removed .admin-btn */
 
-.admin-btn:hover {
-    background: rgba(255, 255, 255, 0.25);
-}
+/* removed .admin-btn:hover */
 
-/* Admin Panel */
-#admin-panel {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
+/* removed #admin-panel */
+
+/* removed .admin-section */
+
+/* removed .admin-section.active */
 
 header {
     background: #182848;
@@ -197,112 +83,31 @@ header h1 {
     letter-spacing: 0.5px;
 }
 
-#logout-button {
-    background: transparent;
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 8px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-size: 0.9rem;
-}
+/* removed #logout-button */
 
-#logout-button:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
+/* removed #logout-button:hover */
 
-.admin-container {
-    display: flex;
-    flex: 1;
-}
+/* removed .admin-container */
 
-.sidebar {
-    width: 240px;
-    background: #f5f7fa;
-    color: #333;
-    padding: 20px 0;
-    box-shadow: 1px 0 5px rgba(0,0,0,0.05);
-}
+/* removed .sidebar */
 
-.sidebar-btn {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: 12px 20px;
-    text-align: left;
-    background: transparent;
-    border: none;
-    color: #555;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.3s;
-    border-left: 3px solid transparent;
-}
+/* removed .sidebar-btn */
 
-.sidebar-btn i {
-    margin-right: 10px;
-    font-size: 1.1rem;
-    width: 20px;
-    text-align: center;
-    color: #4b6cb7;
-}
+/* removed .sidebar-btn i */
 
-.sidebar-btn:hover {
-    background: #f0f2f5;
-    color: #333;
-}
+/* removed .sidebar-btn:hover */
 
-.sidebar-btn.active {
-    background: #e8eef7;
-    color: #4b6cb7;
-    border-left: 3px solid #4b6cb7;
-    font-weight: 500;
-}
+/* removed .sidebar-btn.active */
 
-.content {
-    flex: 1;
-    padding: 20px;
-    background: #fff;
-    overflow-y: auto;
-}
+/* removed .content */
 
-.section-content {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    padding: 25px;
-    margin-bottom: 20px;
-}
+/* removed .section-content */
 
-.section-content h2 {
-    color: #333;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #f0f2f5;
-    font-weight: 500;
-    font-size: 1.5rem;
-}
+/* removed .section-content h2 */
 
-/* Filter Options */
-.filter-options, .questions-filter, .users-filter {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 25px;
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 6px;
-    align-items: center;
-}
+/* removed .filter-options, .questions-filter, .users-filter */
 
-.filter-options .filter-label,
-.questions-filter .filter-label,
-.users-filter .filter-label {
-    font-weight: 500;
-    color: #555;
-    margin-right: 5px;
-}
+/* removed .filter-options .filter-label, .questions-filter .filter-label, .users-filter .filter-label */
 
 select, input[type="text"], input[type="email"], input[type="password"] {
     padding: 10px 12px;
@@ -345,280 +150,92 @@ button.secondary:hover {
     background: #e9ecef;
 }
 
-.export-buttons {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
+/* removed .export-buttons */
 
-.export-buttons button {
-    display: flex;
-    align-items: center;
-}
+/* removed .export-buttons button */
 
-.export-buttons button i {
-    margin-right: 8px;
-}
+/* removed .export-buttons button i */
 
-/* Dashboard Cards */
-.dashboard-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
-}
+/* removed .dashboard-cards */
 
-.dashboard-card {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-}
+/* removed .dashboard-card */
 
-.dashboard-card .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
+/* removed .dashboard-card .card-header */
 
-.dashboard-card .card-title {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #555;
-    margin: 0;
-}
+/* removed .dashboard-card .card-title */
 
-.dashboard-card .card-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.2rem;
-}
+/* removed .dashboard-card .card-icon */
 
-.dashboard-card .card-value {
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: #333;
-    margin: 0;
-    margin-bottom: 10px;
-}
+/* removed .dashboard-card .card-value */
 
-.dashboard-card .card-label {
-    font-size: 0.85rem;
-    color: #888;
-    margin: 0;
-}
+/* removed .dashboard-card .card-label */
 
-.card-bg-blue { background: linear-gradient(45deg, #4b6cb7, #5a87d1); }
-.card-bg-green { background: linear-gradient(45deg, #11998e, #38ef7d); }
-.card-bg-orange { background: linear-gradient(45deg, #f46b45, #eea849); }
-.card-bg-purple { background: linear-gradient(45deg, #8e2de2, #4a00e0); }
+/* removed .card-bg-blue */
+/* removed .card-bg-green */
+/* removed .card-bg-orange */
+/* removed .card-bg-purple */
 
-/* Charts */
-.chart-container {
-    margin-bottom: 30px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    padding: 20px;
-    aspect-ratio: 1 / 1;
-    max-width: 100%;
-    display: flex;
-    max-height: fit-content;
-}
+/* removed .chart-container */
 
-.chart-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
+/* removed .chart-header */
 
-.chart-title {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #333;
-    margin: 0;
-}
+/* removed .chart-title */
 
-.chart-placeholder {
-    width: 100%;
-    height: 300px;
-    background: #f8f9fa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    color: #aaa;
-    font-size: 0.9rem;
-}
+/* removed .chart-placeholder */
 
-/* Results Display */
-#results-container {
-    margin-top: 20px;
-}
+/* removed #results-container */
 
-.result-item {
-    margin-bottom: 30px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    padding: 20px;
-}
+/* removed .result-item */
 
-.result-item h3 {
-    color: #333;
-    margin-bottom: 10px;
-    font-weight: 500;
-    font-size: 1.1rem;
-}
+/* removed .result-item h3 */
 
-.result-meta {
-    color: #777;
-    font-size: 0.9rem;
-    margin-bottom: 15px;
-}
+/* removed .result-meta */
 
-.result-chart {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    height: 250px;
-}
+/* removed .result-chart */
 
-.result-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-    border: 1px solid #f0f2f5;
-}
+/* removed .result-table */
 
-.result-table th, .result-table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #f0f2f5;
-}
+/* removed .result-table th, .result-table td */
 
-.result-table th {
-    background-color: #f8f9fa;
-    font-weight: 500;
-    color: #555;
-}
+/* removed .result-table th */
 
-.result-table tr:hover {
-    background-color: #f8f9fa;
-}
+/* removed .result-table tr:hover */
 
-/* Form Styles */
-.form-group {
-    margin-bottom: 20px;
-}
+/* removed .form-group */
 
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #555;
-}
+/* removed .form-group label */
 
-.form-group input, .form-group select, .form-group textarea {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #e1e1e1;
-    border-radius: 4px;
-    font-size: 0.95rem;
-    transition: all 0.3s;
-}
+/* removed .form-group input, .form-group select, .form-group textarea */
 
-.form-group textarea {
-    min-height: 100px;
-    resize: vertical;
-}
+/* removed .form-group textarea */
 
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-    outline: none;
-    border-color: #4b6cb7;
-    box-shadow: 0 0 0 2px rgba(75, 108, 183, 0.1);
-}
+/* removed .form-group input:focus, .form-group select:focus, .form-group textarea:focus */
 
-.checkbox-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-}
+/* removed .checkbox-group */
 
-.checkbox-group label {
-    display: flex;
-    align-items: center;
-    font-weight: normal;
-}
+/* removed .checkbox-group label */
 
-.checkbox-group input[type="checkbox"] {
-    width: auto;
-    margin-right: 8px;
-}
+/* removed .checkbox-group input[type="checkbox"] */
 
-.form-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 25px;
-}
+/* removed .form-actions */
 
-/* Questions and Users Lists */
-.users-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    border: 1px solid #f0f2f5;
-}
+/* removed .users-table */
 
-.users-table th, .users-table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #f0f2f5;
-}
+/* removed .users-table th, .users-table td */
 
-.users-table th {
-    background-color: #f8f9fa;
-    font-weight: 500;
-    color: #555;
-}
+/* removed .users-table th */
 
-.users-table tr:hover {
-    background-color: #f8f9fa;
-}
+/* removed .users-table tr:hover */
 
-.edit-btn, .delete-btn {
-    padding: 6px 12px;
-    font-size: 0.85rem;
-    margin-right: 5px;
-}
+/* removed .edit-btn, .delete-btn */
 
-.edit-btn {
-    background: #f8f9fa;
-    color: #555;
-    border: 1px solid #e1e1e1;
-}
+/* removed .edit-btn */
 
-.edit-btn:hover {
-    background: #e9ecef;
-}
+/* removed .edit-btn:hover */
 
-.delete-btn {
-    background: #fff0f0;
-    color: #e74c3c;
-    border: 1px solid #ffcfcf;
-}
+/* removed .delete-btn */
 
-.delete-btn:hover {
-    background: #ffe0e0;
-}
+/* removed .delete-btn:hover */
 
 /* Loading spinner */
 .loading-spinner {
@@ -636,352 +253,100 @@ button.secondary:hover {
     100% { transform: rotate(360deg); }
 }
 
-/* Evaluation Container Styles */
-#evaluation-container {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background-color: #f8f9fa;
-}
+/* removed #evaluation-container */
 
-#evaluation-container header {
-    background: #182848;
-    color: white;
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
+/* removed #evaluation-container header */
 
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
+/* removed .user-info */
 
-#user-name-display {
-    font-weight: 500;
-}
+/* removed #user-name-display */
 
-#eval-logout-button {
-    background: transparent;
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 8px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-size: 0.9rem;
-}
+/* removed #eval-logout-button */
 
-#eval-logout-button:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
+/* removed #eval-logout-button:hover */
 
-.evaluation-wrapper {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 0 20px;
-}
+/* removed .evaluation-wrapper */
 
-.evaluation-progress {
-    margin-bottom: 30px;
-}
+/* removed .evaluation-progress */
 
-.progress-bar {
-    height: 8px;
-    background-color: #e9ecef;
-    border-radius: 4px;
-    margin-bottom: 8px;
-    overflow: hidden;
-}
+/* removed .progress-bar */
 
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(45deg, #4b6cb7, #5a87d1);
-    transition: width 0.3s ease;
-    width: 0%;
-}
+/* removed .progress-fill */
 
-.progress-text {
-    text-align: right;
-    font-size: 0.9rem;
-    color: #666;
-}
+/* removed .progress-text */
 
-#question-container {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    padding: 30px;
-    margin-bottom: 20px;
-}
+/* removed #question-container */
 
-#question-container h2 {
-    margin-bottom: 30px;
-    color: #333;
-    font-weight: 500;
-    line-height: 1.5;
-}
+/* removed #question-container h2 */
 
-.rating-container {
-    margin-bottom: 30px;
-}
+/* removed .rating-container */
 
-.rating-options {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-}
+/* removed .rating-options */
 
-.rating-options label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    padding: 10px;
-    border-radius: 4px;
-    transition: all 0.3s;
-    flex: 1;
-    min-width: 80px;
-    text-align: center;
-}
+/* removed .rating-options label */
 
-.rating-options label:hover {
-    background-color: #f8f9fa;
-}
+/* removed .rating-options label:hover */
 
-.rating-options input[type="radio"] {
-    margin-bottom: 8px;
-}
+/* removed .rating-options input[type="radio"] */
 
-.rating-label {
-    font-size: 0.9rem;
-    color: #555;
-}
+/* removed .rating-label */
 
-.question-navigation {
-    display: flex;
-    justify-content: space-between;
-    gap: 15px;
-}
+/* removed .question-navigation */
 
-#submit-evaluation {
-    background: #11998e;
-}
+/* removed #submit-evaluation */
 
-#submit-evaluation:hover {
-    background: #0d7d75;
-}
+/* removed #submit-evaluation:hover */
 
-#evaluation-complete {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    padding: 40px 30px;
-    text-align: center;
-}
+/* removed #evaluation-complete */
 
-.success-message i {
-    font-size: 4rem;
-    color: #11998e;
-    margin-bottom: 20px;
-}
+/* removed .success-message i */
 
-.success-message h2 {
-    color: #333;
-    margin-bottom: 15px;
-}
+/* removed .success-message h2 */
 
-.success-message p {
-    color: #666;
-    margin-bottom: 8px;
-}
+/* removed .success-message p */
 
-#return-button {
-    margin-top: 25px;
-    background: #4b6cb7;
-}
+/* removed #return-button */
 
-/* Dashboard Tabs */
-.dashboard-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
-    gap: 5px;
-}
+/* removed .dashboard-tabs */
 
-.dashboard-tab {
-    background: transparent;
-    color: #555;
-    border: none;
-    padding: 12px 20px;
-    font-size: 0.95rem;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.3s;
-    font-weight: 500;
-}
+/* removed .dashboard-tab */
 
-.dashboard-tab.active {
-    color: #4b6cb7;
-    border-bottom: 2px solid #4b6cb7;
-}
+/* removed .dashboard-tab.active */
 
-.dashboard-view {
-    display: none;
-}
+/* removed .dashboard-view */
 
-.dashboard-view.active {
-    display: block;
-}
+/* removed .dashboard-view.active */
 
-/* Filter Options Compact */
-.filter-options.compact {
-    background: #f5f7fa;
-    padding: 10px 15px;
-    border-radius: 6px;
-    margin-bottom: 20px;
-}
+/* removed .filter-options.compact */
 
-/* Export Options */
-.export-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin-bottom: 25px;
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-}
+/* removed .export-options */
 
-.export-section, .export-settings {
-    flex: 1;
-    min-width: 250px;
-}
+/* removed .export-section, .export-settings */
 
-.export-section h3, .export-settings h3 {
-    font-size: 1rem;
-    font-weight: 500;
-    margin-bottom: 15px;
-    color: #444;
-}
+/* removed .export-section h3, .export-settings h3 */
 
-.export-options-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+/* removed .export-options-list */
 
-.export-options-list label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.9rem;
-    color: #555;
-}
+/* removed .export-options-list label */
 
-.export-options-list input[type="checkbox"] {
-    width: auto;
-}
+/* removed .export-options-list input[type="checkbox"] */
 
-/* Results Summary */
-.results-summary {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    padding: 20px;
-    margin-bottom: 25px;
-}
+/* removed .results-summary */
 
-.summary-stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin-bottom: 15px;
-}
+/* removed .summary-stats */
 
-.summary-stat {
-    flex: 1;
-    min-width: 150px;
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 6px;
-    text-align: center;
-}
+/* removed .summary-stat */
 
-.summary-stat-value {
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: #4b6cb7;
-    margin-bottom: 5px;
-}
+/* removed .summary-stat-value */
 
-.summary-stat-label {
-    font-size: 0.85rem;
-    color: #666;
-}
+/* removed .summary-stat-label */
 
-/* Responsive styles */
-@media (max-width: 768px) {
-    .admin-container {
-        flex-direction: column;
-    }
-    
-    .sidebar {
-        width: 100%;
-        padding: 10px;
-    }
-    
-    .sidebar-btn {
-        padding: 10px 15px;
-    }
-    
-    .content {
-        padding: 15px;
-    }
-    
-    .filter-options, .questions-filter, .users-filter {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .dashboard-cards {
-        grid-template-columns: 1fr;
-    }
-    
-    header h1 {
-        font-size: 1.3rem;
-    }
-    
-    .dashboard-tabs {
-        flex-direction: row;
-        overflow-x: auto;
-        white-space: nowrap;
-        padding-bottom: 5px;
-    }
-    
-    .dashboard-tab {
-        padding: 10px 15px;
-        font-size: 0.85rem;
-    }
-    
-    .export-options {
-        flex-direction: column;
-    }
-}
+/* removed responsive styles */
 
-@media (max-width: 600px) {
-    .rating-options {
-        flex-direction: column;
-    }
-    
-    .rating-options label {
-        flex-direction: row;
-        justify-content: space-between;
-        width: 100%;
-    }
-}
+/* removed .form-container */
+
+/* removed .form-container h3 */
+
+/* removed .form-container input, .form-container select, .form-container textarea */
+
+/* removed .form-container textarea */
