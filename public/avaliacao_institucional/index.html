@@ -54,35 +54,80 @@
                 </div>
                 
                 <div id="question-container">
+                    <div class="question-header">
+                        <span class="question-number">Questão <span id="current-question-num">1</span></span>
+                    </div>
                     <h2 id="question-text"></h2>
+                    
+                    <div class="rating-legend">
+                        <h4><i class="fas fa-info-circle"></i> Escala de Avaliação</h4>
+                        <div class="legend-scale">
+                            <div class="legend-scale-item">
+                                <div class="scale-number">1</div>
+                                <div class="scale-label">Discordo Totalmente</div>
+                            </div>
+                            <div class="legend-scale-item">
+                                <div class="scale-number">2</div>
+                                <div class="scale-label">Discordo Parcialmente</div>
+                            </div>
+                            <div class="legend-scale-item">
+                                <div class="scale-number">3</div>
+                                <div class="scale-label">Neutro</div>
+                            </div>
+                            <div class="legend-scale-item">
+                                <div class="scale-number">4</div>
+                                <div class="scale-label">Concordo Parcialmente</div>
+                            </div>
+                            <div class="legend-scale-item">
+                                <div class="scale-number">5</div>
+                                <div class="scale-label">Concordo Totalmente</div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="rating-container">
                         <div class="rating-options">
-                            <label>
+                            <label class="rating-option">
                                 <input type="radio" name="rating" value="1">
-                                <span class="rating-label">1</span>
+                                <span class="rating-circle">
+                                    <span class="rating-number">1</span>
+                                </span>
+                                <span class="rating-text">Discordo Totalmente</span>
                             </label>
-                            <label>
+                            <label class="rating-option">
                                 <input type="radio" name="rating" value="2">
-                                <span class="rating-label">2</span>
+                                <span class="rating-circle">
+                                    <span class="rating-number">2</span>
+                                </span>
+                                <span class="rating-text">Discordo Parcialmente</span>
                             </label>
-                            <label>
+                            <label class="rating-option">
                                 <input type="radio" name="rating" value="3">
-                                <span class="rating-label">3</span>
+                                <span class="rating-circle">
+                                    <span class="rating-number">3</span>
+                                </span>
+                                <span class="rating-text">Neutro</span>
                             </label>
-                            <label>
+                            <label class="rating-option">
                                 <input type="radio" name="rating" value="4">
-                                <span class="rating-label">4</span>
+                                <span class="rating-circle">
+                                    <span class="rating-number">4</span>
+                                </span>
+                                <span class="rating-text">Concordo Parcialmente</span>
                             </label>
-                            <label>
+                            <label class="rating-option">
                                 <input type="radio" name="rating" value="5">
-                                <span class="rating-label">5</span>
+                                <span class="rating-circle">
+                                    <span class="rating-number">5</span>
+                                </span>
+                                <span class="rating-text">Concordo Totalmente</span>
                             </label>
                         </div>
                     </div>
                     <div class="question-navigation">
-                        <button id="prev-question" class="secondary">Anterior</button>
-                        <button id="next-question">Próxima</button>
-                        <button id="submit-evaluation" style="display: none;">Finalizar Avaliação</button>
+                        <button id="prev-question" class="secondary"><i class="fas fa-arrow-left"></i> Anterior</button>
+                        <button id="next-question">Próxima <i class="fas fa-arrow-right"></i></button>
+                        <button id="submit-evaluation" style="display: none;"><i class="fas fa-check-circle"></i> Finalizar Avaliação</button>
                     </div>
                 </div>
                 

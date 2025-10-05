@@ -111,6 +111,7 @@ function showEvaluationPanel(userName, userRole) {
 function loadUserQuestions(userRole) {
     const questionContainer = document.getElementById('question-container');
     const questionText = document.getElementById('question-text');
+    const currentQuestionNum = document.getElementById('current-question-num');
     const prevButton = document.getElementById('prev-question');
     const nextButton = document.getElementById('next-question');
     const submitButton = document.getElementById('submit-evaluation');
@@ -187,15 +188,16 @@ function loadUserQuestions(userRole) {
         if (currentQuestionIndex >= 0 && currentQuestionIndex < questions.length) {
             const question = questions[currentQuestionIndex];
             questionText.textContent = question.texto;
+            currentQuestionNum.textContent = currentQuestionIndex + 1;
             progressCurrent.textContent = currentQuestionIndex + 1;
             progressFill.style.width = `${((currentQuestionIndex + 1) / questions.length) * 100}%`;
             
-            prevButton.style.display = currentQuestionIndex === 0 ? 'none' : 'block';
+            prevButton.style.display = currentQuestionIndex === 0 ? 'none' : 'flex';
             if (currentQuestionIndex === questions.length - 1) {
                 nextButton.style.display = 'none';
-                submitButton.style.display = 'block';
+                submitButton.style.display = 'flex';
             } else {
-                nextButton.style.display = 'block';
+                nextButton.style.display = 'flex';
                 submitButton.style.display = 'none';
             }
             
@@ -255,7 +257,7 @@ function loadUserQuestions(userRole) {
         const userId = localStorage.getItem('userId');
         const userRole = localStorage.getItem('userRole');
         
-        db.collection('survey_responses').add({
+        db.collection('respostas_avaliacao_institucional').add({
             userId: userId,
             userRole: userRole,
             answers: answers,

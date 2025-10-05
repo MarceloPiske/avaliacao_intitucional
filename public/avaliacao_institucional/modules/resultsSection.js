@@ -42,7 +42,7 @@ async function loadResults() {
     resultsDiv.innerHTML = '<p>Carregando resultados...</p>';
     
     try {
-        const snapshot = await db.collection('survey_responses').get();
+        const snapshot = await db.collection('respostas_avaliacao_institucional').get();
         
         if (snapshot.empty) {
             resultsDiv.innerHTML = '<p>Nenhuma resposta encontrada.</p>';
