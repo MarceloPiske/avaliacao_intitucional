@@ -24,15 +24,15 @@ auth.onAuthStateChanged(user => {
 googleLoginButton.addEventListener('click', () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({
-        hd: 'seminarioconcordia.com.br,faculdadeluterananconcordia.com.br'
+        hd: 'seminarioconcordia.com.br,faculdadeluteranaconcordia.com.br'
     });
     
     auth.signInWithPopup(provider)
         .then((result) => {
             const email = result.user.email;
             const domain = email.substring(email.lastIndexOf('@') + 1);
-            
-            if (domain === 'seminarioconcordia.com.br' || domain === 'faculdadeluterananconcordia.com.br') {
+            //recursoshumanos@faculdadeluteranaconcordia.com.br
+            if (domain === 'seminarioconcordia.com.br' || domain === 'faculdadeluteranaconcordia.com.br') {
                 checkOrCreateUser(result.user.uid, email, result.user.displayName);
             } else {
                 auth.signOut();
