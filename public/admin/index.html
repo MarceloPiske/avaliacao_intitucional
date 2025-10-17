@@ -19,10 +19,13 @@
     <link rel="stylesheet" href="./styles/admin.css">
 
     <!-- Chart.js -->
+    <head>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+</head>
 </head>
 
 <body>
@@ -61,7 +64,7 @@
                     <span class="nav-icon material-icons">analytics</span>
                     <span class="nav-text">Avaliações</span>
                 </li>
-                <li class="nav-item" data-section="avaliacoes"> ... </li>
+
                 <li class="nav-item" data-section="perguntas-institucional">
                     <span class="nav-icon material-icons">help_outline</span>
                     <span class="nav-text">Perguntas (Inst.)</span>
@@ -537,7 +540,9 @@
                         </div>
                     </div>
                 </section>
-                <section id="avaliacoes-section" class="content-section"> ... </section>
+                <!-- ========================================
+                     INSTITUCIONAL SECTION
+                     ======================================== -->
                 <section id="perguntas-institucional-section" class="content-section">
                     <div class="data-table-container">
                         <table class="data-table" id="perguntas-institucional-table">
@@ -553,6 +558,9 @@
                         </table>
                     </div>
                 </section>
+                <!-- ========================================
+                     RESULTADOS INSTITUCIONAL SECTION
+                     ======================================== -->
                 <section id="resultados-institucional-section" class="content-section">
                 </section>
             </div>

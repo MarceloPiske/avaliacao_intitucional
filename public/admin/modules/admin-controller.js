@@ -1,5 +1,6 @@
-import { FirebaseAuth, FirebaseCRUD } from '../../shared/modules/firebase.js';
-import { UsuariosManager } from './disciplinas/usuarios-manager.js';
+import { FirebaseAuth } from '../../shared/modules/firebase.js';
+import { UsuariosManager } from './shared/usuarios-manager.js';
+
 import { DisciplinasManager } from './disciplinas/disciplinas-manager.js';
 import { TurmasManager } from './disciplinas/turmas-manager.js';
 import { FormulariosManager } from './disciplinas/formularios-manager.js';
