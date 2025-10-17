@@ -3,497 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sistema de Feedback</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #4f46e5;
-            --primary-hover: #4338ca;
-            --text-dark: #1f2937;
-            --text-light: #6b7280;
-            --bg-light: #f9fafb;
-            --bg-white: #ffffff;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            display: flex;
-            min-height: 100vh;
-        }
-        
-        .login-container {
-            display: flex;
-            width: 100%;
-        }
-        
-        .login-form-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 2rem;
-            max-width: 480px;
-            margin: 0 auto;
-        }
-        
-        .illustration-container {
-            flex: 1;
-            background-color: var(--primary-color);
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        @media (min-width: 1024px) {
-            .illustration-container {
-                display: flex;
-            }
-        }
-        
-        .login-header {
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-        
-        .login-header h1 {
-            font-size: 1.875rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-        }
-        
-        .login-header p {
-            color: var(--text-light);
-            font-size: 0.875rem;
-        }
-        
-        .login-form {
-            width: 100%;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-dark);
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            font-size: 0.875rem;
-            line-height: 1.5;
-            color: var(--text-dark);
-            background-color: var(--bg-white);
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            transition: border-color 0.15s ease-in-out;
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary-color);
-            outline: 0;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-        }
-        
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 0.75rem 1rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            line-height: 1.5;
-            text-align: center;
-            white-space: nowrap;
-            cursor: pointer;
-            border: 1px solid transparent;
-            border-radius: 0.375rem;
-            transition: all 0.15s ease-in-out;
-        }
-        
-        .btn-primary {
-            color: var(--bg-white);
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-        
-        .btn-primary:hover, .btn-primary:focus {
-            background-color: var(--primary-hover);
-            border-color: var(--primary-hover);
-        }
-        
-        .alert {
-            padding: 0.75rem 1rem;
-            margin-bottom: 1rem;
-            border: 1px solid transparent;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            display: none;
-        }
-        
-        .alert-danger {
-            color: #842029;
-            background-color: #f8d7da;
-            border-color: #f5c2c7;
-        }
-        
-        .alert-success {
-            color: #0f5132;
-            background-color: #d1e7dd;
-            border-color: #badbcc;
-        }
-        
-        .loader {
-            display: none;
-            margin: 0 auto;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 3px solid white;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .btn-text {
-            display: inline-block;
-        }
-        
-        .or-divider {
-            display: flex;
-            align-items: center;
-            margin: 1.5rem 0;
-            color: var(--text-light);
-            font-size: 0.875rem;
-        }
-        
-        .or-divider:before, .or-divider:after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background-color: #e5e7eb;
-        }
-        
-        .or-divider:before {
-            margin-right: 1rem;
-        }
-        
-        .or-divider:after {
-            margin-left: 1rem;
-        }
-        
-        .signup-link {
-            text-align: center;
-            margin-top: 1.5rem;
-            font-size: 0.875rem;
-            color: var(--text-light);
-        }
-        
-        .signup-link a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
-        }
-        
-        .signup-link a:hover {
-            text-decoration: underline;
-        }
-    </style>
-
+    <title>Login - Sistema de Avaliação de Disciplinas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="/shared/styles/login/login.css">
+    <meta name="description" content="Acesse o sistema de avaliação de disciplinas com suas credenciais acadêmicas">
 </head>
 <body>
+    <header class="login-header-top">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="32" height="32" rx="8" fill="url(#logoGradient)"/>
+                        <path d="M8 12L16 8L24 12V20C24 21.1046 23.1046 22 22 22H10C8.89543 22 8 21.1046 8 20V12Z" fill="white"/>
+                        <path d="M12 16H20M12 19H18" stroke="url(#logoGradient)" stroke-width="2" stroke-linecap="round"/>
+                        <defs>
+                            <linearGradient id="logoGradient" x1="0" y1="0" x2="32" y2="32">
+                                <stop offset="0%" stop-color="#0ea5e9"/>
+                                <stop offset="100%" stop-color="#3b82f6"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h3>Sistema de Avaliação</h3>
+                    <p>de Disciplinas</p>
+                </div>
+            </div>
+            <div class="header-nav">
+                <a href="#sobre" class="nav-link">Sobre</a>
+                <a href="#suporte" class="nav-link">Suporte</a>
+                <a href="#contato" class="nav-link">Contato</a>
+            </div>
+        </div>
+    </header>
+
     <div class="login-container">
         <div class="login-form-container">
-            <div class="login-header">
-                <h1>Bem-vindo(a) de volta</h1>
-                <p>Entre com suas credenciais para acessar o sistema</p>
-            </div>
-            
-            <div id="errorAlert" class="alert alert-danger"></div>
-            <div id="successAlert" class="alert alert-success"></div>
-            
-            <form id="loginForm" class="login-form">
-                <!-- <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" class="form-control" id="email" placeholder="Seu email" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">Senha</label>
-                    <input type="password" class="form-control" id="password" placeholder="Sua senha" required>
-                </div>
-                
-                <button type="submit" id="loginButton" class="btn btn-primary">
-                    <span class="btn-text">Entrar</span>
-                    <div class="loader" id="loginLoader"></div>
-                </button>
-                
-                <div class="or-divider">ou</div> -->
-                
-                <button type="button" id="googleLoginButton" class="btn btn-primary">
-                    <span class="btn-text">Entrar com Email Acadêmico</span>
-                    <div class="loader" id="googleLoader"></div>
-                </button>
-            </form>
-            
-            <!-- <div class="signup-link">
-                Ainda não tem uma conta? <a href="#" id="showSignupForm">Registre-se</a>
-            </div> -->
-            
-            <div id="signupFormContainer" style="display: none;">
+            <div class="login-form-wrapper">
                 <div class="login-header">
-                    <h1>Criar uma conta</h1>
-                    <p>Preencha os dados para se registrar</p>
+                    <h1>Bem-vindo(a)</h1>
+                    <p>Acesse o sistema com suas credenciais acadêmicas</p>
                 </div>
                 
-                <form id="signupForm" class="login-form">
-                    <div class="form-group">
-                        <label for="signupEmail">Email</label>
-                        <input type="email" class="form-control" id="signupEmail" placeholder="Seu email" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="signupPassword">Senha</label>
-                        <input type="password" class="form-control" id="signupPassword" placeholder="Sua senha" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="confirmPassword">Confirme a senha</label>
-                        <input type="password" class="form-control" id="confirmPassword" placeholder="Confirme sua senha" required>
-                    </div>
-                    
-                    <button type="submit" id="signupButton" class="btn btn-primary">
-                        <span class="btn-text">Registrar</span>
-                        <div class="loader" id="signupLoader"></div>
+                <div class="login-mode-selector">
+                    <button type="button" class="mode-btn active" data-mode="student">
+                        <span class="mode-icon material-icons">school</span>
+                        <span class="mode-text">Usuário</span>
                     </button>
+                    <button type="button" class="mode-btn" data-mode="admin">
+                        <span class="mode-icon material-icons">admin_panel_settings</span>
+                        <span class="mode-text">Administrador</span>
+                    </button>
+                </div>
+                
+                <div id="errorAlert" class="alert alert-danger" role="alert" aria-live="polite"></div>
+                <div id="successAlert" class="alert alert-success" role="alert" aria-live="polite"></div>
+                
+                <form id="loginForm" class="login-form" novalidate>
+                    <div class="login-mode-content">
+                        <div class="mode-description" id="modeDescription">
+                            <div class="mode-info student-mode active">
+                                <h3>Acesso do Usuário</h3>
+                                <p>Acesse suas avaliações para contribuir com a melhor qualidade de ensino</p>
+                            </div>
+                            <div class="mode-info admin-mode">
+                                <h3>Acesso Administrativo</h3>
+                                <p>Gerencie usuários, disciplinas e visualize relatórios</p>
+                            </div>
+                        </div>
+                        
+                        <button type="button" id="googleLoginButton" class="btn btn-primary" aria-describedby="login-help">
+                            <span class="btn-icon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M10 8.5V11.5H14.5C14.3 12.5 13.5 13.8 12 14.5L14.5 16.5C16.2 15 17 12.8 17 10.3C17 9.8 16.95 9.35 16.9 8.9H10V8.5Z" fill="white"/>
+                                    <path d="M6.5 12L5.8 14.5L3.3 14.6C2.5 13.2 2 11.7 2 10C2 8.3 2.5 6.8 3.3 5.4H6L6.5 8C6.2 8.9 6.2 9.9 6.5 10.8V12Z" fill="white"/>
+                                    <path d="M10 4C11.4 4 12.6 4.5 13.5 5.3L15.8 3C14.2 1.5 12.2 0.5 10 0.5C7.2 0.5 4.8 2.2 3.3 5.4L6 7.8C6.8 5.7 8.3 4 10 4Z" fill="white"/>
+                                </svg>
+                            </span>
+                            <span class="btn-text">Entrar com Google</span>
+                            <div class="loader" id="googleLoader" aria-hidden="true"></div>
+                        </button>
+                        
+                        <div id="login-help" class="sr-only">
+                            Use seu email institucional para fazer login no sistema
+                        </div>
+                    </div>
                 </form>
                 
-                <div class="signup-link">
-                    Já tem uma conta? <a href="#" id="showLoginForm">Fazer login</a>
+                <div class="login-footer">
+                    <div class="security-info">
+                        <span class="material-icons">security</span>
+                        <span>Conexão segura e criptografada</span>
+                    </div>
+                    <div class="help-links">
+                        <a href="#ajuda" class="help-link">Precisa de ajuda?</a>
+                        <a href="#politica" class="help-link">Política de Privacidade</a>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <div class="illustration-container">
-            <svg width="70%" height="90%" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
-                <rect x="400" y="150" width="300" height="250" rx="10" fill="#ffffff" opacity="0.1"/>
-                <rect x="430" y="180" width="240" height="30" rx="5" fill="#ffffff" opacity="0.2"/>
-                <rect x="430" y="230" width="240" height="30" rx="5" fill="#ffffff" opacity="0.2"/>
-                <rect x="430" y="280" width="240" height="30" rx="5" fill="#ffffff" opacity="0.2"/>
-                <rect x="430" y="330" width="120" height="40" rx="5" fill="#ffffff" opacity="0.4"/>
-                
-                <circle cx="250" cy="300" r="150" fill="#ffffff" opacity="0.05"/>
-                <path d="M250 180 L250 420 M180 300 L320 300" stroke="#ffffff" stroke-width="10" opacity="0.2"/>
-                <circle cx="250" cy="300" r="50" fill="#ffffff" opacity="0.3"/>
-                
-                <path d="M100,450 C150,400 200,500 250,450 C300,400 350,500 400,450 C450,400 500,500 550,450 C600,400 650,500 700,450" 
-                      stroke="#ffffff" stroke-width="5" fill="none" opacity="0.2"/>
-            </svg>
+        <div class="illustration-container" aria-hidden="true">
+            <div class="illustration-bg"></div>
+            <div class="illustration-content">
+                <div class="floating-card card-1">
+                    <div class="card-header"></div>
+                    <div class="card-body">
+                        <div class="card-line long"></div>
+                        <div class="card-line medium"></div>
+                        <div class="card-line short"></div>
+                    </div>
+                </div>
+                <div class="floating-card card-2">
+                    <div class="card-icon"></div>
+                    <div class="card-content">
+                        <div class="card-title"></div>
+                        <div class="card-subtitle"></div>
+                    </div>
+                </div>
+                <div class="floating-card card-3">
+                    <div class="chart-container">
+                        <div class="chart-bar" style="height: 60%"></div>
+                        <div class="chart-bar" style="height: 80%"></div>
+                        <div class="chart-bar" style="height: 40%"></div>
+                        <div class="chart-bar" style="height: 90%"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    
-    <script type="module">
-        import {FirebaseAuth} from './firebase_auth.js';
-        document.addEventListener('DOMContentLoaded', function() {
-            const loginForm = document.getElementById('loginForm');
-            const signupForm = document.getElementById('signupForm');
-            const loginFormContainer = document.getElementById('loginForm').parentElement;
-            const signupFormContainer = document.getElementById('signupFormContainer');
-            const showSignupFormLink = document.getElementById('showSignupForm');
-            const showLoginFormLink = document.getElementById('showLoginForm');
-            const loginButton = document.getElementById('loginButton');
-            const signupButton = document.getElementById('signupButton');
-            const googleLoginButton = document.getElementById('googleLoginButton');
-            const loginLoader = document.getElementById('loginLoader');
-            const signupLoader = document.getElementById('signupLoader');
-            const googleLoader = document.getElementById('googleLoader');
-            const errorAlert = document.getElementById('errorAlert');
-            const successAlert = document.getElementById('successAlert');
+    <footer class="login-footer-bottom">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Sistema de Avaliação</h4>
+                <p>Plataforma moderna para avaliação acadêmica e feedback institucional</p>
+            </div>
+            <div class="footer-section">
+                <h5>Recursos</h5>
+                <ul>
+                    <li><a href="#avaliacoes">Avaliações</a></li>
+                    <li><a href="#relatorios">Relatórios</a></li>
+                    <li><a href="#analytics">Analytics</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h5>Suporte</h5>
+                <ul>
+                    <li><a href="#documentacao">Documentação</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#contato">Contato</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h5>Institucional</h5>
+                <ul>
+                    <li><a href="#sobre">Sobre Nós</a></li>
+                    <li><a href="#privacidade">Privacidade</a></li>
+                    <li><a href="#termos">Termos de Uso</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Sistema de Avaliação de Disciplinas. Todos os direitos reservados.</p>
+            <div class="footer-links">
+                <a href="#status">Status do Sistema</a>
+                <a href="#api">API</a>
+                <a href="#changelog">Changelog</a>
+            </div>
+        </div>
+    </footer>
 
-            /* showSignupFormLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                loginFormContainer.style.display = 'none';
-                signupFormContainer.style.display = 'block';
-                errorAlert.style.display = 'none';
-                successAlert.style.display = 'none';
-            });
-
-            showLoginFormLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                loginFormContainer.style.display = 'block';
-                signupFormContainer.style.display = 'none';
-                errorAlert.style.display = 'none';
-                successAlert.style.display = 'none';
-            }); */
-
-            /* loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                
-                // Show loader and disable button
-                loginButton.querySelector('.btn-text').style.display = 'none';
-                loginLoader.style.display = 'block';
-                loginButton.disabled = true;
-                
-                // Clear previous alerts
-                errorAlert.style.display = 'none';
-                successAlert.style.display = 'none';
-                
-                firebase.auth().signInWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
-                        // Login successful
-                        successAlert.textContent = 'Login bem-sucedido! Redirecionando...';
-                        successAlert.style.display = 'block';
-                        
-                        // Redirect after a short delay
-                        setTimeout(() => {
-                            window.location.href = 'index.html';
-                        }, 1500);
-                    })
-                    .catch((error) => {
-                        // Display error
-                        errorAlert.textContent = getAuthErrorMessage(error.code);
-                        errorAlert.style.display = 'block';
-                        
-                        // Hide loader and enable button
-                        loginButton.querySelector('.btn-text').style.display = 'inline-block';
-                        loginLoader.style.display = 'none';
-                        loginButton.disabled = false;
-                    });
-            }); */
-            
-            /* signupForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const email = document.getElementById('signupEmail').value;
-                const password = document.getElementById('signupPassword').value;
-                const confirmPassword = document.getElementById('confirmPassword').value;
-                
-                // Check if passwords match
-                if (password !== confirmPassword) {
-                    errorAlert.textContent = 'As senhas não coincidem.';
-                    errorAlert.style.display = 'block';
-                    return;
-                }
-                
-                // Show loader and disable button
-                signupButton.querySelector('.btn-text').style.display = 'none';
-                signupLoader.style.display = 'block';
-                signupButton.disabled = true;
-                
-                // Clear previous alerts
-                errorAlert.style.display = 'none';
-                successAlert.style.display = 'none';
-                
-                firebase.auth().createUserWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
-                        // Signup successful
-                        successAlert.textContent = 'Conta criada com sucesso! Redirecionando...';
-                        successAlert.style.display = 'block';
-                        
-                        // Redirect after a short delay
-                        setTimeout(() => {
-                            window.location.href = 'index.html';
-                        }, 1500);
-                    })
-                    .catch((error) => {
-                        // Display error
-                        errorAlert.textContent = getAuthErrorMessage(error.code);
-                        errorAlert.style.display = 'block';
-                        
-                        // Hide loader and enable button
-                        signupButton.querySelector('.btn-text').style.display = 'inline-block';
-                        signupLoader.style.display = 'none';
-                        signupButton.disabled = false;
-                    });
-            });
-             */
-            googleLoginButton.addEventListener('click', function() {
-                // Show loader and disable button
-                googleLoginButton.querySelector('.btn-text').style.display = 'none';
-                googleLoader.style.display = 'block';
-                googleLoginButton.disabled = true;
-                
-                // Clear previous alerts
-                errorAlert.style.display = 'none';
-                successAlert.style.display = 'none';
-                
-                //const provider = new firebase.auth.GoogleAuthProvider();
-                
-                new FirebaseAuth().loginWithGoogle()
-                    .then((result) => {
-                        // Google sign-in successful
-                        successAlert.textContent = 'Login com Google bem-sucedido! Redirecionando...';
-                        successAlert.style.display = 'block';
-                        
-                        // Redirect after a short delay
-                        setTimeout(() => {
-                            window.location.href = 'index.html';
-                        }, 1500);
-                    })
-                    .catch((error) => {
-                        // Display error
-                        errorAlert.textContent = getAuthErrorMessage(error.code);
-                        errorAlert.style.display = 'block';
-                        
-                        // Hide loader and enable button
-                        googleLoginButton.querySelector('.btn-text').style.display = 'inline-block';
-                        googleLoader.style.display = 'none';
-                        googleLoginButton.disabled = false;
-                    });
-            });
-            
-            // Check if user is already logged in
-            /* new FirebaseAuth().check_login_status(function () {
-                //window.location.href = 'index.html';
-            }); */
-            
-            // Helper function to translate Firebase auth error codes
-            function getAuthErrorMessage(errorCode) {
-                switch(errorCode) {
-                    case 'auth/email-already-in-use':
-                        return 'Este email já está em uso.';
-                    case 'auth/invalid-email':
-                        return 'Email inválido.';
-                    case 'auth/user-disabled':
-                        return 'Esta conta foi desativada.';
-                    case 'auth/user-not-found':
-                        return 'Usuário não encontrado.';
-                    case 'auth/wrong-password':
-                        return 'Senha incorreta.';
-                    case 'auth/weak-password':
-                        return 'A senha é muito fraca.';
-                    case 'auth/operation-not-allowed':
-                        return 'Operação não permitida.';
-                    case 'auth/popup-closed-by-user':
-                        return 'Popup fechado antes da conclusão da operação.';
-                    default:
-                        return 'Ocorreu um erro. Por favor, tente novamente.';
-                }
-            }
-        });
-    </script>
+    <script type="module" src="login.js"></script>
 </body>
 </html>
-

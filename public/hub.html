@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Bem-vindo(a)!</title>
+    <link rel="stylesheet" href="shared/styles/base.css">
+    <style>
+        /* Estilos simples para os cards de seleção */
+        body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f1f5f9; }
+        .hub-container { text-align: center; }
+        .card-link { display: block; background: white; padding: 40px; margin: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-decoration: none; color: #1e293b; transition: all 0.3s ease; }
+        .card-link:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+        h2 { font-size: 1.5rem; margin-bottom: 8px; }
+        p { color: #64748b; }
+        #admin-panel-link { display: none; /* Oculto por padrão */ }
+    </style>
+</head>
+<body>
+    <div class="hub-container">
+        <h1>Selecione a Avaliação</h1>
+        <a href="avaliacao_disciplinas/index.html" class="card-link">
+            <h2>Avaliação de Disciplinas</h2>
+            <p>Avalie as disciplinas e professores do seu semestre.</p>
+        </a>
+        <a href="avaliacao_institucional/index.html" class="card-link">
+            <h2>Avaliação Institucional</h2>
+            <p>Forneça seu feedback sobre a instituição.</p>
+        </a>
+    </div>
+
+    <script type="module">
+        import { FirebaseAuth } from './shared/modules/firebase.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const userTipos = JSON.parse(localStorage.getItem("user_tipos") || "[]");
+            const adminLink = document.getElementById('admin-panel-link');
+
+            // Mostra o link do painel admin apenas se o usuário for admin ou professor
+            if (userTipos.includes('admin') || userTipos.includes('professor')) {
+                adminLink.style.display = 'block';
+            }
+
+            // Lógica de logout, se necessário
+            // const auth = new FirebaseAuth();
+            // document.getElementById('logoutButton').addEventListener('click', () => auth.logout());
+        });
+    </script>
+</body>
+</html>
