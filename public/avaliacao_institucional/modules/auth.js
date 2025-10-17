@@ -38,7 +38,7 @@ export function setupAuth() {
         
         // Only allow specific domains
         provider.setCustomParameters({
-            hd: 'seminarioconcordia.com.br,faculdadeluterananconcordia.com.br'
+            hd: 'seminarioconcordia.com.br,faculdadeluteranaconcordia.com.br'
         });
         
         firebase.auth().signInWithPopup(provider)
@@ -48,7 +48,7 @@ export function setupAuth() {
                 const domain = email.substring(email.lastIndexOf('@') + 1);
                 
                 // Verify domain
-                if (domain === 'seminarioconcordia.com.br' || domain === 'faculdadeluterananconcordia.com.br') {
+                if (domain === 'seminarioconcordia.com.br' || domain === 'faculdadeluteranaconcordia.com.br') {
                     // Check if user exists in our database
                     checkUserType(result.user.uid, email);
                 } else {
@@ -358,7 +358,7 @@ function loadUserQuestions(userType) {
         const userId = localStorage.getItem('userId');
         const userType = localStorage.getItem('userType');
         
-        firebase.firestore().collection('survey_responses').add({
+        firebase.firestore().collection('respostas_avaliacao_institucional').add({
             userId: userId,
             userType: userType,
             answers: answers,

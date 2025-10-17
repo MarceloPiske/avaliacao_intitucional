@@ -1,427 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo CPA</title>
+    <title>Painel Administrativo - CPA</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
 </head>
 <body>
     <div id="app">
-        <div id="login-container">
+        <div id="admin-login-container">
             <h1>Painel Administrativo CPA</h1>
-            <div id="login-form">
-                <p>Entre com suas credenciais de administrador</p>
-                
-                <div class="login-method">
-                    <button id="google-login-button" class="google-btn">
-                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/google.svg" alt="Google">
-                        Entrar com Google
-                    </button>
-                    <p class="login-info">Apenas administradores cadastrados podem acessar o painel</p>
-                </div>
-                
-                <p id="login-error" class="error-message"></p>
-            </div>
-            <div class="admin-access">
-                <a href="index.html" class="admin-btn">Voltar para Página Principal</a>
+            <div id="admin-login-form">
+                <p>Entre com seu email institucional de administrador</p>
+                <button id="admin-google-login-button" class="google-btn">
+                    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/google.svg" alt="Google">
+                    Entrar com Google
+                </button>
+                <p class="login-info">Apenas administradores autorizados podem acessar</p>
+                <p id="admin-login-error" class="error-message"></p>
             </div>
         </div>
         
         <div id="admin-panel" style="display: none;">
             <header>
-                <h1>Painel Administrativo</h1>
-                <button id="logout-button">Sair</button>
+                <h1>Painel Administrativo CPA</h1>
+                <button id="logout-btn">Sair</button>
             </header>
             
             <div class="admin-container">
-                <div class="sidebar">
-                    <button id="view-dashboard-btn" class="sidebar-btn active">
-                        <i class="fas fa-chart-line"></i> Dashboard
+                <aside class="sidebar">
+                    <button class="sidebar-btn active" data-section="users">
+                        <i class="fas fa-users"></i>
+                        Usuários
                     </button>
-                    <button id="view-results-btn" class="sidebar-btn">
-                        <i class="fas fa-chart-bar"></i> Resultados
+                    <button class="sidebar-btn" data-section="questions">
+                        <i class="fas fa-question-circle"></i>
+                        Perguntas
                     </button>
-                    <button id="manage-questions-btn" class="sidebar-btn">
-                        <i class="fas fa-question-circle"></i> Perguntas
+                    <button class="sidebar-btn" data-section="results">
+                        <i class="fas fa-chart-bar"></i>
+                        Resultados
                     </button>
-                    <button id="manage-users-btn" class="sidebar-btn">
-                        <i class="fas fa-users"></i> Usuários
-                    </button>
-                    <button id="manage-admins-btn" class="sidebar-btn">
-                        <i class="fas fa-user-shield"></i> Administradores
-                    </button>
-                </div>
+                </aside>
                 
-                <div class="content">
-                    <div id="dashboard-section-admin" class="section-content">
-                        <h2>Dashboard</h2>
-                        
-                        <div class="dashboard-tabs">
-                            <button class="dashboard-tab active" data-view="overview">Visão Geral</button>
-                            <button class="dashboard-tab" data-view="profile">Por Perfil</button>
-                            <button class="dashboard-tab" data-view="axis">Por Eixo</button>
-                            <button class="dashboard-tab" data-view="dimension">Por Dimensão</button>
-                            <button class="dashboard-tab" data-view="trends">Tendências</button>
-                            <button class="dashboard-tab" data-view="ranking">Ranking</button>
-                        </div>
-                        
-                        <div class="dashboard-cards">
-                            <div id="total-responses"></div>
-                            <div id="total-users"></div>
-                            <div id="participation-rate"></div>
-                            <div id="average-rating"></div>
-                        </div>
-                        
-                        <div id="dashboard-overview-admin" class="dashboard-view active">
-                            <div class="chart-container">
-                                <div class="chart-header">
-                                    <h3 class="chart-title">Participação por Grupo</h3>
-                                </div>
-                                <div id="participation-chart-admin" class="chart-placeholder">
-                                    O gráfico será carregado aqui
-                                </div>
-                            </div>
-                            
-                            <div class="chart-container">
-                                <div class="chart-header">
-                                    <h3 class="chart-title">Avaliação por Dimensão</h3>
-                                </div>
-                                <div id="dimension-chart-admin" class="chart-placeholder">
-                                    O gráfico será carregado aqui
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="dashboard-profile-admin" class="dashboard-view">
-                            <div class="filter-options compact">
-                                <div>
-                                    <span class="filter-label">Perfil:</span>
-                                    <select id="profile-filter-admin">
-                                        <option value="alunos">Discentes</option>
-                                        <option value="professores">Docentes</option>
-                                        <option value="tecnicos">Técnicos Administrativos</option>
-                                    </select>
-                                </div>
-                                <button id="apply-profile-filter-admin" class="secondary">
-                                    <i class="fas fa-filter"></i> Aplicar
-                                </button>
-                            </div>
-                            
-                            <div class="chart-container">
-                                <div class="chart-header">
-                                    <h3 class="chart-title">Respostas por Perfil</h3>
-                                </div>
-                                <div id="profile-responses-chart-admin" class="chart-placeholder">
-                                    O gráfico será carregado aqui
-                                </div>
-                            </div>
-                            
-                            <div class="chart-container">
-                                <div class="chart-header">
-                                    <h3 class="chart-title">Média por Dimensão para o Perfil</h3>
-                                </div>
-                                <div id="profile-dimension-chart-admin" class="chart-placeholder">
-                                    O gráfico será carregado aqui
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="results-section-admin" class="section-content" style="display: none;">
-                        <h2>Resultados da Avaliação</h2>
-                        
-                        <div class="export-options">
-                            <div class="export-section">
-                                <h3>Exportar Relatório</h3>
-                                <div class="export-buttons">
-                                    <button id="export-pdf-btn" class="secondary">
-                                        <i class="fas fa-file-pdf"></i> PDF
-                                    </button>
-                                    <button id="export-excel-btn" class="secondary">
-                                        <i class="fas fa-file-excel"></i> Excel
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="export-settings">
-                                <h3>Configurações do Relatório</h3>
-                                <div class="export-options-list">
-                                    <label>
-                                        <input type="checkbox" name="export-option-admin" value="graphs" checked> Incluir Gráficos
-                                    </label>
-                                    <label>
-                                        <input type="checkbox" name="export-option-admin" value="tables" checked> Incluir Tabelas
-                                    </label>
-                                    <label>
-                                        <input type="checkbox" name="export-option-admin" value="summaries" checked> Incluir Resumos
-                                    </label>
-                                    <label>
-                                        <input type="checkbox" name="export-option-admin" value="comments" checked> Incluir Comentários
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="filter-options">
-                            <div>
-                                <span class="filter-label">Dimensão:</span>
-                                <select id="dimension-filter-admin">
-                                    <option value="all">Todas as Dimensões</option>
-                                </select>
-                            </div>
-                            <div>
-                                <span class="filter-label">Ano:</span>
-                                <select id="year-filter-admin">
-                                    <option value="all">Todos os Anos</option>
-                                    <option value="2023">2023</option>
-                                    <option value="2022">2022</option>
-                                    <option value="2021">2021</option>
-                                </select>
-                            </div>
-                            <div>
-                                <span class="filter-label">Grupo:</span>
-                                <select id="group-filter-admin">
-                                    <option value="all">Todos os Grupos</option>
-                                    <option value="alunos">Discentes</option>
-                                    <option value="professores">Docentes</option>
-                                    <option value="tecnicos">Técnicos Administrativos</option>
-                                </select>
-                            </div>
-                            <div>
-                                <span class="filter-label">Eixo:</span>
-                                <select id="axis-filter-admin">
-                                    <option value="all">Todos os Eixos</option>
-                                    <!-- Options will be populated dynamically -->
-                                </select>
-                            </div>
-                            <button id="apply-filters-btn" class="secondary">
-                                <i class="fas fa-filter"></i> Aplicar Filtros
-                            </button>
-                        </div>
-                        
-                        <div id="results-summary-admin" class="results-summary">
-                            <!-- Summary information will be displayed here -->
-                        </div>
-                        
-                        <div id="results-container-admin"></div>
-                    </div>
-                    
-                    <div id="questions-section" class="section-content" style="display: none;">
-                        <h2>Gerenciar Perguntas</h2>
-                        <div class="questions-container">
-                            <div class="questions-filter">
-                                <select id="dimension-select">
-                                    <option value="all">Todas as Dimensões</option>
-                                </select>
-                                <select id="group-select">
-                                    <option value="all">Todos os Grupos</option>
-                                    <option value="alunos">Discentes</option>
-                                    <option value="professores">Docentes</option>
-                                    <option value="tecnicos">Técnicos Administrativos</option>
-                                </select>
-                                <button id="add-question-btn">Adicionar Nova Pergunta</button>
-                            </div>
-                            <div id="questions-list"></div>
-                            
-                            <div id="question-form-container" style="display: none;">
-                                <h3 id="question-form-title">Nova Pergunta</h3>
-                                <form id="question-form">
-                                    <div class="form-group">
-                                        <label for="question-text">Texto da Pergunta:</label>
-                                        <textarea id="question-text" required></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="question-dimension">Dimensão:</label>
-                                        <select id="question-dimension" required>
-                                            <option value="">Selecione a Dimensão</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Grupo(s) Aplicável:</label>
-                                        <div class="checkbox-group">
-                                            <label><input type="checkbox" name="question-group" value="alunos"> Discentes</label>
-                                            <label><input type="checkbox" name="question-group" value="professores"> Docentes</label>
-                                            <label><input type="checkbox" name="question-group" value="tecnicos"> Técnicos Administrativos</label>
-                                        </div>
-                                    </div>
-                                    <div class="form-actions">
-                                        <button type="submit" id="save-question-btn">Salvar</button>
-                                        <button type="button" id="cancel-question-btn">Cancelar</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="users-section" class="section-content" style="display: none;">
-                        <h2>Gerenciar Usuários</h2>
-                        <div class="users-container">
-                            <div class="users-filter">
-                                <input type="text" id="user-search" placeholder="Pesquisar usuário...">
-                                <select id="user-type-filter">
-                                    <option value="all">Todos os Tipos</option>
-                                    <option value="alunos">Discentes</option>
-                                    <option value="professores">Docentes</option>
-                                    <option value="tecnicos">Técnicos Administrativos</option>
-                                    <option value="admin">Administradores</option>
-                                </select>
-                                <button id="add-user-btn">Adicionar Novo Usuário</button>
-                            </div>
-                            <div id="users-list"></div>
-                            
-                            <div id="user-form-container" style="display: none;">
-                                <h3 id="user-form-title">Novo Usuário</h3>
-                                <form id="user-form">
-                                    <div class="form-group">
-                                        <label for="user-name">Nome:</label>
-                                        <input type="text" id="user-name" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="user-email">Email:</label>
-                                        <input type="email" id="user-email" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="user-type">Tipo de Usuário:</label>
-                                        <select id="user-type" required>
-                                            <option value="">Selecione o Tipo</option>
-                                            <option value="alunos">Aluno</option>
-                                            <option value="professores">Professor</option>
-                                            <option value="tecnicos">Técnico Administrativo</option>
-                                            <option value="admin">Administrador</option>
-                                        </select>
-                                    </div>
-                                    <div id="staff-code-group" class="form-group" style="display: none;">
-                                        <label for="user-code">Código de Acesso:</label>
-                                        <div style="display: flex; gap: 10px;">
-                                            <input type="text" id="user-code" readonly>
-                                            <button type="button" id="generate-code-btn" class="secondary">
-                                                <i class="fas fa-key"></i> Gerar Código
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div id="user-password-group" class="form-group" style="display: none;">
-                                        <label for="user-password">Senha:</label>
-                                        <input type="password" id="user-password">
-                                    </div>
-                                    <div class="form-actions">
-                                        <button type="submit" id="save-user-btn">Salvar</button>
-                                        <button type="button" id="cancel-user-btn" class="secondary">Cancelar</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="staff-section" class="section-content" style="display: none;">
-                        <h2>Gerenciar Técnicos Administrativos</h2>
-                        <div class="users-container">
-                            <div class="users-filter">
-                                <input type="text" id="staff-search" placeholder="Pesquisar funcionário...">
-                                <button id="add-staff-btn">Adicionar Novo Técnicos Administrativo</button>
-                            </div>
-                            <div id="staff-list"></div>
-                            
-                            <div id="staff-form-container" style="display: none;">
-                                <h3 id="staff-form-title">Novo Técnicos Administrativo</h3>
-                                <form id="staff-form">
-                                    <div class="form-group">
-                                        <label for="staff-name">Nome:</label>
-                                        <input type="text" id="staff-name" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="staff-email">Email:</label>
-                                        <input type="email" id="staff-email" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="staff-code">Código de Acesso:</label>
-                                        <input type="text" id="staff-code" readonly>
-                                        <button type="button" id="generate-code-btn">Gerar Código</button>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="staff-password">Senha:</label>
-                                        <input type="password" id="staff-password" required>
-                                    </div>
-                                    <div class="form-actions">
-                                        <button type="submit" id="save-staff-btn">Salvar</button>
-                                        <button type="button" id="cancel-staff-btn">Cancelar</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="professors-section" class="section-content" style="display: none;">
-                        <h2>Gerenciar Docentes</h2>
-                        <div class="users-container">
-                            <div class="users-filter">
-                                <input type="text" id="professor-search" placeholder="Pesquisar professor...">
-                                <button id="add-professor-btn">Adicionar Novo Professor</button>
-                            </div>
-                            <div id="professors-list"></div>
-                            
-                            <div id="professor-form-container" style="display: none;">
-                                <h3 id="professor-form-title">Novo Professor</h3>
-                                <form id="professor-form">
-                                    <div class="form-group">
-                                        <label for="professor-name">Nome:</label>
-                                        <input type="text" id="professor-name" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="professor-email">Email Institucional:</label>
-                                        <input type="email" id="professor-email" required>
-                                    </div>
-                                    <div class="form-actions">
-                                        <button type="submit" id="save-professor-btn">Salvar</button>
-                                        <button type="button" id="cancel-professor-btn">Cancelar</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="admins-section" class="section-content" style="display: none;">
-                        <h2>Gerenciar Administradores</h2>
-                        <div class="users-container">
-                            <div class="users-filter">
-                                <input type="text" id="admin-search" placeholder="Pesquisar administrador...">
-                                <button id="add-admin-btn">Adicionar Novo Administrador</button>
-                            </div>
-                            <div id="admins-list"></div>
-                            
-                            <div id="admin-form-container" style="display: none;">
-                                <h3 id="admin-form-title">Novo Administrador</h3>
-                                <form id="admin-form">
-                                    <div class="form-group">
-                                        <label for="admin-name">Nome:</label>
-                                        <input type="text" id="admin-name" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="admin-email">Email:</label>
-                                        <input type="email" id="admin-email" required>
-                                    </div>
-                                    <div class="form-actions">
-                                        <button type="submit" id="save-admin-btn">Salvar</button>
-                                        <button type="button" id="cancel-admin-btn">Cancelar</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <main class="content">
+                    <div id="users-section" class="admin-section active"></div>
+                    <div id="questions-section" class="admin-section"></div>
+                    <div id="results-section" class="admin-section"></div>
+                </main>
             </div>
         </div>
     </div>
     
-    <!-- External Libraries -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <script type="module" src="admin.js"></script>
 </body>

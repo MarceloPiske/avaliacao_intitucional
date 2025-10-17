@@ -142,8 +142,8 @@ export function setupProfessorsSection() {
 
         // Validate email domain
         if (!professorEmail.endsWith('@seminarioconcordia.com.br') && 
-            !professorEmail.endsWith('@faculdadeluterananconcordia.com.br')) {
-            alert('O email deve ser um email institucional válido (@seminarioconcordia.com.br ou @faculdadeluterananconcordia.com.br).');
+            !professorEmail.endsWith('@faculdadeluteranaconcordia.com.br')) {
+            alert('O email deve ser um email institucional válido (@seminarioconcordia.com.br ou @faculdadeluteranaconcordia.com.br).');
             return;
         }
 

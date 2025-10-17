@@ -78,7 +78,7 @@ export function setupDashboardSection() {
             const totalUsers = userSnapshot.size;
             
             // Get real response data from Firestore
-            const responseSnapshot = await db.collection('survey_responses').get();
+            const responseSnapshot = await db.collection('respostas_avaliacao_institucional').get();
             const totalResponses = responseSnapshot.size;
             
             // Calculate participation rate - number of unique users who submitted responses
@@ -135,7 +135,7 @@ export function setupDashboardSection() {
         participationChartEl.appendChild(canvas);
         
         // Get response data from Firestore
-        const responseSnapshot = await db.collection('survey_responses').get();
+        const responseSnapshot = await db.collection('respostas_avaliacao_institucional').get();
         const usersByType = {
             'alunos': 0,
             'professores': 0,
@@ -249,7 +249,7 @@ export function setupDashboardSection() {
             const questions = await response.json();
             
             // Get response data from Firestore
-            const responseSnapshot = await db.collection('survey_responses').get();
+            const responseSnapshot = await db.collection('respostas_avaliacao_institucional').get();
             
             // Initialize ratings by dimension
             const dimensionMap = new Map();
@@ -363,7 +363,7 @@ export function setupDashboardSection() {
             
             async function updateProfileCharts(profileType) {
                 // Get response data for the selected profile
-                const responseSnapshot = await db.collection('survey_responses')
+                const responseSnapshot = await db.collection('respostas_avaliacao_institucional')
                     .where('userType', '==', profileType)
                     .get();
                 
@@ -538,7 +538,7 @@ export function setupDashboardSection() {
             const questions = await loadQuestionsMapping();
             
             // Get response data
-            const responseSnapshot = await db.collection('survey_responses').get();
+            const responseSnapshot = await db.collection('respostas_avaliacao_institucional').get();
             
             // Process data for charts
             const axisQuestions = {};

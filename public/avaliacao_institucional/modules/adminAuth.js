@@ -16,7 +16,7 @@ export function setupAdminAuth() {
         
         // Only allow specific domains
         provider.setCustomParameters({
-            hd: 'seminarioconcordia.com.br,faculdadeluterananconcordia.com.br'
+            hd: 'seminarioconcordia.com.br,faculdadeluteranaconcordia.com.br'
         });
         
         firebase.auth().signInWithPopup(provider)
