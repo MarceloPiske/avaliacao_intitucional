@@ -1,21 +1,54 @@
 export class FormulariosRenderer {
+    constructor() {
+        this.formulariosData = [];
+    }
+
     renderFormularios(formularios) {
+        if (formularios) this.formulariosData = formularios;
+
         const tbody = document.querySelector('#formularios-table tbody');
+        if (!tbody) return;
+
         tbody.innerHTML = '';
 
-        formularios.forEach(formulario => {
+        if (this.formulariosData.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5">
+                        <div class="empty-state" style="padding: 40px; text-align: center; color: var(--text-secondary);">
+                            <span class="material-icons" style="font-size: 48px; color: var(--border-color);">dynamic_form</span>
+                            <p style="margin-top: 8px;">Nenhum formulário cadastrado.</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        // Ordena para colocar os ativos primeiro
+        const sortedData = [...this.formulariosData].sort((a, b) => (a.ativo === b.ativo) ? 0 : a.ativo ? -1 : 1);
+
+        sortedData.forEach(formulario => {
+            const statusClass = formulario.ativo ? 'status-active' : 'status-inactive';
+            const statusText = formulario.ativo ? 'Ativo' : 'Inativo';
+            const opacity = formulario.ativo ? '1' : '0.6';
+
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${formulario.titulo}</td>
-                <td><span class="status-badge ${formulario.ativo ? 'active' : 'inactive'}">${formulario.ativo ? 'Ativo' : 'Inativo'}</span></td>
-                <td>0</td>
-                <td>${this.formatDate(formulario.dataCriacao)}</td>
-                <td>
-                    <button class="action-btn view" onclick="viewFormulario('${formulario.id}')">Ver</button>
-                    <button class="action-btn questions" onclick="manageQuestions('${formulario.id}')">Questões</button>
-                    <button class="action-btn edit" onclick="editFormulario('${formulario.id}')">Editar</button>
-                    <button class="action-btn duplicate" onclick="duplicateFormulario('${formulario.id}')">Duplicar</button>
-                    <button class="action-btn delete" onclick="deleteFormulario('${formulario.id}')">Excluir</button>
+                <td style="opacity: ${opacity};"><strong>${formulario.titulo}</strong></td>
+                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                <td style="opacity: ${opacity};">
+                    <span class="badge-modern" style="background: #f1f5f9; color: var(--text-primary);">
+                        <span class="material-icons" style="font-size: 14px; margin-right: 4px;">format_list_bulleted</span>
+                        Questões
+                    </span>
+                </td>
+                <td style="opacity: ${opacity}; color: var(--text-secondary); font-size: 13px;">${this.formatDate(formulario.dataCriacao)}</td>
+                <td class="text-right">
+                    <button class="action-btn questions" data-action="questions" data-id="${formulario.id}" title="Gerir Questões" style="background: #e0e7ff; color: #3b82f6;"><span class="material-icons">list_alt</span></button>
+                    <button class="action-btn edit" data-action="edit" data-id="${formulario.id}" title="Editar Formulário"><span class="material-icons">edit</span></button>
+                    <button class="action-btn success" data-action="duplicate" data-id="${formulario.id}" title="Duplicar"><span class="material-icons">content_copy</span></button>
+                    <button class="action-btn delete" data-action="delete" data-id="${formulario.id}" title="Excluir"><span class="material-icons">delete_outline</span></button>
                 </td>
             `;
             tbody.appendChild(row);
@@ -25,22 +58,22 @@ export class FormulariosRenderer {
     createAddFormModal() {
         return `
             <form id="formularioForm">
-                <div class="form-grid">
+                <div class="form-grid single-col">
                     <div class="form-group">
                         <label for="titulo">Título do Formulário *</label>
-                        <input type="text" id="titulo" name="titulo" required>
+                        <input type="text" id="titulo" name="titulo" placeholder="Ex: Avaliação de Docentes 2026.1" required>
                     </div>
                     <div class="form-group">
-                        <label for="ativo">Status *</label>
+                        <label for="ativo">Status Inicial *</label>
                         <select id="ativo" name="ativo" required>
-                            <option value="true">Ativo</option>
-                            <option value="false">Inativo</option>
+                            <option value="true">Ativo (Pronto a usar)</option>
+                            <option value="false">Inativo (Rascunho)</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Salvar Formulário</button>
+                    <button type="button" class="btn-cancel" id="btnCancelModal">Cancelar</button>
+                    <button type="submit" class="btn-primary-modern"><span class="material-icons">save</span> Salvar Formulário</button>
                 </div>
             </form>
         `;
@@ -49,7 +82,7 @@ export class FormulariosRenderer {
     createEditFormModal(formulario, formularioId) {
         return `
             <form id="formularioEditForm" data-formulario-id="${formularioId}">
-                <div class="form-grid">
+                <div class="form-grid single-col">
                     <div class="form-group">
                         <label for="titulo">Título do Formulário *</label>
                         <input type="text" id="titulo" name="titulo" value="${formulario.titulo}" required>
@@ -63,34 +96,10 @@ export class FormulariosRenderer {
                     </div>
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Atualizar Formulário</button>
+                    <button type="button" class="btn-cancel" id="btnCancelModal">Cancelar</button>
+                    <button type="submit" class="btn-primary-modern"><span class="material-icons">sync</span> Atualizar Formulário</button>
                 </div>
             </form>
-        `;
-    }
-
-    createViewFormModal(formulario) {
-        return `
-            <div class="formulario-details">
-                <div class="detail-grid">
-                    <div class="detail-item">
-                        <label>Título:</label>
-                        <span>${formulario.titulo}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Status:</label>
-                        <span class="status-badge ${formulario.ativo ? 'active' : 'inactive'}">${formulario.ativo ? 'Ativo' : 'Inativo'}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Data de Criação:</label>
-                        <span>${new Date(formulario.dataCriacao.toDate()).toLocaleDateString('pt-BR')}</span>
-                    </div>
-                </div>
-            </div>
-            <div class="form-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeModal()">Fechar</button>
-            </div>
         `;
     }
 

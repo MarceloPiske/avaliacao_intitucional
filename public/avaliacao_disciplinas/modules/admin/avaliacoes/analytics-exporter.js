@@ -1,29 +1,19 @@
-// analytics-exporter.js
-
-// 1. IMPORTAÇÕES CORRIGIDAS
-// Importamos o jsPDF
 import { jsPDF } from 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/+esm';
-// Importamos o html2canvas (que os seus ficheiros antigos usam)
-import html2canvas from 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm';
-// REMOVEMOS a importação do 'jspdf-autotable' que causou o erro.
+import autoTableModule from 'https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/+esm';
 
-// Importar a legenda (do seu 'chart_legend.js')
-import { getRatingLegendElement } from '../../../../chart_legend.js';
+const autoTable = autoTableModule.default || autoTableModule;
 
 export class AnalyticsExporter {
 
     constructor() {
         this.pdf = null;
-        this.yOffset = 0; // Para controlar a posição vertical no PDF
+        this.yOffset = 0;
         this.pdfWidth = 0;
         this.pdfHeight = 0;
         this.pageMargin = 15;
     }
 
-    /**
-     * Função principal chamada pelo avaliacoes-manager.js
-     */
-    async exportAnalytics(summary, studentAnalytics, professorAnalytics, disciplineAnalytics, activeFiltersText) {
+    async exportAnalytics(summary, studentAnalytics, professorAnalytics, disciplineAnalytics, activeFiltersText, filteredData = [], isDetailed = false) {
         this.showLoading(true);
 
         try {
@@ -32,18 +22,24 @@ export class AnalyticsExporter {
             this.pdfHeight = this.pdf.internal.pageSize.getHeight();
             this.yOffset = this.pageMargin;
 
-            // Passamos o texto dos filtros para o cabeçalho
-            this.addHeader(activeFiltersText);
+            // 1. Cabeçalho Executivo Refinado
+            this.addExecutiveHeader(activeFiltersText);
 
-            await this.addLegend();
-            await this.addSummaryData(summary);
+            // 2. Cartões de KPI Melhorados (Fontes maiores, melhor alinhamento)
+            this.addNativeKPICards(summary);
 
-            // Tabelas melhoradas
-            await this.addDataTables(professorAnalytics, disciplineAnalytics);
+            // 3. Gráficos com Proporção Controlada
+            await this.addCompactCharts();
 
-            await this.addCharts();
+            // 4. Rankings com Alto Contraste
+            this.addNativeRankings(professorAnalytics, disciplineAnalytics);
 
-            this.pdf.save(`relatorio-filtrado-${new Date().toISOString().split('T')[0]}.pdf`);
+            // 5. Relatório Detalhado (Otimizado para não esmagar textos)
+            if (isDetailed && filteredData && filteredData.length > 0) {
+                await this.addDetailedResponses(filteredData);
+            }
+
+            this.pdf.save(`relatorio-institucional-${new Date().toISOString().split('T')[0]}.pdf`);
 
         } catch (error) {
             console.error('Erro ao gerar PDF:', error);
@@ -53,388 +49,296 @@ export class AnalyticsExporter {
         }
     }
 
-    addHeader(filterText) {
-        // Título Principal
-        this.pdf.setFillColor(14, 165, 233); // Azul Primary
-        this.pdf.rect(0, 0, this.pdfWidth, 25, 'F');
+    addExecutiveHeader(filterText) {
+        // Fundo Escuro Moderno (Slate-900)
+        this.pdf.setFillColor(15, 23, 42); 
+        this.pdf.rect(0, 0, this.pdfWidth, 28, 'F');
 
+        // Título Maior e Mais Limpo
         this.pdf.setTextColor(255, 255, 255);
-        this.pdf.setFontSize(22);
+        this.pdf.setFontSize(20);
         this.pdf.setFont("helvetica", "bold");
-        this.pdf.text('Relatório de Avaliação', this.pageMargin, 16);
+        this.pdf.text('Relatório Institucional de Avaliações', this.pageMargin, 18);
 
-        this.yOffset = 35;
+        this.yOffset = 36;
 
-        // Data e Filtros
-        this.pdf.setTextColor(80, 80, 80);
-        this.pdf.setFontSize(10);
+        // Metadados com melhor hierarquia
+        this.pdf.setTextColor(100, 116, 139); 
+        this.pdf.setFontSize(9);
         this.pdf.setFont("helvetica", "normal");
-
         const today = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR');
-        this.pdf.text(`Gerado em: ${today}`, this.pageMargin, this.yOffset);
-        this.yOffset += 6;
-
-        // Mostra os filtros que vieram do Manager
+        this.pdf.text(`Documento gerado em: ${today}`, this.pageMargin, this.yOffset);
+        
         if (filterText) {
+            this.yOffset += 6;
             this.pdf.setFont("helvetica", "bold");
-            this.pdf.text(`Filtros Aplicados:`, this.pageMargin, this.yOffset);
-            this.pdf.setFont("helvetica", "normal");
-
-            // Quebra de linha se o texto for muito longo
-            const splitText = this.pdf.splitTextToSize(filterText, this.pdfWidth - (this.pageMargin * 2));
-            this.pdf.text(splitText, this.pageMargin + 30, this.yOffset);
-            this.yOffset += (splitText.length * 5) + 10;
-        } else {
-            this.yOffset += 10;
+            this.pdf.setTextColor(2, 132, 199); // Azul Sky-600
+            this.pdf.text(`Filtros Aplicados: ${filterText}`, this.pageMargin, this.yOffset);
         }
+        this.yOffset += 14;
     }
 
-    async addDataTables(professorAnalytics, disciplineAnalytics) {
-        // Estilo CSS para as tabelas (injetado no HTML)
-        const tableStyle = `
-            width: 100%; 
-            border-collapse: collapse; 
-            font-family: 'Helvetica', sans-serif; 
-            font-size: 11px;
-            color: #333;
-        `;
-        const thStyle = `
-            background-color: #0ea5e9; 
-            color: white; 
-            padding: 8px; 
-            text-align: left; 
-            font-weight: bold;
-            border-bottom: 2px solid #0284c7;
-        `;
-        const tdStyle = `
-            padding: 8px; 
-            border-bottom: 1px solid #e2e8f0;
-        `;
-        const rowStriped = `background-color: #f8fafc;`;
-
-        // --- Tabela de Professores ---
-        // Ordenar por Média (descendente) para ficar mais útil
-        const sortedProfessors = professorAnalytics.sort((a, b) => b.mediaGeral - a.mediaGeral);
-
-        let profHtml = `
-            <div style="padding: 15px; background: white; width: 750px;">
-            <h3 style="font-size: 16px; color: #0f172a; margin-bottom: 15px; border-left: 4px solid #0ea5e9; padding-left: 10px;">
-                Desempenho por Professor (Top Resultados)
-            </h3>
-            <table style="${tableStyle}">
-                <thead>
-                    <tr>
-                        <th style="${thStyle}">Professor</th>
-                        <th style="${thStyle} text-align: center;">Média</th>
-                        <th style="${thStyle} text-align: center;">NPS/Qualidade</th>
-                        <th style="${thStyle} text-align: center;">Respostas</th>
-                        <th style="${thStyle} text-align: center;">Disciplinas</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-
-        sortedProfessors.forEach((p, index) => {
-            const bg = index % 2 === 0 ? rowStriped : '';
-            // Badge visual para a nota
-            let badgeColor = p.mediaGeral >= 4.5 ? '#166534' : (p.mediaGeral >= 3.5 ? '#15803d' : '#ca8a04');
-            let badgeText = p.mediaGeral >= 4.5 ? 'Excelente' : (p.mediaGeral >= 3.5 ? 'Bom' : 'Atenção');
-            if (p.mediaGeral < 3) { badgeColor = '#dc2626'; badgeText = 'Crítico'; }
-
-            profHtml += `
-                <tr style="${bg}">
-                    <td style="${tdStyle} font-weight: 500;">${p.professorNome}</td>
-                    <td style="${tdStyle} text-align: center; font-weight: bold; font-size: 12px;">${p.mediaGeral.toFixed(2)}</td>
-                    <td style="${tdStyle} text-align: center;">
-                        <span style="background: ${badgeColor}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 9px;">${badgeText}</span>
-                    </td>
-                    <td style="${tdStyle} text-align: center;">${p.totalRespostas}</td>
-                    <td style="${tdStyle} text-align: center;">${p.disciplinas.length}</td>
-                </tr>
-            `;
-        });
-        profHtml += `</tbody></table></div>`;
-
-        // Renderiza e adiciona Professor Table
-        let elProf = document.createElement('div');
-        elProf.innerHTML = profHtml;
-        let imgProf = await this.renderHtmlToImage(elProf, 750); // Largura fixa para consistência
-
-        // Ajuste de escala para caber na página A4 (largura ~190mm com margens)
-        let imgWidthProf = this.pdfWidth - (this.pageMargin * 2);
-        let imgHeightProf = (imgProf.height * imgWidthProf) / imgProf.width;
-
-        this.checkPageBreak(imgHeightProf + 10);
-        this.pdf.addImage(imgProf.url, 'PNG', this.pageMargin, this.yOffset, imgWidthProf, imgHeightProf);
-        this.yOffset += imgHeightProf + 10;
-
-        // ... Repita lógica similar para Disciplinas se desejar, ou mantenha simplificado ...
-    }
-
-    // --- FUNÇÕES AUXILIARES ---
-
-    /**
-     * Adiciona um cabeçalho ao PDF com título, data e filtros.
-     */
-    addHeader() {
-        this.pdf.setFontSize(18);
-        this.pdf.text('Relatório de Análise de Avaliações', this.pdfWidth / 2, this.yOffset, { align: 'center' });
-        this.yOffset += 8;
-
-        const today = new Date();
-        this.pdf.setFontSize(10);
-        this.pdf.text(`Exportado em: ${today.toLocaleDateString()} ${today.toLocaleTimeString()}`, this.pdfWidth / 2, this.yOffset, { align: 'center' });
-        this.yOffset += 5;
-
-        // ... (Lógica dos filtros permanece a mesma) ...
-        const year = document.getElementById('yearFilter')?.value || 'all';
-        const professor = document.getElementById('professorAnalyticsFilter')?.value || 'all';
-        let filterText = "Filtros: ";
-        if (year !== 'all') filterText += `Ano: ${year} | `;
-        if (professor !== 'all') filterText += `Professor: ${professor} | `;
-
-        if (filterText !== "Filtros: ") {
-            this.pdf.setFontSize(9);
-            this.pdf.text(filterText, this.pdfWidth / 2, this.yOffset, { align: 'center' });
-            this.yOffset += 10;
-        }
-    }
-
-    /**
-     * Helper para renderizar um elemento HTML para uma imagem.
-     * (Lógica dos seus 'response_exporter.js')
-     */
-    async renderHtmlToImage(element, width) {
-        const tempContainer = document.createElement('div');
-        tempContainer.style.position = 'absolute';
-        tempContainer.style.left = '-9999px'; // Renderizar fora do ecrã
-        tempContainer.style.width = `${width}px`;
-        tempContainer.style.background = 'white';
-        tempContainer.appendChild(element);
-        document.body.appendChild(tempContainer);
-
-        const canvas = await html2canvas(tempContainer, {
-            scale: 2, // Alta resolução
-            logging: false,
-            useCORS: true,
-            backgroundColor: 'white'
-        });
-
-        document.body.removeChild(tempContainer); // Limpar o DOM
-
-        return {
-            url: canvas.toDataURL('image/png', 1.0),
-            width: canvas.width,
-            height: canvas.height
-        };
-    }
-
-    /**
-     * Adiciona a legenda de notas (1-5) usando html2canvas
-     */
-    async addLegend() {
-        // Esta é a linha que causou o erro (144). Agora corrigida.
-        // this.pdf.autoTable(...) FOI REMOVIDA.
-
-        // Usamos a sua função de 'chart_legend.js' para obter o HTML
-        const legendElement = getRatingLegendElement();
-
-        // Usamos o 'html2canvas' para "fotografar" o elemento
-        const imgData = await this.renderHtmlToImage(legendElement, 600);
-
-        const imgWidth = this.pdfWidth - (this.pageMargin * 2);
-        const imgHeight = (imgData.height * imgWidth) / imgData.width;
-
-        this.checkPageBreak(imgHeight + 10); // Verificar espaço
-        this.pdf.addImage(imgData.url, 'PNG', this.pageMargin, this.yOffset, imgWidth, imgHeight);
-        this.yOffset += imgHeight + 10;
-    }
-
-    /**
-     * Adiciona os dados do sumário usando html2canvas
-     */
-    async addSummaryData(summary) {
+    addNativeKPICards(summary) {
         if (!summary) return;
 
-        // 1. Criar o HTML para o sumário
-        const summaryHtml = `
-            <div style="padding: 10px; background: white; font-family: Helvetica; font-size: 11px; width: 600px; color: #333;">
-                <h3 style="font-size: 14px; color: #1e40af; margin-bottom: 8px;">Resumo Geral</h3>
-                <table style="width: 100%;">
-                    <tr style="vertical-align: top;">
-                        <td style="padding: 3px;">
-                            <div><strong>Total de Avaliações:</strong> ${summary.totalAvaliacoes}</div>
-                            <div><strong>Total de Alunos:</strong> ${summary.totalAlunos}</div>
-                            <div><strong>Total de Turmas:</strong> ${summary.totalTurmas}</div>
-                        </td>
-                        <td style="padding: 3px;">
-                            <div><strong>Total de Professores:</strong> ${summary.totalProfessores}</div>
-                            <div><strong>Total de Disciplinas:</strong> ${summary.totalDisciplinas}</div>
-                            <div><strong>Média Geral:</strong> ${summary.mediaGeral}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="padding: 3px;">
-                            <div><strong>Taxa de Participação:</strong> ${summary.taxaParticipacao}</div>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        `;
-        const el = document.createElement('div');
-        el.innerHTML = summaryHtml;
+        // Espaçamento e dimensionamento melhorados
+        const gap = 6;
+        const cardWidth = (this.pdfWidth - (this.pageMargin * 2) - (gap * 2)) / 3; 
+        const cardHeight = 24;
 
-        // 2. Renderizar o HTML para imagem
-        const imgData = await this.renderHtmlToImage(el, 600);
-        const imgWidth = this.pdfWidth - (this.pageMargin * 2);
-        const imgHeight = (imgData.height * imgWidth) / imgData.width;
-
-        // 3. Adicionar imagem ao PDF
-        this.checkPageBreak(imgHeight + 10);
-        this.pdf.addImage(imgData.url, 'PNG', this.pageMargin, this.yOffset, imgWidth, imgHeight);
-        this.yOffset += imgHeight + 10;
-    }
-
-    /**
-     * Adiciona as tabelas de dados de Professores e Disciplinas usando html2canvas
-     */
-    async addDataTables(professorAnalytics, disciplineAnalytics) {
-        // --- Tabela de Professores ---
-        let profHtml = `
-            <div style="padding: 10px; background: white; font-family: Helvetica; font-size: 10px; width: 800px;">
-            <h3 style="font-size: 14px; color: #1e40af; margin-bottom: 8px;">Desempenho por Professor</h3>
-            <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
-                <thead style="background-color: #f0f4f8; color: #333;">
-                    <tr>
-                        <th style="padding: 6px; border: 1px solid #ddd; text-align: left;">Professor</th>
-                        <th style="padding: 6px; border: 1px solid #ddd;">Média Geral</th>
-                        <th style="padding: 6px; border: 1px solid #ddd;">Respostas</th>
-                        <th style="padding: 6px; border: 1px solid #ddd;">Disciplinas</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-        professorAnalytics.forEach(p => {
-            profHtml += `
-                <tr>
-                    <td style="padding: 5px; border: 1px solid #ddd;">${p.professorNome}</td>
-                    <td style="padding: 5px; border: 1px solid #ddd; text-align: center;">${p.mediaGeral.toFixed(2)}</td>
-                    <td style="padding: 5px; border: 1px solid #ddd; text-align: center;">${p.totalRespostas}</td>
-                    <td style="padding: 5px; border: 1px solid #ddd; text-align: center;">${p.disciplinas.length}</td>
-                </tr>
-            `;
-        });
-        profHtml += `</tbody></table></div>`;
-
-        let elProf = document.createElement('div');
-        elProf.innerHTML = profHtml;
-        let imgProf = await this.renderHtmlToImage(elProf, 800);
-        let imgWidthProf = this.pdfWidth - (this.pageMargin * 2);
-        let imgHeightProf = (imgProf.height * imgWidthProf) / imgProf.width;
-
-        this.checkPageBreak(imgHeightProf + 10);
-        this.pdf.addImage(imgProf.url, 'PNG', this.pageMargin, this.yOffset, imgWidthProf, imgHeightProf);
-        this.yOffset += imgHeightProf + 10;
-
-        // --- Tabela de Disciplinas ---
-        let discHtml = `
-            <div style="padding: 10px; background: white; font-family: Helvetica; font-size: 10px; width: 800px;">
-            <h3 style="font-size: 14px; color: #1e40af; margin-bottom: 8px;">Desempenho por Disciplina</h3>
-            <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
-                <thead style="background-color: #f0f4f8; color: #333;">
-                    <tr>
-                        <th style="padding: 6px; border: 1px solid #ddd; text-align: left;">Disciplina</th>
-                        <th style="padding: 6px; border: 1px solid #ddd;">Código</th>
-                        <th style="padding: 6px; border: 1px solid #ddd;">Média Geral</th>
-                        <th style="padding: 6px; border: 1px solid #ddd;">Respostas</th>
-                        <th style="padding: 6px; border: 1px solid #ddd;">Alunos</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-        disciplineAnalytics.forEach(d => {
-            discHtml += `
-                <tr>
-                    <td style="padding: 5px; border: 1px solid #ddd;">${d.disciplinaNome}</td>
-                    <td style="padding: 5px; border: 1px solid #ddd; text-align: center;">${d.disciplinaCodigo}</td>
-                    <td style="padding: 5px; border: 1px solid #ddd; text-align: center;">${d.mediaGeral.toFixed(2)}</td>
-                    <td style="padding: 5px; border: 1px solid #ddd; text-align: center;">${d.totalRespostas}</td>
-                    <td style="padding: 5px; border: 1px solid #ddd; text-align: center;">${d.alunos.length}</td>
-                </tr>
-            `;
-        });
-        discHtml += `</tbody></table></div>`;
-
-        let elDisc = document.createElement('div');
-        elDisc.innerHTML = discHtml;
-        let imgDisc = await this.renderHtmlToImage(elDisc, 800);
-        let imgWidthDisc = this.pdfWidth - (this.pageMargin * 2);
-        let imgHeightDisc = (imgDisc.height * imgWidthDisc) / imgDisc.width;
-
-        this.checkPageBreak(imgHeightDisc + 10);
-        this.pdf.addImage(imgDisc.url, 'PNG', this.pageMargin, this.yOffset, imgWidthDisc, imgHeightDisc);
-        this.yOffset += imgHeightDisc + 10;
-    }
-
-    /**
-     * Adiciona os gráficos da aba "Visão Geral" ao PDF.
-     * (Esta função estava correta e permanece a mesma)
-     */
-    async addCharts() {
-        const chartIds = [
-            { id: 'categoryChart', title: 'Respostas por Categoria' },
-            { id: 'distributionChart', title: 'Distribuição das Respostas (1-5)' },
-            { id: 'semesterChart', title: 'Média por Semestre' },
-            //{ id: 'timelineChart', title: 'Avaliações ao Longo do Tempo' }
+        const metrics = [
+            { title: 'MÉDIA GERAL', value: summary.mediaGeral, color: [14, 165, 233] },
+            { title: 'TOTAL AVALIAÇÕES', value: summary.totalAvaliacoes, color: [16, 185, 129] },
+            { title: 'NPS', value: summary.nps !== undefined ? summary.nps : 'N/A', color: [245, 158, 11] },
+            { title: 'PROFESSORES', value: summary.totalProfessores, color: [100, 116, 139] },
+            { title: 'DISCIPLINAS', value: summary.totalDisciplinas, color: [100, 116, 139] },
+            { title: 'ALUNOS', value: summary.totalAlunos, color: [100, 116, 139] }
         ];
 
-        // Adiciona uma nova página para os gráficos
-        this.pdf.addPage();
-        this.yOffset = this.pageMargin;
-        this.pdf.setFontSize(16);
-        this.pdf.text("Gráficos da Visão Geral", this.pdfWidth / 2, this.yOffset, { align: 'center' });
-        this.yOffset += 10;
+        let startX = this.pageMargin;
+        let startY = this.yOffset;
 
-        for (const chartInfo of chartIds) {
-            const canvas = document.getElementById(chartInfo.id);
-            if (!canvas) {
-                console.warn(`Gráfico ${chartInfo.id} não encontrado.`);
-                continue;
+        metrics.forEach((metric, index) => {
+            if (index > 0 && index % 3 === 0) {
+                startX = this.pageMargin;
+                startY += cardHeight + gap;
             }
 
-            // Usar 'toDataURL' diretamente do canvas (melhor que html2canvas)
-            const imgData = canvas.toDataURL('image/png', 1.0);
+            // Fundo do cartão
+            this.pdf.setFillColor(248, 250, 252);
+            this.pdf.setDrawColor(203, 213, 225);
+            this.pdf.roundedRect(startX, startY, cardWidth, cardHeight, 1.5, 1.5, 'FD');
 
-            const canvasAspect = canvas.width / canvas.height;
-            const imgWidth = this.pdfWidth - (this.pageMargin * 2);
-            const imgHeight = imgWidth / canvasAspect;
+            // Linha lateral mais grossa (4px)
+            this.pdf.setFillColor(...metric.color);
+            this.pdf.roundedRect(startX, startY, 4, cardHeight, 1.5, 1.5, 'F');
 
-            this.checkPageBreak(imgHeight + 10);
+            // Título (Ajustado verticalmente)
+            this.pdf.setFontSize(8);
+            this.pdf.setTextColor(100, 116, 139);
+            this.pdf.setFont("helvetica", "bold");
+            this.pdf.text(metric.title, startX + 10, startY + 8);
 
-            this.pdf.setFontSize(12);
-            this.pdf.text(chartInfo.title, this.pageMargin, this.yOffset);
-            this.yOffset += 5;
+            // Valor (Maior e mais escuro)
+            this.pdf.setFontSize(18);
+            this.pdf.setTextColor(15, 23, 42);
+            this.pdf.text(String(metric.value), startX + 10, startY + 18);
 
-            this.pdf.addImage(imgData, 'PNG', this.pageMargin, this.yOffset, imgWidth, imgHeight);
-            this.yOffset += imgHeight + 10;
+            startX += cardWidth + gap;
+        });
+
+        this.yOffset = startY + cardHeight + 16;
+    }
+
+    async addCompactCharts() {
+        const getHighResImg = (canvasId) => {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return null;
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const ctx = tempCanvas.getContext('2d');
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            ctx.drawImage(canvas, 0, 0);
+            return { data: tempCanvas.toDataURL('image/jpeg', 1.0), aspect: canvas.width / canvas.height };
+        };
+
+        const catImg = getHighResImg('categoryChart');
+        const distImg = getHighResImg('distributionChart');
+        const semImg = getHighResImg('semesterChart');
+
+        const contentWidth = this.pdfWidth - (this.pageMargin * 2);
+        const gap = 10;
+        const halfWidth = (contentWidth - gap) / 2;
+
+        this.pdf.setFontSize(11);
+        this.pdf.setTextColor(15, 23, 42);
+        this.pdf.setFont("helvetica", "bold");
+        
+        if (catImg && distImg) {
+            this.checkPageBreak(halfWidth / catImg.aspect + 20);
+            
+            this.pdf.text("Respostas por Categoria", this.pageMargin, this.yOffset);
+            this.pdf.text("Distribuição de Notas", this.pageMargin + halfWidth + gap, this.yOffset);
+            this.yOffset += 6;
+
+            this.pdf.addImage(catImg.data, 'JPEG', this.pageMargin, this.yOffset, halfWidth, halfWidth / catImg.aspect);
+            this.pdf.addImage(distImg.data, 'JPEG', this.pageMargin + halfWidth + gap, this.yOffset, halfWidth, halfWidth / distImg.aspect);
+            
+            this.yOffset += (halfWidth / catImg.aspect) + 16;
+        }
+
+        if (semImg) {
+            // CORREÇÃO: Limitar a altura máxima do gráfico de semestre para não virar um bloco azul
+            let semHeight = contentWidth / semImg.aspect;
+            if (semHeight > 55) semHeight = 55; 
+
+            this.checkPageBreak(semHeight + 20);
+            
+            this.pdf.text("Evolução por Semestre", this.pageMargin, this.yOffset);
+            this.yOffset += 6;
+            this.pdf.addImage(semImg.data, 'JPEG', this.pageMargin, this.yOffset, contentWidth, semHeight);
+            this.yOffset += semHeight + 16;
         }
     }
 
-    /**
-     * Verifica se o conteúdo cabe na página atual, se não, adiciona uma nova.
-     * (Nenhuma mudança aqui)
-     */
+    addNativeRankings(professorAnalytics, disciplineAnalytics) {
+        const topProfs = professorAnalytics.sort((a, b) => b.mediaGeral - a.mediaGeral).slice(0, 10);
+        const topDiscs = disciplineAnalytics.sort((a, b) => b.mediaGeral - a.mediaGeral).slice(0, 10);
+
+        // Configuração Premium para Tabelas
+        const tableConfig = {
+            theme: 'striped',
+            headStyles: { 
+                fillColor: [15, 23, 42], // Azul muito escuro para contraste
+                textColor: 255, 
+                fontStyle: 'bold', 
+                fontSize: 9,
+                cellPadding: 5
+            },
+            bodyStyles: { 
+                textColor: [51, 65, 85], 
+                fontSize: 9,
+                cellPadding: 5
+            },
+            alternateRowStyles: { fillColor: [248, 250, 252] },
+            margin: { left: this.pageMargin, right: this.pageMargin }
+        };
+
+        if (topProfs.length > 0) {
+            this.checkPageBreak(60); 
+            this.pdf.setFontSize(13);
+            this.pdf.setTextColor(15, 23, 42);
+            this.pdf.text("Top 10 - Desempenho de Professores", this.pageMargin, this.yOffset);
+            this.yOffset += 6;
+
+            autoTable(this.pdf, {
+                ...tableConfig,
+                startY: this.yOffset,
+                head: [['Professor', 'Média', 'Respostas', 'Disciplinas']],
+                body: topProfs.map(p => [p.professorNome, p.mediaGeral.toFixed(2), p.totalRespostas, p.disciplinas.length]),
+                didDrawPage: (data) => { this.yOffset = data.cursor.y + 16; }
+            });
+        }
+
+        if (topDiscs.length > 0) {
+            this.checkPageBreak(60);
+            this.pdf.setFontSize(13);
+            this.pdf.setTextColor(15, 23, 42);
+            this.pdf.text("Top 10 - Desempenho de Disciplinas", this.pageMargin, this.yOffset);
+            this.yOffset += 6;
+
+            autoTable(this.pdf, {
+                ...tableConfig,
+                startY: this.yOffset,
+                head: [['Disciplina', 'Código', 'Média', 'Respostas']],
+                body: topDiscs.map(d => [d.disciplinaNome, d.disciplinaCodigo || '-', d.mediaGeral.toFixed(2), d.totalRespostas]),
+                didDrawPage: (data) => { this.yOffset = data.cursor.y + 16; }
+            });
+        }
+    }
+
+    async addDetailedResponses(filteredData) {
+        const avaliacoesMap = new Map();
+        
+        filteredData.forEach(item => {
+            if (!avaliacoesMap.has(item.avaliacaoId)) {
+                avaliacoesMap.set(item.avaliacaoId, {
+                    disciplina: item.disciplinaNome,
+                    semestre: item.semestre,
+                    professor: item.professorNome,
+                    respostas: {}
+                });
+            }
+            avaliacoesMap.get(item.avaliacaoId).respostas[item.questaoTexto] = item.respostaValor;
+        });
+
+        const questoesPorCategoria = { disciplina: new Set(), professor: new Set(), aluno: new Set() };
+        filteredData.forEach(item => {
+            if (questoesPorCategoria[item.tipo]) {
+                questoesPorCategoria[item.tipo].add(item.questaoTexto);
+            }
+        });
+
+        const categorias = [
+            { id: 'disciplina', titulo: 'Avaliação da Disciplina' },
+            { id: 'professor', titulo: 'Avaliação do Professor' },
+            { id: 'aluno', titulo: 'Autoavaliação do Aluno' }
+        ];
+
+        categorias.forEach(cat => {
+            const perguntas = Array.from(questoesPorCategoria[cat.id]);
+            if (perguntas.length === 0) return; 
+
+            const head = [['Disciplina', 'Professor', ...perguntas]];
+            const body = [];
+            
+            avaliacoesMap.forEach(av => {
+                let temResposta = false;
+                const row = [`${av.disciplina}\n(${av.semestre})`, av.professor];
+                
+                perguntas.forEach(p => {
+                    const resp = av.respostas[p];
+                    if (resp !== undefined && typeof resp === 'number') temResposta = true;
+                    row.push(resp !== undefined ? resp : '-');
+                });
+
+                if (temResposta) body.push(row);
+            });
+
+            if (body.length > 0) {
+                this.pdf.addPage('a4', 'l'); 
+                
+                // CORREÇÃO DA TABELA DETALHADA: Mais legível e sem esmagar
+                autoTable(this.pdf, {
+                    startY: 28,
+                    head: head,
+                    body: body,
+                    theme: 'grid',
+                    headStyles: { 
+                        fillColor: [15, 23, 42], 
+                        textColor: 255,
+                        fontSize: 6.5, // Fonte menor no cabeçalho para acomodar textos longos
+                        halign: 'center', 
+                        valign: 'middle',
+                        cellPadding: 2,
+                        minCellHeight: 15 // Garante que o cabeçalho não fica bizarramente alto
+                    },
+                    bodyStyles: { 
+                        fontSize: 7.5, 
+                        halign: 'center', 
+                        valign: 'middle',
+                        textColor: [51, 65, 85]
+                    },
+                    alternateRowStyles: { fillColor: [248, 250, 252] },
+                    columnStyles: {
+                        0: { halign: 'left', cellWidth: 35, fontStyle: 'bold' }, 
+                        1: { halign: 'left', cellWidth: 30 }  
+                    },
+                    margin: { left: 10, right: 10, bottom: 15 },
+                    didDrawPage: (data) => {
+                        const pageWidth = this.pdf.internal.pageSize.getWidth();
+                        this.pdf.setFillColor(15, 23, 42);
+                        this.pdf.rect(0, 0, pageWidth, 18, 'F');
+                        
+                        this.pdf.setTextColor(255, 255, 255);
+                        this.pdf.setFontSize(14);
+                        this.pdf.setFont("helvetica", "bold");
+                        this.pdf.text(`Respostas Detalhadas: ${cat.titulo} (Anônimo)`, 10, 12);
+                    }
+                });
+            }
+        });
+    }
+
     checkPageBreak(contentHeight) {
         if (this.yOffset + contentHeight > this.pdfHeight - this.pageMargin) {
             this.pdf.addPage();
-            this.yOffset = this.pageMargin;
+            this.yOffset = this.pageMargin + 5;
         }
     }
 
-    /**
-     * Mostra ou esconde um 'overlay' de carregamento.
-     * (Nenhuma mudança aqui)
-     */
     showLoading(show) {
         let loadingEl = document.getElementById('pdf-loading-overlay');
         if (show) {
@@ -442,19 +346,17 @@ export class AnalyticsExporter {
                 loadingEl = document.createElement('div');
                 loadingEl.id = 'pdf-loading-overlay';
                 loadingEl.innerHTML = `
-                    <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;z-index:9998;">
-                        <div style="padding:25px 30px;background:white;border-radius:8px;box-shadow:0 0 15px rgba(0,0,0,0.2);text-align:center;">
-                            <h3 style="margin:0;color:#333;">Gerando Relatório PDF...</h3>
-                            <p style="margin:10px 0 0;color:#555;">Isto pode demorar alguns segundos.</p>
+                    <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.8);display:flex;justify-content:center;align-items:center;z-index:9998; backdrop-filter: blur(4px);">
+                        <div style="padding:30px;background:white;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.2);text-align:center;">
+                            <h3 style="margin:0 0 10px;color:#0f172a;font-family:sans-serif;">Gerando Relatório Executivo</h3>
+                            <p style="margin:0;color:#64748b;font-family:sans-serif;">Processando dados e formatando tabelas...</p>
                         </div>
                     </div>
                 `;
                 document.body.appendChild(loadingEl);
             }
         } else {
-            if (loadingEl) {
-                loadingEl.remove();
-            }
+            if (loadingEl) loadingEl.remove();
         }
     }
 }

@@ -62,12 +62,15 @@ export class AnalyticsFilters {
         this.populateSelect('formularioAnalyticsFilter', formularios);
         this.populateSelect('statusTurmaFilter', statusOptions);
         
-        // Set default values to current year and semester if available
-        if (years.length > 0) {
-            document.getElementById('yearFilter').value = years[0];
+        // CORREÇÃO: Validação de segurança antes de injetar os valores
+        const yearSelect = document.getElementById('yearFilter');
+        if (yearSelect && years.length > 0) {
+            yearSelect.value = years[0];
         }
-        if (semesters.length > 0) {
-            document.getElementById('semesterFilter').value = semesters[0];
+        
+        const semesterSelect = document.getElementById('semesterFilter');
+        if (semesterSelect && semesters.length > 0) {
+            semesterSelect.value = semesters[0];
         }
     }
 

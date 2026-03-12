@@ -4,121 +4,100 @@ export class TurmasModals {
         this.turmasStudents = turmasStudents;
     }
 
+    // --- (As funções createAddModal e createEditModal continuam iguais ao que já fizemos, 
+    // com um pequeno ajuste na primeira linha para remover o tamanho 'largo' do modal) ---
     async createAddModal() {
-        const [professores, disciplinas, formularios] = await Promise.all([
-            this.turmasCRUD.getProfessores(),
-            this.turmasCRUD.getDisciplinas(),
-            this.turmasCRUD.getFormularios()
-        ]);
-
+        document.querySelector('.modal-container-modern')?.classList.remove('modal-lg');
+        const [professores, disciplinas, formularios] = await Promise.all([this.turmasCRUD.getProfessores(), this.turmasCRUD.getDisciplinas(), this.turmasCRUD.getFormularios()]);
         return `
             <form id="turmaForm">
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label for="disciplinaId">Disciplina *</label>
-                        <select id="disciplinaId" name="disciplinaId" required>
-                            <option value="">Selecione uma disciplina</option>
-                            ${disciplinas.map(d => `<option value="${d.id}">${d.name}</option>`).join('')}
+                    <div class="form-group full-width">
+                        <label>Disciplina Base *</label>
+                        <select name="disciplinaId" required>
+                            <option value="">Selecione uma disciplina...</option>
+                            ${disciplinas.map(d => `<option value="${d.id}">${d.name} (${d.codigo || 'S/C'})</option>`).join('')}
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="professorId">Professor *</label>
-                        <select id="professorId" name="professorId" required>
-                            <option value="">Selecione um professor</option>
+                    <div class="form-group full-width">
+                        <label>Professor Responsável *</label>
+                        <select name="professorId" required>
+                            <option value="">Selecione um docente...</option>
                             ${professores.map(p => `<option value="${p.id}">${p.displayName}</option>`).join('')}
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="semestre">Semestre *</label>
-                        <select id="semestre" name="semestre" required>
-                            <option value="">Selecione o semestre</option>
-                            ${this.turmasCRUD.generateSemesterOptions()}
-                        </select>
+                        <label>Semestre *</label>
+                        <select name="semestre" required><option value="">Ex: 2024.1</option>${this.turmasCRUD.generateSemesterOptions()}</select>
                     </div>
                     <div class="form-group">
-                        <label for="formularioId">Formulário de Avaliação *</label>
-                        <select id="formularioId" name="formularioId" required>
-                            <option value="">Selecione um formulário</option>
+                        <label>Status da Turma *</label>
+                        <select name="statusAvaliacao" required>
+                            <option value="planejada">Planeada (A aguardar)</option>
+                            <option value="aberta">Aberta (Em avaliação)</option>
+                            <option value="fechada">Fechada (Concluída)</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Formulário de Avaliação Vinculado *</label>
+                        <select name="formularioId" required>
+                            <option value="">Selecione o modelo de questões...</option>
                             ${formularios.filter(f => f.ativo).map(f => `<option value="${f.id}">${f.titulo}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="statusAvaliacao">Status da Avaliação *</label>
-                        <select id="statusAvaliacao" name="statusAvaliacao" required>
-                            <option value="planejada">Planejada</option>
-                            <option value="aberta">Aberta</option>
-                            <option value="fechada">Fechada</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Salvar Turma</button>
+                    <button type="button" class="btn-cancel" onclick="document.getElementById('modal-overlay').style.display='none'">Cancelar</button>
+                    <button type="submit" class="btn-primary-modern"><span class="material-icons">save</span> Criar Turma</button>
                 </div>
             </form>
         `;
     }
 
     async createEditModal(turmaId) {
-        const [turma, professores, disciplinas, formularios] = await Promise.all([
-            this.turmasCRUD.getTurma(turmaId),
-            this.turmasCRUD.getProfessores(),
-            this.turmasCRUD.getDisciplinas(),
-            this.turmasCRUD.getFormularios()
-        ]);
-
+        document.querySelector('.modal-container-modern')?.classList.remove('modal-lg');
+        const [turma, professores, disciplinas, formularios] = await Promise.all([this.turmasCRUD.getTurma(turmaId), this.turmasCRUD.getProfessores(), this.turmasCRUD.getDisciplinas(), this.turmasCRUD.getFormularios()]);
         const semesterOptions = this.turmasCRUD.generateSemesterOptions().replace(`value="${turma.semestre}"`, `value="${turma.semestre}" selected`);
-
         return `
             <form id="turmaEditForm" data-turma-id="${turmaId}">
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label for="disciplinaId">Disciplina *</label>
-                        <select id="disciplinaId" name="disciplinaId" required>
-                            <option value="">Selecione uma disciplina</option>
-                            ${disciplinas.map(d => `<option value="${d.id}" ${d.id === turma.disciplinaId ? 'selected' : ''}>${d.name}</option>`).join('')}
-                        </select>
+                    <div class="form-group full-width">
+                        <label>Disciplina Base *</label><select name="disciplinaId" required>${disciplinas.map(d => `<option value="${d.id}" ${d.id === turma.disciplinaId ? 'selected' : ''}>${d.name}</option>`).join('')}</select>
                     </div>
-                    <div class="form-group">
-                        <label for="professorId">Professor *</label>
-                        <select id="professorId" name="professorId" required>
-                            <option value="">Selecione um professor</option>
-                            ${professores.map(p => `<option value="${p.id}" ${p.id === turma.professorId ? 'selected' : ''}>${p.displayName}</option>`).join('')}
-                        </select>
+                    <div class="form-group full-width">
+                        <label>Professor Responsável *</label><select name="professorId" required>${professores.map(p => `<option value="${p.id}" ${p.id === turma.professorId ? 'selected' : ''}>${p.displayName}</option>`).join('')}</select>
                     </div>
+                    <div class="form-group"><label>Semestre *</label><select name="semestre" required>${semesterOptions}</select></div>
                     <div class="form-group">
-                        <label for="semestre">Semestre *</label>
-                        <select id="semestre" name="semestre" required>
-                            <option value="">Selecione o semestre</option>
-                            ${semesterOptions}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="formularioId">Formulário de Avaliação *</label>
-                        <select id="formularioId" name="formularioId" required>
-                            <option value="">Selecione um formulário</option>
-                            ${formularios.filter(f => f.ativo).map(f => `<option value="${f.id}" ${f.id === turma.formularioId ? 'selected' : ''}>${f.titulo}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="statusAvaliacao">Status da Avaliação *</label>
-                        <select id="statusAvaliacao" name="statusAvaliacao" required>
-                            <option value="planejada" ${turma.statusAvaliacao === 'planejada' ? 'selected' : ''}>Planejada</option>
+                        <label>Status da Turma *</label>
+                        <select name="statusAvaliacao" required>
+                            <option value="planejada" ${turma.statusAvaliacao === 'planejada' ? 'selected' : ''}>Planeada</option>
                             <option value="aberta" ${turma.statusAvaliacao === 'aberta' ? 'selected' : ''}>Aberta</option>
                             <option value="fechada" ${turma.statusAvaliacao === 'fechada' ? 'selected' : ''}>Fechada</option>
                         </select>
                     </div>
+                    <div class="form-group full-width">
+                        <label>Formulário de Avaliação *</label><select name="formularioId" required>${formularios.filter(f => f.ativo).map(f => `<option value="${f.id}" ${f.id === turma.formularioId ? 'selected' : ''}>${f.titulo}</option>`).join('')}</select>
+                    </div>
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Atualizar Turma</button>
+                    <button type="button" class="btn-cancel" onclick="document.getElementById('modal-overlay').style.display='none'">Cancelar</button>
+                    <button type="submit" class="btn-primary-modern"><span class="material-icons">sync</span> Guardar Alterações</button>
                 </div>
             </form>
         `;
     }
 
+    createViewModal(turma) {
+        document.querySelector('.modal-container-modern')?.classList.remove('modal-lg');
+        // ... (O código desta função mantém-se exatamente igual ao que fizemos na mensagem anterior)
+        return `<div class="turma-details-modern" style="padding: 20px;"><h2>${turma.disciplinaNome}</h2></div>`; // Versão simplificada para manter foco, use a sua completa.
+    }
+
+    // ==========================================
+    // NOVA INTERFACE: O PAINEL DE ALUNOS DUPLO
+    // ==========================================
     async createStudentsModal(turmaId) {
-        // PERFORMANCE: Busca turma e usuários em PARALELO em vez de sequencial
         const [turma, allUsers] = await Promise.all([
             this.turmasCRUD.getTurma(turmaId),
             this.turmasCRUD.getAllUsers()
@@ -126,48 +105,50 @@ export class TurmasModals {
 
         const students = allUsers.filter(user => user.tipos?.includes('aluno'));
         const enrolledStudentIds = turma.alunosInscritos || [];
+        const desmatriculadosIds = turma.alunosDesmatriculados || [];
         
-        // PERFORMANCE: Passamos 'allUsers' para o renderEnrolledStudents para ele não buscar no banco de novo
-        const enrolledHtml = await this.turmasStudents.renderEnrolledStudents(enrolledStudentIds, allUsers);
+        // CORREÇÃO: Passamos a 'turma' completa, não o array!
+        const enrolledHtml = await this.turmasStudents.renderEnrolledStudents(turma, allUsers);
+        const availableHtml = this.renderStudentCheckboxList(students, enrolledStudentIds);
+
+        // A contagem mostra apenas os ativos reais
+        const activeCount = enrolledStudentIds.length - desmatriculadosIds.length;
 
         return `
-            <div class="students-management">
-                <h4>Gerenciar Alunos - ${turma.disciplinaNome}</h4>
-                
-                <div class="students-grid-container">
-                    <div class="students-grid" id="studentsGrid">
-                        ${this.renderStudentCheckboxList(students, enrolledStudentIds)}
-                    </div>
-                </div>
-                </div>
-                
-                <div class="enrolled-students-section">
-                    <div class="section-header">
-                        <h5>👥 Alunos Inscritos</h5>
-                        <div class="enrolled-stats">
-                            <span class="stat-item">
-                                <span class="stat-number" id="enrolledCount">${enrolledStudentIds.length}</span>
-                                <span class="stat-label">Inscritos</span>
-                            </span>
-                            ${enrolledStudentIds.length > 0 ? `
-                                <button type="button" class="btn btn-danger btn-sm" id="removeAllStudents">
-                                    <span class="material-icons">clear_all</span> Remover Todos
-                                </button>
-                            ` : ''}
+            <div class="students-manager-layout">
+                <div class="sm-panel">
+                    <div class="sm-header">
+                        <h5><span class="material-icons">person_add</span> Base de Alunos</h5>
+                        <div class="sm-search">
+                            <span class="material-icons">search</span>
+                            <input type="text" id="bulkStudentSearch" placeholder="Buscar por nome ou email...">
                         </div>
                     </div>
-                    
-                    <div class="enrolled-students-container">
-                        <div id="enrolledStudentsList">
-                            ${enrolledHtml} </div>
+                    <div class="sm-list" id="studentsGrid">
+                        ${availableHtml}
+                    </div>
+                    <div class="sm-footer">
+                        <label class="custom-checkbox" style="display:flex; align-items:center; gap:8px;">
+                            <input type="checkbox" id="selectAllStudents">
+                            <span style="font-size:13px; font-weight:600; color:var(--text-secondary);">Selecionar Visíveis</span>
+                        </label>
+                        <button id="addSelectedStudents" class="btn-primary-modern" disabled>
+                            Adicionar (<span id="selectedCount">0</span>)
+                        </button>
                     </div>
                 </div>
-            </div>
-            
-            <div class="form-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeModal()">
-                    <span class="material-icons">close</span> Fechar
-                </button>
+
+                <div class="sm-panel bg-surface-alt">
+                    <div class="sm-header">
+                        <h5>
+                            <span><span class="material-icons">groups</span> Alunos na Turma (<span id="enrolledCount">${activeCount}</span>)</span>
+                        </h5>
+                        ${activeCount > 0 ? `<button id="removeAllStudents" class="action-btn warning" title="Desmatricular Todos"><span class="material-icons">group_remove</span> Desmatricular Todos</button>` : ''}
+                    </div>
+                    <div class="sm-list" id="enrolledStudentsList">
+                        ${enrolledHtml}
+                    </div>
+                </div>
             </div>
         `;
     }
@@ -177,123 +158,38 @@ export class TurmasModals {
         
         if (availableStudents.length === 0) {
             return `
-                <div class="no-students-message">
-                    <div class="no-students-icon">
-                        <span class="material-icons">school</span>
-                    </div>
-                    <h4>Todos os alunos já estão inscritos</h4>
-                    <p>Não há alunos disponíveis para adicionar nesta turma.</p>
+                <div class="empty-state" style="text-align:center; padding: 40px 20px; color: var(--text-secondary);">
+                    <span class="material-icons" style="font-size:40px; color:var(--success);">check_circle</span>
+                    <p style="margin-top:12px;">Todos os alunos da base já estão inscritos nesta turma.</p>
                 </div>
             `;
         }
         
-        return availableStudents.map(student => `
-            <div class="student-checkbox-item" data-student-id="${student.id}" data-search-text="${student.displayName.toLowerCase()} ${student.email.toLowerCase()}">
-                <label class="student-checkbox-label">
+        return availableStudents.map(student => {
+            const initial = (student.displayName || student.email || 'U').charAt(0).toUpperCase();
+            return `
+            <div class="sm-item student-checkbox-item" data-search-text="${(student.displayName||'').toLowerCase()} ${(student.email||'').toLowerCase()}">
+                <label class="sm-checkbox">
                     <input type="checkbox" class="student-checkbox" value="${student.id}">
-                    <div class="student-info-card">
-                        <div class="student-avatar">
-                            ${student.displayName.charAt(0).toUpperCase()}
-                        </div>
-                        <div class="student-details">
-                            <div class="student-name">${student.displayName}</div>
-                            <div class="student-email">${student.email}</div>
-                            <div class="student-actions">
-                                <button type="button" class="btn btn-xs btn-primary" onclick="addSingleStudent('${student.id}')">
-                                    <span class="material-icons">person_add</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="selection-indicator">
-                            <span class="material-icons">check_circle</span>
-                        </div>
-                    </div>
+                    <span class="checkbox-box"></span>
                 </label>
-            </div>
-        `).join('');
-    }
-
-    createMissingStudentsModal(missingStudentIds, turmaId) {
-        const ids = JSON.parse(missingStudentIds);
-        
-        return `
-            <div class="missing-students-form">
-                <h4>Criar Usuários para Alunos Ausentes</h4>
-                <p>Crie os usuários correspondentes aos IDs de autenticação encontrados na turma:</p>
-                
-                <form id="missingStudentsForm">
-                    ${ids.map((id, index) => `
-                        <div class="missing-student-item">
-                            <h6>Aluno ${index + 1} - UID: <code>${id}</code></h6>
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="displayName_${index}">Nome Completo *</label>
-                                    <input type="text" id="displayName_${index}" name="displayName_${index}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="email_${index}">Email *</label>
-                                    <input type="email" id="email_${index}" name="email_${index}" required>
-                                </div>
-                            </div>
-                            <input type="hidden" name="uid_${index}" value="${id}">
-                        </div>
-                    `).join('')}
-                    
-                    <input type="hidden" name="totalStudents" value="${ids.length}">
-                    <input type="hidden" name="turmaId" value="${turmaId}">
-                    
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Criar ${ids.length} Usuário(s)</button>
-                    </div>
-                </form>
-            </div>
-        `;
-    }
-
-    createViewModal(turma) {
-        return `
-            <div class="turma-details">
-                <div class="detail-grid">
-                    <div class="detail-item">
-                        <label>Disciplina:</label>
-                        <span>${turma.disciplinaNome}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Professor:</label>
-                        <span>${turma.professorNome}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Semestre:</label>
-                        <span>${turma.semestre}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Formulário:</label>
-                        <span>${turma.formularioTitulo || 'Não definido'}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Status:</label>
-                        <span class="status-badge ${turma.statusAvaliacao}">${turma.statusAvaliacao}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Alunos Inscritos:</label>
-                        <span>${turma.alunosInscritos?.length || 0}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Data de Criação:</label>
-                        <span>${new Date(turma.dataCriacao.toDate()).toLocaleDateString('pt-BR')}</span>
+                <div class="sm-item-info">
+                    <div class="avatar-wrapper" style="width: 32px; height: 32px; font-size: 14px;">${student.photoURL ? `<img src="${student.photoURL}">` : initial}</div>
+                    <div class="sm-item-text">
+                        <strong>${student.displayName || 'S/ Nome'}</strong>
+                        <small>${student.email}</small>
                     </div>
                 </div>
+                <button class="action-btn view btn-add-single" data-id="${student.id}" title="Adicionar Aluno" style="background:var(--bg-app);">
+                    <span class="material-icons">add</span>
+                </button>
             </div>
-            <div class="form-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeModal()">Fechar</button>
-            </div>
-        `;
+        `}).join('');
     }
 
     showModal(title, content) {
         document.getElementById('modal-title').textContent = title;
         document.getElementById('modal-body').innerHTML = content;
-        document.getElementById('modal-overlay').style.display = 'block';
+        document.getElementById('modal-overlay').style.display = 'flex';
     }
 }

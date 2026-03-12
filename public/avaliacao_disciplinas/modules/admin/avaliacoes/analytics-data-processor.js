@@ -189,49 +189,63 @@ export class AnalyticsDataProcessor {
         AnalyticsDataUtils.processDetailedAnalytics(this.processedData, this.detailedAnalytics);
     }
     
-    // ... (COLE O RESTO DAS SUAS FUNÇÕES AQUI: calculateSummary, getStudentAnalytics, etc.) ...
-    // ... Elas não precisam de NENHUMA alteração. ...
-    calculateSummary() {
-        const totalAvaliacoes = this.allAvaliacoes.length;
-        const totalAlunos = new Set(this.allAvaliacoes.map(a => a.alunoId)).size;
+    /*
+     * Calcula o sumário global ou filtrado.
+     * Se passar o parâmetro 'data', calcula apenas para esse subconjunto.
+     * Se não passar nada, calcula para todo o 'processedData'.
+     */
+    calculateSummary(data = null) {
+        // Se dados não forem fornecidos, usa todos os dados processados (Global)
+        const targetData = data || this.processedData;
+
+        if (!targetData || targetData.length === 0) {
+            return {
+                totalAvaliacoes: 0, totalAlunos: 0, totalTurmas: 0,
+                totalProfessores: 0, totalDisciplinas: 0, mediaGeral: 0,
+                taxaParticipacao: data ? "N/A (Filtro)" : "0%"
+            };
+        }
+
+        // Usamos Set para garantir que contamos os itens únicos, mesmo com respostas achatadas
+        const avaliacoesUnicas = new Set(targetData.map(item => item.avaliacaoId)).size;
+        const alunosUnicos = new Set(targetData.map(item => item.alunoId)).size;
+        const turmasUnicas = new Set(targetData.map(item => item.turmaId)).size;
+        const professoresUnicos = new Set(targetData.map(item => item.professorId)).size;
+        const disciplinasUnicas = new Set(targetData.map(item => item.disciplinaId)).size;
+
+        // Calcula a Média Geral
+        const responses = targetData.filter(item => typeof item.respostaValor === 'number');
         
-        // Only count turmas that have evaluations
-        const turmasAvaliadas = new Set(this.allAvaliacoes.map(a => a.turmaId));
-        const totalTurmas = turmasAvaliadas.size;
+        let mediaGeral = 0;
+        let nps = 0;
         
-        // Only count professors who have been evaluated
-        const professoresAvaliados = new Set();
-        turmasAvaliadas.forEach(turmaId => {
-            const turma = this.allTurmas.find(t => t.id === turmaId);
-            if (turma) professoresAvaliados.add(turma.professorId);
-        });
-        const totalProfessores = professoresAvaliados.size;
+        if (responses.length > 0) {
+            mediaGeral = (responses.reduce((sum, item) => sum + item.respostaValor, 0) / responses.length).toFixed(2);
+            
+            // Cálculo do NPS
+            const promotores = responses.filter(r => r.respostaValor === 5).length;
+            const detratores = responses.filter(r => r.respostaValor <= 3).length;
+            nps = Math.round(((promotores - detratores) / responses.length) * 100);
+        }
         
-        // Only count disciplines that have been evaluated
-        const disciplinasAvaliadas = new Set();
-        turmasAvaliadas.forEach(turmaId => {
-            const turma = this.allTurmas.find(t => t.id === turmaId);
-            if (turma) disciplinasAvaliadas.add(turma.disciplinaId);
-        });
-        const totalDisciplinas = disciplinasAvaliadas.size;
-        
-        const responses = this.processedData.filter(item => typeof item.respostaValor === 'number');
-        const mediaGeral = responses.length > 0 ? 
-            (responses.reduce((sum, item) => sum + item.respostaValor, 0) / responses.length).toFixed(2) : 0;
-        
-        const alunosMatriculados = this.allTurmas.reduce((total, turma) => 
-            total + (turma.alunosInscritos ? turma.alunosInscritos.length : 0), 0);
-        const taxaParticipacao = alunosMatriculados > 0 ? 
-            ((totalAlunos / alunosMatriculados) * 100).toFixed(1) : 0;
+        // A taxa de participação global usa o total de alunos inscritos no BD
+        let taxaParticipacao = "N/A (Filtro Ativo)";
+        if (!data) { // Só calcula a taxa de participação se for a visão Global (sem filtros)
+            const alunosMatriculados = this.allTurmas.reduce((total, turma) => 
+                total + (turma.alunosInscritos ? turma.alunosInscritos.length : 0), 0);
+            taxaParticipacao = alunosMatriculados > 0 ? 
+                ((alunosUnicos / alunosMatriculados) * 100).toFixed(1) + '%' : '0%';
+        }
         
         return {
-            totalAvaliacoes,
-            totalAlunos,
-            totalTurmas,
-            totalProfessores,
-            totalDisciplinas,
+            totalAvaliacoes: avaliacoesUnicas,
+            totalAlunos: alunosUnicos,
+            totalTurmas: turmasUnicas,
+            totalProfessores: professoresUnicos,
+            totalDisciplinas: disciplinasUnicas,
             mediaGeral,
-            taxaParticipacao: `${taxaParticipacao}%`
+            taxaParticipacao,
+            nps: nps
         };
     }
 

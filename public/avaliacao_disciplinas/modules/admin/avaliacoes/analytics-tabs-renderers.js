@@ -1,481 +1,372 @@
 export class AnalyticsTabsRenderers {
-    renderStudentsGrid(container, studentAnalytics, detailViewMode) {
-        const sortedStudents = studentAnalytics
-            .filter(student => student.totalRespostas > 0)
-            .sort((a, b) => b.mediaGeral - a.mediaGeral);
+    
+    // ==========================================
+    // 1. RENDERIZADOR DE PROFESSORES
+    // ==========================================
+    renderProfessorsDetailed(container, professorAnalytics, filteredData, detailViewMode, limit = 20) {
+        const sorted = [...professorAnalytics].sort((a, b) => b.mediaGeral - a.mediaGeral);
+        const displayed = sorted.slice(0, limit);
+        const hasMore = sorted.length > limit;
 
-        container.innerHTML = `
-            <div class="view-controls">
-                <div class="view-mode-selector">
-                    <button class="view-mode-btn ${detailViewMode === 'grid' ? 'active' : ''}" data-mode="grid">
-                        <span class="material-icons">grid_view</span> Grade
-                    </button>
-                    <button class="view-mode-btn ${detailViewMode === 'detailed' ? 'active' : ''}" data-mode="detailed">
-                        <span class="material-icons">view_list</span> Detalhado
-                    </button>
+        let html = `
+            <div class="tab-header-modern">
+                <div class="tab-title-group">
+                    <span class="material-icons">person</span>
+                    <div>
+                        <h3>Desempenho dos Professores</h3>
+                        <p>Ranking e detalhamento das avaliações por docente</p>
+                    </div>
                 </div>
+                <button class="btn-primary-modern export-tab-btn" data-export="professors">
+                    <span class="material-icons">download</span> Exportar Aba
+                </button>
             </div>
-            <div class="students-grid">
-                ${sortedStudents.map((student, index) => `
-                    <div class="student-analytics-card">
-                        <div class="student-avatar">
-                            ${String.fromCharCode(65 + (index % 26))}
-                        </div>
-                        <div class="student-info">
-                            <h4>Aluno ${String.fromCharCode(65 + (index % 26))}</h4>
-                            <p>ID: ***${student.alunoId.slice(-4)}</p>
-                        </div>
-                        <div class="student-metrics">
-                            <div class="metric">
-                                <div class="metric-value">${student.mediaGeral.toFixed(2)}</div>
-                                <div class="metric-label">Média Geral</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-value">${student.totalRespostas}</div>
-                                <div class="metric-label">Respostas</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-value">${student.disciplinas.length}</div>
-                                <div class="metric-label">Disciplinas</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-value">${student.avaliacoes.length}</div>
-                                <div class="metric-label">Avaliações</div>
+            <div class="items-list-modern">
+        `;
+
+        displayed.forEach((prof, index) => {
+            const percentage = (prof.mediaGeral / 5) * 100;
+            const colorClass = prof.mediaGeral >= 4 ? 'bg-success' : (prof.mediaGeral >= 3 ? 'bg-warning' : 'bg-danger');
+
+            html += `
+                <div class="modern-data-card detailed-professor-item">
+                    <div class="card-main-row">
+                        <div class="rank-badge">#${index + 1}</div>
+                        <div class="main-info">
+                            <h4>${prof.professorNome}</h4>
+                            <div class="tags-row">
+                                <span class="badge-modern"><span class="material-icons" style="font-size:12px; margin-right:4px;">book</span>${prof.disciplinas.length} Disciplinas</span>
+                                <span class="badge-modern"><span class="material-icons" style="font-size:12px; margin-right:4px;">forum</span>${prof.totalRespostas} Respostas</span>
                             </div>
                         </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${(student.mediaGeral / 5) * 100}%"></div>
+                        <div class="score-display">
+                            <span class="score-value">${prof.mediaGeral.toFixed(2)}</span>
+                            <span class="score-max">/ 5.00</span>
                         </div>
-                        <div class="student-tags">
-                            ${student.semestres.map(sem => `<span class="tag">${sem}</span>`).join('')}
+                        <button class="btn-icon-modern expand-btn">
+                            <span class="material-icons">expand_more</span>
+                        </button>
+                    </div>
+                    <div class="progress-track"><div class="progress-fill ${colorClass}" style="width: ${percentage}%"></div></div>
+                    
+                    <div class="professor-expanded-content expanded-panel" style="display: none;">
+                        <div class="panel-grid">
+                            <div class="panel-col">
+                                <h5>Disciplinas Lecionadas</h5>
+                                <div class="chip-group">${prof.disciplinas.map(d => `<span class="chip">${d}</span>`).join('')}</div>
+                            </div>
+                            <div class="panel-col">
+                                <h5>Feedback Recente (${prof.comentarios.length})</h5>
+                                <ul class="comment-list">
+                                    ${prof.comentarios.slice(0,3).map(c => `<li><strong>${c.disciplina}:</strong> "${c.comentario}"</li>`).join('')}
+                                    ${prof.comentarios.length === 0 ? '<li class="text-muted">Sem comentários registados.</li>' : ''}
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                `).join('')}
-            </div>
-        `;
+                </div>
+            `;
+        });
+
+        html += `</div>`;
+        if (hasMore) html += this.getLoadMoreButton('professors', limit, sorted.length);
+        container.innerHTML = html;
     }
 
-    renderStudentsDetailed(container, studentAnalytics, filteredData, detailViewMode) {
-        container.innerHTML = `
-            <div class="view-controls">
-                <div class="view-mode-selector">
-                    <button class="view-mode-btn ${detailViewMode === 'grid' ? 'active' : ''}" data-mode="grid">
-                        <span class="material-icons">grid_view</span> Grade
-                    </button>
-                    <button class="view-mode-btn ${detailViewMode === 'detailed' ? 'active' : ''}" data-mode="detailed">
-                        <span class="material-icons">view_list</span> Detalhado
-                    </button>
+    // ==========================================
+    // 2. RENDERIZADOR DE DISCIPLINAS
+    // ==========================================
+    renderDisciplinesDetailed(container, disciplineAnalytics, filteredData, detailViewMode, limit = 20) {
+        const sorted = [...disciplineAnalytics].sort((a, b) => b.mediaGeral - a.mediaGeral);
+        const displayed = sorted.slice(0, limit);
+        const hasMore = sorted.length > limit;
+
+        let html = `
+            <div class="tab-header-modern">
+                <div class="tab-title-group">
+                    <span class="material-icons">class</span>
+                    <div>
+                        <h3>Análise de Disciplinas</h3>
+                        <p>Ranking das disciplinas mais bem avaliadas</p>
+                    </div>
                 </div>
+                <button class="btn-primary-modern export-tab-btn" data-export="disciplines">
+                    <span class="material-icons">download</span> Exportar Aba
+                </button>
             </div>
-            <div class="detailed-students-list">
-                ${studentAnalytics.map((student, index) => `
-                    <div class="detailed-student-item">
-                        <div class="student-header">
-                            <div class="student-avatar">${String.fromCharCode(65 + (index % 26))}</div>
-                            <div class="student-basic-info">
-                                <h4>Aluno ${String.fromCharCode(65 + (index % 26))}</h4>
-                                <p>ID: ***${student.alunoId.slice(-4)}</p>
-                                <div class="quick-stats">
-                                    <span>Média: ${student.mediaGeral.toFixed(2)}</span>
-                                    <span>•</span>
-                                    <span>${student.totalRespostas} respostas</span>
-                                    <span>•</span>
-                                    <span>${student.disciplinas.length} disciplinas</span>
-                                </div>
+            <div class="items-list-modern">
+        `;
+
+        displayed.forEach((disc, index) => {
+            const percentage = (disc.mediaGeral / 5) * 100;
+            const colorClass = disc.mediaGeral >= 4 ? 'bg-success' : (disc.mediaGeral >= 3 ? 'bg-warning' : 'bg-danger');
+
+            html += `
+                <div class="modern-data-card detailed-discipline-item">
+                    <div class="card-main-row">
+                        <div class="rank-badge">#${index + 1}</div>
+                        <div class="main-info">
+                            <h4>${disc.disciplinaNome} <small class="text-muted">(${disc.disciplinaCodigo || 'S/C'})</small></h4>
+                            <div class="tags-row">
+                                <span class="badge-modern"><span class="material-icons" style="font-size:12px; margin-right:4px;">person</span>${disc.professores.length} Professores</span>
+                                <span class="badge-modern"><span class="material-icons" style="font-size:12px; margin-right:4px;">groups</span>${disc.alunos.length} Alunos</span>
                             </div>
-                            <button class="expand-btn" onclick="toggleStudentExpand(this, '${student.alunoId}')">
-                                <span class="material-icons">expand_more</span>
-                            </button>
                         </div>
-                        <div class="student-expanded-content" style="display: none;">
-                            <div class="expanded-metrics">
-                                <div class="metric-group">
-                                    <h5>Disciplinas Avaliadas</h5>
-                                    <div class="discipline-list">
-                                        ${student.disciplinas.map(disc => `<span class="discipline-tag">${disc}</span>`).join('')}
-                                    </div>
-                                </div>
-                                <div class="metric-group">
-                                    <h5>Professores Avaliados</h5>
-                                    <div class="professor-list">
-                                        ${student.professores.map(prof => `<span class="professor-tag">${prof}</span>`).join('')}
-                                    </div>
-                                </div>
-                                ${student.comentarios.length > 0 ? `
-                                    <div class="metric-group">
-                                        <h5>Comentários (${student.comentarios.length})</h5>
-                                        <div class="comments-preview">
-                                            ${student.comentarios.slice(0, 3).map(c => `
-                                                <div class="comment-preview">
-                                                    <strong>${c.disciplina}</strong>: ${c.comentario.substring(0, 100)}${c.comentario.length > 100 ? '...' : ''}
-                                                </div>
-                                            `).join('')}
-                                            ${student.comentarios.length > 3 ? `<p>+${student.comentarios.length - 3} comentários</p>` : ''}
+                        <div class="score-display">
+                            <span class="score-value">${disc.mediaGeral.toFixed(2)}</span>
+                            <span class="score-max">/ 5.00</span>
+                        </div>
+                        <button class="btn-icon-modern expand-btn">
+                            <span class="material-icons">expand_more</span>
+                        </button>
+                    </div>
+                    <div class="progress-track"><div class="progress-fill ${colorClass}" style="width: ${percentage}%"></div></div>
+                    
+                    <div class="discipline-expanded-content expanded-panel" style="display: none;">
+                        <div class="panel-grid">
+                            <div class="panel-col">
+                                <h5>Média por Professor</h5>
+                                <div class="mini-bar-chart">
+                                    ${Array.from(disc.mediaPorProfessor.entries()).map(([prof, media]) => `
+                                        <div class="mini-bar-row">
+                                            <span class="mini-bar-label">${prof}</span>
+                                            <div class="mini-bar-track"><div class="mini-bar-fill bg-primary" style="width: ${(media/5)*100}%"></div></div>
+                                            <span class="mini-bar-value">${media.toFixed(2)}</span>
                                         </div>
-                                    </div>
-                                ` : ''}
+                                    `).join('')}
+                                </div>
                             </div>
                         </div>
                     </div>
-                `).join('')}
-            </div>
-        `;
-    }
-
-    renderProfessorsGrid(container, professorAnalytics, detailViewMode) {
-        const sortedProfessors = professorAnalytics
-            .filter(professor => professor.totalRespostas > 0)
-            .sort((a, b) => b.mediaGeral - a.mediaGeral);
-
-        container.innerHTML = `
-            <div class="view-controls">
-                <div class="view-mode-selector">
-                    <button class="view-mode-btn ${detailViewMode === 'grid' ? 'active' : ''}" data-mode="grid">
-                        <span class="material-icons">grid_view</span> Grade
-                    </button>
-                    <button class="view-mode-btn ${detailViewMode === 'detailed' ? 'active' : ''}" data-mode="detailed">
-                        <span class="material-icons">view_list</span> Detalhado
-                    </button>
                 </div>
-            </div>
-            <div class="professors-grid">
-                ${sortedProfessors.map(professor => `
-                    <div class="professor-analytics-card" onclick="showProfessorDetail('${professor.professorId}')">
-                        <div class="professor-avatar">
-                            ${professor.professorNome.split(' ').map(n => n.charAt(0)).join('').substring(0, 2).toUpperCase()}
-                        </div>
-                        <div class="professor-info">
-                            <h4>${professor.professorNome}</h4>
-                        </div>
-                        <div class="professor-metrics">
-                            <div class="metric">
-                                <div class="metric-value">${professor.mediaGeral.toFixed(2)}</div>
-                                <div class="metric-label">Média Geral</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-value">${professor.totalRespostas}</div>
-                                <div class="metric-label">Respostas</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-value">${professor.disciplinas.length}</div>
-                                <div class="metric-label">Disciplinas</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-value">${professor.alunos.length}</div>
-                                <div class="metric-label">Alunos</div>
-                            </div>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${(professor.mediaGeral / 5) * 100}%"></div>
-                        </div>
-                        <div class="rating-indicator ${professor.mediaGeral >= 4 ? 'excellent' : professor.mediaGeral >= 3 ? 'good' : 'needs-improvement'}">
-                            <span class="material-icons">
-                                ${professor.mediaGeral >= 4 ? 'star' : professor.mediaGeral >= 3 ? 'star_half' : 'star_border'}
-                            </span>
-                            ${professor.mediaGeral >= 4 ? 'Excelente' : professor.mediaGeral >= 3 ? 'Bom' : 'Precisa Melhorar'}
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
+            `;
+        });
+
+        html += `</div>`;
+        if (hasMore) html += this.getLoadMoreButton('disciplines', limit, sorted.length);
+        container.innerHTML = html;
     }
 
-    renderProfessorsDetailed(container, professorAnalytics, filteredData, detailViewMode) {
-        container.innerHTML = `
-            <div class="view-controls">
-                <div class="view-mode-selector">
-                    <button class="view-mode-btn ${detailViewMode === 'grid' ? 'active' : ''}" data-mode="grid">
-                        <span class="material-icons">grid_view</span> Grade
-                    </button>
-                    <button class="view-mode-btn ${detailViewMode === 'detailed' ? 'active' : ''}" data-mode="detailed">
-                        <span class="material-icons">view_list</span> Detalhado
-                    </button>
+    // ==========================================
+    // 3. RENDERIZADOR DE ALUNOS (Anónimo)
+    // ==========================================
+    renderStudentsDetailed(container, studentAnalytics, filteredData, detailViewMode, limit = 20) {
+        // Ordena por quantidade de respostas (engajamento)
+        const sorted = [...studentAnalytics].sort((a, b) => b.totalRespostas - a.totalRespostas);
+        const displayed = sorted.slice(0, limit);
+        const hasMore = sorted.length > limit;
+
+        let html = `
+            <div class="tab-header-modern">
+                <div class="tab-title-group">
+                    <span class="material-icons">face</span>
+                    <div>
+                        <h3>Engajamento dos Alunos</h3>
+                        <p>Alunos mais participativos (Dados anonimizados)</p>
+                    </div>
                 </div>
+                <button class="btn-primary-modern export-tab-btn" data-export="students">
+                    <span class="material-icons">download</span> Exportar Aba
+                </button>
             </div>
-            <div class="detailed-professors-list">
-                ${professorAnalytics.map(professor => `
-                    <div class="detailed-professor-item">
-                        <div class="professor-header">
-                            <div class="professor-avatar">
-                                ${professor.professorNome.split(' ').map(n => n.charAt(0)).join('').substring(0, 2).toUpperCase()}
+            <div class="items-list-modern">
+        `;
+
+        displayed.forEach((student, index) => {
+            const percentage = (student.mediaGeral / 5) * 100;
+            const letter = String.fromCharCode(65 + (index % 26)); // Letra A, B, C...
+
+            html += `
+                <div class="modern-data-card detailed-student-item">
+                    <div class="card-main-row">
+                        <div class="avatar-badge">${letter}</div>
+                        <div class="main-info">
+                            <h4>Aluno ${letter} <small class="text-muted">***${student.alunoId.slice(-4)}</small></h4>
+                            <div class="tags-row">
+                                <span class="badge-modern">${student.totalRespostas} Respostas Submetidas</span>
+                                <span class="badge-modern">${student.disciplinas.length} Disciplinas Avaliadas</span>
                             </div>
-                            <div class="professor-basic-info">
-                                <h4>${professor.professorNome}</h4>
-                                <div class="quick-stats">
-                                    <span>Média: ${professor.mediaGeral.toFixed(2)}</span>
-                                    <span>•</span>
-                                    <span>${professor.totalRespostas} respostas</span>
-                                    <span>•</span>
-                                    <span>${professor.disciplinas.length} disciplinas</span>
-                                </div>
-                            </div>
-                            <div class="rating-badge ${professor.mediaGeral >= 4 ? 'excellent' : professor.mediaGeral >= 3 ? 'good' : 'needs-improvement'}">
-                                ${professor.mediaGeral.toFixed(1)}
-                            </div>
-                            <button class="expand-btn" onclick="toggleProfessorExpand(this, '${professor.professorId}')">
-                                <span class="material-icons">expand_more</span>
-                            </button>
                         </div>
-                        <div class="professor-expanded-content" style="display: none;">
-                            <div class="expanded-metrics">
-                                <div class="category-analysis">
-                                    <h5>Avaliação por Categoria</h5>
-                                    <div class="category-grid">
-                                        ${Object.entries(professor.questoesPorCategoria).map(([categoria, respostas]) => {
-                                            if (respostas.length === 0) return '';
-                                            const media = respostas.reduce((sum, r) => sum + r.resposta, 0) / respostas.length;
-                                            return `
-                                                <div class="category-metric">
-                                                    <div class="category-name">${categoria === 'disciplina' ? 'Disciplina' : categoria === 'professor' ? 'Professor' : 'Aluno'}</div>
-                                                    <div class="category-value">${media.toFixed(2)}</div>
-                                                    <div class="category-bar">
-                                                        <div class="category-fill" style="width: ${(media / 5) * 100}%"></div>
-                                                    </div>
-                                                </div>
-                                            `;
-                                        }).join('')}
-                                    </div>
-                                </div>
-                                <div class="metric-group">
-                                    <h5>Disciplinas Lecionadas</h5>
-                                    <div class="discipline-list">
-                                        ${professor.disciplinas.map(disc => `<span class="discipline-tag">${disc}</span>`).join('')}
-                                    </div>
-                                </div>
-                                ${professor.comentarios.length > 0 ? `
-                                    <div class="metric-group">
-                                        <h5>Feedback dos Alunos (${professor.comentarios.length})</h5>
-                                        <div class="comments-preview">
-                                            ${professor.comentarios.slice(0, 3).map(c => `
-                                                <div class="comment-preview">
-                                                    <strong>${c.disciplina}</strong>: ${c.comentario.substring(0, 100)}${c.comentario.length > 100 ? '...' : ''}
-                                                </div>
-                                            `).join('')}
-                                            ${professor.comentarios.length > 3 ? `<p>+${professor.comentarios.length - 3} comentários</p>` : ''}
-                                        </div>
-                                    </div>
-                                ` : ''}
+                        <div class="score-display">
+                            <span class="score-value">${student.mediaGeral.toFixed(2)}</span>
+                            <span class="score-max">Média Dada</span>
+                        </div>
+                        <button class="btn-icon-modern expand-btn">
+                            <span class="material-icons">expand_more</span>
+                        </button>
+                    </div>
+                    <div class="progress-track"><div class="progress-fill bg-primary" style="width: ${percentage}%"></div></div>
+                    
+                    <div class="student-expanded-content expanded-panel" style="display: none;">
+                         <div class="panel-grid">
+                            <div class="panel-col">
+                                <h5>Disciplinas Avaliadas</h5>
+                                <div class="chip-group">${student.disciplinas.map(d => `<span class="chip">${d}</span>`).join('')}</div>
                             </div>
                         </div>
                     </div>
-                `).join('')}
-            </div>
-        `;
-    }
-
-    renderDisciplinesGrid(container, disciplineAnalytics, detailViewMode) {
-        const sortedDisciplines = disciplineAnalytics
-            .filter(discipline => discipline.totalRespostas > 0)
-            .sort((a, b) => b.mediaGeral - a.mediaGeral);
-
-        container.innerHTML = `
-            <div class="view-controls">
-                <div class="view-mode-selector">
-                    <button class="view-mode-btn ${detailViewMode === 'grid' ? 'active' : ''}" data-mode="grid">
-                        <span class="material-icons">grid_view</span> Grade
-                    </button>
-                    <button class="view-mode-btn ${detailViewMode === 'detailed' ? 'active' : ''}" data-mode="detailed">
-                        <span class="material-icons">view_list</span> Detalhado
-                    </button>
                 </div>
-            </div>
-            <div class="disciplines-grid">
-                ${sortedDisciplines.map(discipline => `
-                    <div class="discipline-analytics-card" onclick="showDisciplineDetail('${discipline.disciplinaId}')">
-                        <div class="discipline-header">
-                            <div class="discipline-icon">
-                                <span class="material-icons">book</span>
-                            </div>
-                            <div class="discipline-code">${discipline.disciplinaCodigo}</div>
-                        </div>
-                        <div class="discipline-info">
-                            <h4>${discipline.disciplinaNome}</h4>
-                        </div>
-                        <div class="discipline-metrics">
-                            <div class="metric">
-                                <div class="metric-value">${discipline.mediaGeral.toFixed(2)}</div>
-                                <div class="metric-label">Média Geral</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-value">${discipline.totalRespostas}</div>
-                                <div class="metric-label">Respostas</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-value">${discipline.professores.length}</div>
-                                <div class="metric-label">Professores</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-value">${discipline.alunos.length}</div>
-                                <div class="metric-label">Alunos</div>
-                            </div>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${(discipline.mediaGeral / 5) * 100}%"></div>
-                        </div>
-                        <div class="professor-comparison">
-                            <h6>Por Professor:</h6>
-                            <div class="mini-chart">
-                                ${Array.from(discipline.mediaPorProfessor.entries()).slice(0, 3).map(([prof, media]) => `
-                                    <div class="mini-bar">
-                                        <div class="mini-bar-fill" style="height: ${(media / 5) * 100}%" title="${prof}: ${media.toFixed(2)}"></div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
+            `;
+        });
+
+        html += `</div>`;
+        if (hasMore) html += this.getLoadMoreButton('students', limit, sorted.length);
+        container.innerHTML = html;
     }
 
-    renderDisciplinesDetailed(container, disciplineAnalytics, filteredData, detailViewMode) {
-        container.innerHTML = `
-            <div class="view-controls">
-                <div class="view-mode-selector">
-                    <button class="view-mode-btn ${detailViewMode === 'grid' ? 'active' : ''}" data-mode="grid">
-                        <span class="material-icons">grid_view</span> Grade
-                    </button>
-                    <button class="view-mode-btn ${detailViewMode === 'detailed' ? 'active' : ''}" data-mode="detailed">
-                        <span class="material-icons">view_list</span> Detalhado
-                    </button>
-                </div>
-            </div>
-            <div class="detailed-disciplines-list">
-                ${disciplineAnalytics.map(discipline => `
-                    <div class="detailed-discipline-item">
-                        <div class="discipline-header">
-                            <div class="discipline-icon">
-                                <span class="material-icons">book</span>
-                            </div>
-                            <div class="discipline-basic-info">
-                                <h4>${discipline.disciplinaNome}</h4>
-                                <p>Código: ${discipline.disciplinaCodigo}</p>
-                                <div class="quick-stats">
-                                    <span>Média: ${discipline.mediaGeral.toFixed(2)}</span>
-                                    <span>•</span>
-                                    <span>${discipline.totalRespostas} respostas</span>
-                                    <span>•</span>
-                                    <span>${discipline.professores.length} professores</span>
-                                </div>
-                            </div>
-                            <button class="expand-btn" onclick="toggleDisciplineExpand(this, '${discipline.disciplinaId}')">
-                                <span class="material-icons">expand_more</span>
-                            </button>
-                        </div>
-                        <div class="discipline-expanded-content" style="display: none;">
-                            <div class="expanded-metrics">
-                                <div class="professor-performance">
-                                    <h5>Desempenho por Professor</h5>
-                                    <div class="professor-performance-list">
-                                        ${Array.from(discipline.mediaPorProfessor.entries()).map(([professor, media]) => `
-                                            <div class="professor-performance-item">
-                                                <div class="professor-name">${professor}</div>
-                                                <div class="performance-bar">
-                                                    <div class="performance-fill" style="width: ${(media / 5) * 100}%"></div>
-                                                </div>
-                                                <div class="performance-value">${media.toFixed(2)}</div>
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                                <div class="metric-group">
-                                    <h5>Semestres Ofertados</h5>
-                                    <div class="semester-list">
-                                        ${discipline.semestres.map(sem => `<span class="semester-tag">${sem}</span>`).join('')}
-                                    </div>
-                                </div>
-                                ${discipline.comentarios.length > 0 ? `
-                                    <div class="metric-group">
-                                        <h5>Feedback dos Alunos (${discipline.comentarios.length})</h5>
-                                        <div class="comments-preview">
-                                            ${discipline.comentarios.slice(0, 3).map(c => `
-                                                <div class="comment-preview">
-                                                    <strong>Prof. ${c.professor}</strong>: ${c.comentario.substring(0, 100)}${c.comentario.length > 100 ? '...' : ''}
-                                                </div>
-                                            `).join('')}
-                                            ${discipline.comentarios.length > 3 ? `<p>+${discipline.comentarios.length - 3} comentários</p>` : ''}
-                                        </div>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-    }
-
-    renderCommentsTab(container, allAvaliacoes, allTurmas) {
+    // ==========================================
+    // 4. RENDERIZADOR DE COMENTÁRIOS
+    // ==========================================
+    renderCommentsTab(container, allAvaliacoes, allTurmas, limit = 20) {
+        // Extrai comentários de avaliações que contenham texto
         const comments = allAvaliacoes
             .filter(av => av.comentarios && av.comentarios.trim() !== '')
             .map(av => {
                 const turma = allTurmas.find(t => t.id === av.turmaId);
                 return {
                     comentario: av.comentarios,
-                    disciplina: turma ? turma.disciplinaNome : 'N/A',
-                    professor: turma ? turma.professorNome : 'N/A',
+                    disciplina: turma ? turma.disciplinaNome : 'Desconhecida',
+                    professor: turma ? turma.professorNome : 'Desconhecido',
                     semestre: turma ? turma.semestre : 'N/A',
                     data: av.dataResposta
                 };
             });
-        
-        container.innerHTML = '';
-        
-        if (comments.length === 0) {
-            container.innerHTML = '<div class="no-data-message">Nenhum comentário encontrado</div>';
-            return;
-        }
-        
-        comments.forEach(comment => {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'comment-item';
-            itemDiv.innerHTML = `
-                <div class="comment-meta">
-                    <span><strong>${comment.disciplina}</strong> - ${comment.professor}</span>
-                    <span>${comment.semestre}</span>
+
+        const displayed = comments.slice(0, limit);
+        const hasMore = comments.length > limit;
+
+        let html = `
+            <div class="tab-header-modern">
+                <div class="tab-title-group">
+                    <span class="material-icons">forum</span>
+                    <div>
+                        <h3>Mural de Feedbacks</h3>
+                        <p>Comentários qualitativos e sugestões deixadas pelos alunos</p>
+                    </div>
                 </div>
-                <div class="comment-text">${comment.comentario}</div>
-            `;
-            
-            container.appendChild(itemDiv);
-        });
+            </div>
+            <div class="comments-grid-modern">
+        `;
+
+        if (comments.length === 0) {
+            html += `<div class="empty-state"><span class="material-icons">speaker_notes_off</span><p>Nenhum comentário encontrado para os filtros atuais.</p></div>`;
+        } else {
+            displayed.forEach(c => {
+                html += `
+                    <div class="comment-modern-card">
+                        <div class="comment-header">
+                            <div class="comment-context">
+                                <strong>${c.disciplina}</strong>
+                                <span>Prof. ${c.professor} • ${c.semestre}</span>
+                            </div>
+                            <span class="material-icons format-quote">format_quote</span>
+                        </div>
+                        <div class="comment-body">"${c.comentario}"</div>
+                    </div>
+                `;
+            });
+        }
+
+        html += `</div>`;
+        if (hasMore) html += this.getLoadMoreButton('comments', limit, comments.length);
+        container.innerHTML = html;
     }
 
-    renderQuestionsTab(container, data, groupByQuestion) {
+    // ==========================================
+    // HELPER: Botão de Carregar Mais
+    // ==========================================
+    getLoadMoreButton(tabName, currentLimit, total) {
+        return `
+            <div class="load-more-container" style="margin-top: 24px; text-align: center;">
+                <button class="btn-secondary load-more-btn" data-tab="${tabName}" style="margin: 0 auto;">
+                    Mostrar mais <span class="material-icons">expand_more</span>
+                </button>
+                <p class="text-muted" style="margin-top: 8px; font-size: 13px;">Mostrando ${currentLimit} de ${total}</p>
+            </div>
+        `;
+    }
+
+    renderQuestionsTab(container, data, groupByQuestion, limit = 20) {
         const questionsData = groupByQuestion(data);
         
-        container.innerHTML = '';
-        
-        Object.entries(questionsData).forEach(([question, responses]) => {
+        // 1. Processar e ordenar as questões da melhor para a pior média
+        const processedQuestions = Object.entries(questionsData).map(([question, responses]) => {
             const numericResponses = responses.filter(r => typeof r.respostaValor === 'number');
-            if (numericResponses.length === 0) return;
-            
-            const average = numericResponses.reduce((sum, r) => sum + r.respostaValor, 0) / numericResponses.length;
-            
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'analysis-item';
-            itemDiv.innerHTML = `
-                <h4>${question}</h4>
-                <div class="analysis-metrics">
-                    <div class="metric">
-                        <div class="metric-value">${average.toFixed(2)}</div>
-                        <div class="metric-label">Média</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">${numericResponses.length}</div>
-                        <div class="metric-label">Respostas</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">${responses[0]?.tipo || 'N/A'}</div>
-                        <div class="metric-label">Categoria</div>
+            const average = numericResponses.length > 0 
+                ? numericResponses.reduce((sum, r) => sum + r.respostaValor, 0) / numericResponses.length 
+                : 0;
+            return { question, responses: numericResponses, average, tipo: responses[0]?.tipo || 'N/A' };
+        }).filter(q => q.responses.length > 0).sort((a, b) => b.average - a.average);
+
+        // Paginação
+        const displayedQuestions = processedQuestions.slice(0, limit);
+        const hasMore = processedQuestions.length > limit;
+
+        // 2. Renderizar UI Moderna
+        let html = `
+            <div class="tab-header-modern">
+                <div class="tab-title-group">
+                    <span class="material-icons">rule</span>
+                    <div>
+                        <h3>Análise de Desempenho por Questão</h3>
+                        <p>Ranking das questões com base na avaliação dos alunos</p>
                     </div>
                 </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: ${(average / 5) * 100}%"></div>
+                <button class="btn-primary-modern export-tab-btn" data-export="questions">
+                    <span class="material-icons">download</span> Exportar Aba
+                </button>
+            </div>
+            
+            <div class="questions-list-modern">
+        `;
+
+        displayedQuestions.forEach((q, index) => {
+            const percentage = (q.average / 5) * 100;
+            // Cores dinâmicas: Verde (>4), Amarelo (>3), Vermelho (<3)
+            const colorClass = q.average >= 4 ? 'bg-success' : (q.average >= 3 ? 'bg-warning' : 'bg-danger');
+
+            html += `
+                <div class="question-modern-card">
+                    <div class="q-header">
+                        <span class="q-rank">#${index + 1}</span>
+                        <div class="q-info">
+                            <span class="q-category badge-modern">${q.tipo.toUpperCase()}</span>
+                            <h4>${q.question}</h4>
+                        </div>
+                    </div>
+                    <div class="q-stats-row">
+                        <div class="q-stat">
+                            <span class="label">Média</span>
+                            <span class="value">${q.average.toFixed(2)} <small>/ 5.00</small></span>
+                        </div>
+                        <div class="q-stat">
+                            <span class="label">Respostas</span>
+                            <span class="value">${q.responses.length}</span>
+                        </div>
+                    </div>
+                    <div class="q-progress-container">
+                        <div class="q-progress-bar">
+                            <div class="q-progress-fill ${colorClass}" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
                 </div>
             `;
-            
-            container.appendChild(itemDiv);
         });
+
+        html += `</div>`;
+
+        // Botão Load More
+        if (hasMore) {
+            html += `
+                <div class="load-more-container">
+                    <button class="btn-secondary load-more-btn" data-tab="questions">
+                        Mostrar mais questões <span class="material-icons">expand_more</span>
+                    </button>
+                    <p class="text-muted">Mostrando ${limit} de ${processedQuestions.length}</p>
+                </div>
+            `;
+        }
+
+        container.innerHTML = html;
     }
 }

@@ -26,6 +26,16 @@ export class AvaliacoesManager {
         // Set up callbacks
         this.filters.onFilterChange = () => this.applyFilters();
         this.tabs.onTabChange = (tabName) => this.updateAnalytics();
+        
+        // NOVO: Escutar cliques para exportar abas específicas
+        this.tabs.onExportTab = (tabName) => {
+            console.log(`Iniciando exportação da aba: ${tabName}`);
+            
+            // Aqui você poderá chamar futuramente:
+            // this.exporter.exportMiniReport(tabName, this.filteredData);
+            
+            alert(`A exportação específica da aba "${tabName}" será processada com os filtros atuais! (Em desenvolvimento)`);
+        };
 
         // Export button - ALTERADO PARA USAR DADOS FILTRADOS
         document.getElementById('exportAnalyticsBtn')?.addEventListener('click', () => {
@@ -36,9 +46,12 @@ export class AvaliacoesManager {
                 return;
             }
 
+            // 2. Capturar a escolha do utilizador no checkbox (NOVO)
+            const isDetailed = document.getElementById('detailedExportCheckbox')?.checked || false;
+
             this.showLoading(true);
 
-            // 2. Preparar objetos temporários para recalcular estatísticas baseadas no FILTRO
+            // 3. Preparar objetos temporários para recalcular estatísticas baseadas no FILTRO
             const filteredDetailedAnalytics = {
                 byStudent: new Map(),
                 byProfessor: new Map(),
@@ -46,62 +59,34 @@ export class AvaliacoesManager {
                 byTurma: new Map()
             };
 
-            // 3. Processar os dados filtrados usando a Utility existente
-            // Isso garante que os mapas (byStudent, byProfessor) contenham apenas info filtrada
+            // 4. Processar os dados filtrados usando a Utility existente
             AnalyticsDataUtils.processDetailedAnalytics(this.filteredData, filteredDetailedAnalytics);
 
-            // 4. Calcular o Sumário baseado APENAS nos dados filtrados
-            // (Recriamos a lógica do dataProcessor.calculateSummary mas para o array filtrado)
-            const summary = this.calculateFilteredSummary(this.filteredData);
+            // 5. Calcular o Sumário baseado APENAS nos dados filtrados
+            const summary = this.dataProcessor.calculateSummary(this.filteredData);
 
-            // 5. Converter Maps para Arrays para o exportador
+            // 6. Converter Maps para Arrays para o exportador
             const studentAnalytics = Array.from(filteredDetailedAnalytics.byStudent.values());
             const professorAnalytics = Array.from(filteredDetailedAnalytics.byProfessor.values());
             const disciplineAnalytics = Array.from(filteredDetailedAnalytics.byDiscipline.values());
 
-            // 6. Obter texto dos filtros ativos para mostrar no cabeçalho
+            // 7. Obter texto dos filtros ativos para mostrar no cabeçalho
             const activeFiltersText = this.getFormattedActiveFilters();
 
-            // 7. Chamar o exporter com os dados filtrados
+            // 8. Chamar o exporter com os dados filtrados e a flag do detalhamento (MODIFICADO)
             this.exporter.exportAnalytics(
                 summary,
                 studentAnalytics,
                 professorAnalytics,
                 disciplineAnalytics,
-                activeFiltersText // Novo argumento
+                activeFiltersText,
+                this.filteredData, // Passamos o array de respostas brutas
+                isDetailed         // Passamos se ele quer o detalhamento
             ).finally(() => {
                 this.showLoading(false);
             });
         });
         document.getElementById('refreshAnalyticsBtn')?.addEventListener('click', () => this.loadData());
-    }
-    
-    // NOVA FUNÇÃO AUXILIAR: Calcula sumário apenas para dados filtrados
-    calculateFilteredSummary(data) {
-        const totalAvaliacoes = data.length;
-        const totalAlunos = new Set(data.map(a => a.alunoId)).size;
-
-        // Contagem baseada nos itens filtrados
-        const turmasUnicas = new Set(data.map(a => a.turmaId)).size;
-        const professoresUnicos = new Set(data.map(a => a.professorId)).size;
-        const disciplinasUnicas = new Set(data.map(a => a.disciplinaId)).size;
-
-        // Média
-        const responses = data.filter(item => typeof item.respostaValor === 'number');
-        const mediaGeral = responses.length > 0 ?
-            (responses.reduce((sum, item) => sum + item.respostaValor, 0) / responses.length).toFixed(2) : 0;
-
-        // Taxa de participação é difícil calcular no filtro pois depende do total de matriculados da turma
-        // Vamos manter o cálculo visual baseado no contexto atual ou simplificar
-        return {
-            totalAvaliacoes,
-            totalAlunos,
-            totalTurmas: turmasUnicas,
-            totalProfessores: professoresUnicos,
-            totalDisciplinas: disciplinasUnicas,
-            mediaGeral,
-            taxaParticipacao: "N/A (Filtro Ativo)" // Taxa global não faz sentido em filtro parcial
-        };
     }
 
     // NOVA FUNÇÃO AUXILIAR: Formata texto dos filtros para o PDF
@@ -154,13 +139,17 @@ export class AvaliacoesManager {
     updateSummary() {
         const summary = this.dataProcessor.calculateSummary();
 
-        document.getElementById('totalAvaliacoes').textContent = summary.totalAvaliacoes;
-        document.getElementById('totalAlunos').textContent = summary.totalAlunos;
-        document.getElementById('totalTurmas').textContent = summary.totalTurmas;
-        document.getElementById('totalProfessores').textContent = summary.totalProfessores;
-        document.getElementById('totalDisciplinas').textContent = summary.totalDisciplinas;
-        document.getElementById('mediaGeral').textContent = summary.mediaGeral;
-        document.getElementById('taxaParticipacao').textContent = summary.taxaParticipacao;
+        // Função auxiliar de segurança: só insere o texto se o elemento existir no HTML
+        const safeSetText = (id, text) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = text;
+        };
+
+        safeSetText('totalAvaliacoes', summary.totalAvaliacoes);
+        safeSetText('totalAlunos', summary.totalAlunos);
+        safeSetText('totalProfessores', summary.totalProfessores);
+        safeSetText('totalDisciplinas', summary.totalDisciplinas);
+        safeSetText('mediaGeral', summary.mediaGeral);
     }
 
     updateAnalytics() {
@@ -209,69 +198,3 @@ export class AvaliacoesManager {
         alert(message);
     }
 }
-
-// Global functions for detailed views
-window.showStudentDetail = (studentId) => {
-    console.log('Showing student detail for:', studentId);
-    // Implement detailed student view modal
-};
-
-window.showProfessorDetail = (professorId) => {
-    console.log('Showing professor detail for:', professorId);
-    // Implement detailed professor view modal
-};
-
-window.showDisciplineDetail = (disciplineId) => {
-    console.log('Showing discipline detail for:', disciplineId);
-    // Implement detailed discipline view modal
-};
-
-window.toggleStudentExpand = (button, studentId) => {
-    const item = button.closest('.detailed-student-item');
-    const content = item.querySelector('.student-expanded-content');
-    const icon = button.querySelector('.material-icons');
-
-    if (content.style.display === 'none') {
-        content.style.display = 'block';
-        icon.textContent = 'expand_less';
-    } else {
-        content.style.display = 'none';
-        icon.textContent = 'expand_more';
-    }
-};
-
-window.toggleProfessorExpand = (button, professorId) => {
-    const item = button.closest('.detailed-professor-item');
-    const content = item.querySelector('.professor-expanded-content');
-    const icon = button.querySelector('.material-icons');
-
-    if (content.style.display === 'none') {
-        content.style.display = 'block';
-        icon.textContent = 'expand_less';
-    } else {
-        content.style.display = 'none';
-        icon.textContent = 'expand_more';
-    }
-};
-
-window.toggleDisciplineExpand = (button, disciplineId) => {
-    const item = button.closest('.detailed-discipline-item');
-    const content = item.querySelector('.discipline-expanded-content');
-    const icon = button.querySelector('.material-icons');
-
-    if (content.style.display === 'none') {
-        content.style.display = 'block';
-        icon.textContent = 'expand_less';
-    } else {
-        content.style.display = 'none';
-        icon.textContent = 'expand_more';
-    }
-};
-
-window.sortStudents = (sortBy) => {
-    console.log('Sorting students by:', sortBy);
-    // Implement student sorting
-};
-
-// Make Chart.js available globally
-window.Chart = Chart;

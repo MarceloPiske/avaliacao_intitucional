@@ -9,20 +9,34 @@ export class TurmasManager {
         this.renderer = new TurmasRenderer();
         this.studentsManager = new TurmasStudents(this.turmasCRUD);
         this.modalsManager = new TurmasModals(this.turmasCRUD, this.studentsManager);
+        
         this.setupFilters();
+        this.setupDelegatedEvents(); // Nova abordagem limpa
     }
 
     setupFilters() {
-        document.getElementById('turmasSemestreFilter').addEventListener('change', () => {
-            this.renderer.filterTurmas();
+        // Redireciona todos os filtros para chamar o render() que agora usa a memória
+        ['turmasSemestreFilter', 'turmasStatusFilter', 'turmasSearchFilter'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener(id.includes('Search') ? 'input' : 'change', () => this.renderer.renderTurmas());
         });
+    }
 
-        document.getElementById('turmasStatusFilter').addEventListener('change', () => {
-            this.renderer.filterTurmas();
-        });
+    setupDelegatedEvents() {
+        const container = document.querySelector('#turmas-section');
+        if (!container) return;
 
-        document.getElementById('turmasSearchFilter').addEventListener('input', () => {
-            this.renderer.filterTurmas();
+        container.addEventListener('click', async (e) => {
+            const actionBtn = e.target.closest('.action-btn');
+            if (!actionBtn) return;
+
+            const turmaId = actionBtn.dataset.id;
+            const action = actionBtn.dataset.action;
+
+            if (action === 'view') await this.viewTurma(turmaId);
+            else if (action === 'edit') await this.openEditModal(turmaId);
+            else if (action === 'students') await this.openStudentsModal(turmaId);
+            else if (action === 'delete') await this.deleteTurma(turmaId);
         });
     }
 
@@ -35,27 +49,42 @@ export class TurmasManager {
         }
     }
 
+    // --- MÉTODOS DE AÇÃO ---
+
+    async viewTurma(turmaId) {
+        try {
+            const turma = await this.turmasCRUD.getTurma(turmaId);
+            const modalContent = this.modalsManager.createViewModal(turma);
+            this.modalsManager.showModal('Detalhes da Turma', modalContent);
+        } catch (error) {
+            console.error('Erro ao carregar detalhes:', error);
+        }
+    }
+
+    async deleteTurma(turmaId) {
+        if (confirm('Tem certeza que deseja excluir esta turma?\n\nAtenção: Esta ação não pode ser desfeita e pode afetar avaliações existentes.')) {
+            try {
+                await this.turmasCRUD.deleteTurma(turmaId);
+                this.loadData();
+            } catch (error) {
+                console.error('Erro ao excluir turma:', error);
+            }
+        }
+    }
+
     async openAddModal() {
         try {
             const modalContent = await this.modalsManager.createAddModal();
-            this.modalsManager.showModal('Adicionar Turma', modalContent);
-            
-            document.getElementById('turmaForm').addEventListener('submit', async (e) => {
-                await this.handleTurmaSubmit(e);
-            });
+            this.modalsManager.showModal('Nova Turma', modalContent);
+            document.getElementById('turmaForm').addEventListener('submit', (e) => this.handleTurmaSubmit(e));
         } catch (error) {
-            console.error('Erro ao abrir modal de adicionar:', error);
-            alert('Erro ao carregar formulário. Tente novamente.');
+            console.error('Erro ao abrir modal:', error);
         }
     }
 
     async handleTurmaSubmit(e) {
         e.preventDefault();
-        
         const formData = new FormData(e.target);
-        const disciplinaId = formData.get('disciplinaId');
-        const professorId = formData.get('professorId');
-        const formularioId = formData.get('formularioId');
         
         try {
             const [disciplinas, professores, formularios] = await Promise.all([
@@ -64,17 +93,14 @@ export class TurmasManager {
                 this.turmasCRUD.getFormularios()
             ]);
             
-            const disciplina = disciplinas.find(d => d.id === disciplinaId);
-            const professor = professores.find(p => p.id === professorId);
-            const formulario = formularios.find(f => f.id === formularioId);
+            const disciplina = disciplinas.find(d => d.id === formData.get('disciplinaId'));
+            const professor = professores.find(p => p.id === formData.get('professorId'));
+            const formulario = formularios.find(f => f.id === formData.get('formularioId'));
             
             const turmaData = {
-                disciplinaId: disciplinaId,
-                disciplinaNome: disciplina.name,
-                professorId: professorId,
-                professorNome: professor.displayName,
-                formularioId: formularioId,
-                formularioTitulo: formulario.titulo,
+                disciplinaId: disciplina.id, disciplinaNome: disciplina.name,
+                professorId: professor.id, professorNome: professor.displayName,
+                formularioId: formulario.id, formularioTitulo: formulario.titulo,
                 semestre: formData.get('semestre'),
                 statusAvaliacao: formData.get('statusAvaliacao'),
                 alunosInscritos: [],
@@ -82,37 +108,27 @@ export class TurmasManager {
             };
 
             await this.turmasCRUD.createTurma(turmaData);
-            alert('Turma criada com sucesso!');
             document.getElementById('modal-overlay').style.display = 'none';
             this.loadData();
         } catch (error) {
             console.error('Erro ao criar turma:', error);
-            alert('Erro ao criar turma. Tente novamente.');
         }
     }
 
     async openEditModal(turmaId) {
         try {
             const modalContent = await this.modalsManager.createEditModal(turmaId);
-            this.modalsManager.showModal('Editar Turma', modalContent);
-
-            document.getElementById('turmaEditForm').addEventListener('submit', async (e) => {
-                await this.handleTurmaEditSubmit(e);
-            });
+            this.modalsManager.showModal('Configurar Turma', modalContent);
+            document.getElementById('turmaEditForm').addEventListener('submit', (e) => this.handleTurmaEditSubmit(e));
         } catch (error) {
             console.error('Erro ao carregar turma:', error);
-            alert('Erro ao carregar dados da turma.');
         }
     }
 
     async handleTurmaEditSubmit(e) {
         e.preventDefault();
-        
         const formData = new FormData(e.target);
         const turmaId = e.target.dataset.turmaId;
-        const disciplinaId = formData.get('disciplinaId');
-        const professorId = formData.get('professorId');
-        const formularioId = formData.get('formularioId');
         
         try {
             const [disciplinas, professores, formularios] = await Promise.all([
@@ -121,271 +137,190 @@ export class TurmasManager {
                 this.turmasCRUD.getFormularios()
             ]);
             
-            const disciplina = disciplinas.find(d => d.id === disciplinaId);
-            const professor = professores.find(p => p.id === professorId);
-            const formulario = formularios.find(f => f.id === formularioId);
+            const disciplina = disciplinas.find(d => d.id === formData.get('disciplinaId'));
+            const professor = professores.find(p => p.id === formData.get('professorId'));
+            const formulario = formularios.find(f => f.id === formData.get('formularioId'));
             
             const turmaData = {
-                disciplinaId: disciplinaId,
-                disciplinaNome: disciplina.name,
-                professorId: professorId,
-                professorNome: professor.displayName,
-                formularioId: formularioId,
-                formularioTitulo: formulario.titulo,
+                disciplinaId: disciplina.id, disciplinaNome: disciplina.name,
+                professorId: professor.id, professorNome: professor.displayName,
+                formularioId: formulario.id, formularioTitulo: formulario.titulo,
                 semestre: formData.get('semestre'),
                 statusAvaliacao: formData.get('statusAvaliacao')
             };
 
             await this.turmasCRUD.updateTurma(turmaId, turmaData);
-            alert('Turma atualizada com sucesso!');
             document.getElementById('modal-overlay').style.display = 'none';
             this.loadData();
         } catch (error) {
             console.error('Erro ao atualizar turma:', error);
-            alert('Erro ao atualizar turma. Tente novamente.');
+        }
+    }
+ 
+    async openStudentsModal(turmaId) {
+        // 1. Alarga o modal visualmente para caber as duas colunas
+        const modalContainer = document.querySelector('.modal-container-modern');
+        if (modalContainer) modalContainer.classList.add('modal-lg');
+
+        try {
+            const loadingContent = `
+                <div style="padding: 40px; text-align: center;">
+                    <div class="loading-pulse" style="width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 20px;"></div>
+                    <p style="color: var(--text-secondary); font-weight: 500;">A carregar base de alunos...</p>
+                </div>
+            `;
+            this.modalsManager.showModal('Matrículas da Turma', loadingContent);
+
+            // 2. Processa o HTML pesado
+            const modalContent = await this.modalsManager.createStudentsModal(turmaId);
+            const modalBody = document.getElementById('modal-body');
+            modalBody.innerHTML = modalContent;
+
+            window.turmasModalsManager = this.modalsManager; // Necessário para refrescar as listas
+
+            const layout = modalBody.querySelector('.students-manager-layout');
+            if (!layout) return;
+
+            // 3. EVENT DELEGATION DO MODAL
+            // A. Busca Dinâmica (Search)
+            const bulkSearch = document.getElementById('bulkStudentSearch');
+            if (bulkSearch) {
+                bulkSearch.addEventListener('input', (e) => {
+                    const searchTerm = e.target.value.toLowerCase();
+                    layout.querySelectorAll('.student-checkbox-item').forEach(item => {
+                        const isVisible = item.dataset.searchText.includes(searchTerm);
+                        item.style.display = isVisible ? 'flex' : 'none';
+                    });
+                });
+            }
+
+            // B. Lógica de Checkboxes
+            const updateCount = () => {
+                const count = layout.querySelectorAll('.student-checkbox:checked').length;
+                const countEl = document.getElementById('selectedCount');
+                const addBtn = document.getElementById('addSelectedStudents');
+                if (countEl) countEl.textContent = count;
+                if (addBtn) addBtn.disabled = count === 0;
+            };
+
+            layout.addEventListener('change', (e) => {
+                if (e.target.classList.contains('student-checkbox')) {
+                    updateCount();
+                } else if (e.target.id === 'selectAllStudents') {
+                    const visibleCheckboxes = layout.querySelectorAll('.student-checkbox-item:not([style*="display: none"]) .student-checkbox');
+                    visibleCheckboxes.forEach(cb => cb.checked = e.target.checked);
+                    updateCount();
+                }
+            });
+
+            // C. Lógica de Botões de Ação (Clique)
+            layout.addEventListener('click', async (e) => {
+                // Adicionar 1 Único Aluno
+                const btnAddSingle = e.target.closest('.btn-add-single');
+                if (btnAddSingle) {
+                    await this.studentsManager.addSelectedStudentsToTurma(turmaId, [btnAddSingle.dataset.id]);
+                    await this.refreshModalData(turmaId);
+                    return;
+                }
+
+                // Remover 1 Único Aluno
+                const btnRemoveSingle = e.target.closest('.btn-remove-single');
+                if (btnRemoveSingle) {
+                    await this.studentsManager.removeStudentFromTurma(btnRemoveSingle.dataset.id, turmaId);
+                    await this.refreshModalData(turmaId);
+                    return;
+                }
+
+                // ===================================
+                // NOVO: Restaurar 1 Único Aluno
+                // ===================================
+                const btnRestoreSingle = e.target.closest('.btn-restore-single');
+                if (btnRestoreSingle) {
+                    await this.studentsManager.restoreStudentToTurma(btnRestoreSingle.dataset.id, turmaId);
+                    await this.refreshModalData(turmaId);
+                    return;
+                }
+
+                // Adicionar Lote
+                const btnBulkAdd = e.target.closest('#addSelectedStudents');
+                if (btnBulkAdd && !btnBulkAdd.disabled) {
+                    const selected = Array.from(layout.querySelectorAll('.student-checkbox:checked')).map(cb => cb.value);
+                    await this.studentsManager.addSelectedStudentsToTurma(turmaId, selected);
+                    await this.refreshModalData(turmaId);
+                    return;
+                }
+
+                // Remover Lote (Esvaziar)
+                const btnRemoveAll = e.target.closest('#removeAllStudents');
+                if (btnRemoveAll) {
+                    if (confirm('Tem a certeza que deseja esvaziar esta turma?')) {
+                        await this.studentsManager.removeAllStudentsFromTurma(turmaId);
+                        await this.refreshModalData(turmaId);
+                    }
+                    return;
+                }
+
+                // Limpar Erros (Fantasmas)
+                const btnCleanMissing = e.target.closest('#btnCleanMissing');
+                if (btnCleanMissing) {
+                    await this.cleanupMissingStudents(turmaId);
+                    return;
+                }
+            });
+
+        } catch (error) {
+            document.getElementById('modal-body').innerHTML = `<p class="text-danger" style="text-align:center; padding:20px;">Erro fatal ao carregar dados.</p>`;
         }
     }
 
-    async openStudentsModal(turmaId) {
+    // ==========================================
+    // FUNÇÕES AUXILIARES DA AÇÃO DO MODAL
+    // ==========================================
+    async refreshModalData(turmaId) {
+        // Recarrega as duas colunas do modal e limpa os checkboxes
+        await this.studentsManager.refreshEnrolledStudentsList(turmaId);
+        await this.studentsManager.refreshAvailableStudentsList(turmaId);
+        
+        // CORREÇÃO: Puxa do banco os dados frescos para a tabela de trás atualizar o número de alunos!
+        const turmasFrescas = await this.turmasCRUD.loadData();
+        this.renderer.renderTurmas(turmasFrescas); 
+        
+        // Reset da UI
+        const countEl = document.getElementById('selectedCount');
+        const addBtn = document.getElementById('addSelectedStudents');
+        const selectAll = document.getElementById('selectAllStudents');
+        if(countEl) countEl.textContent = '0';
+        if(addBtn) addBtn.disabled = true;
+        if(selectAll) selectAll.checked = false;
+    }
+
+    async cleanupMissingStudents(turmaId) {
         try {
-            // 1. UX: Mostra feedback de carregamento IMEDIATAMENTE
-            const loadingContent = `
-                <div style="padding: 40px; text-align: center;">
-                    <div class="loader" style="margin: 0 auto 20px;"></div>
-                    <p style="color: #64748b;">Carregando dados dos alunos...</p>
-                </div>
-            `;
-            this.modalsManager.showModal('Gerenciar Alunos', loadingContent);
-
-            // 2. Agora faz o processamento pesado (que vai demorar um pouco)
-            const modalContent = await this.modalsManager.createStudentsModal(turmaId);
+            const turma = await this.turmasCRUD.getTurma(turmaId);
+            const allUsers = await this.turmasCRUD.getAllUsers();
+            const validUserIds = allUsers.map(u => u.id);
             
-            // 3. Substitui o conteúdo do modal (sem fechar e abrir de novo, para não piscar)
-            document.getElementById('modal-body').innerHTML = modalContent;
-
-            // Store the turma ID globally for easy access
-            window.currentTurmaId = turmaId;
-            window.turmasModalsManager = this.modalsManager;
-
-            // ... (resto da configuração dos eventos como corrigimos anteriormente) ...
+            const validStudents = (turma.alunosInscritos || []).filter(id => validUserIds.includes(id));
+            const validDesmatriculados = (turma.alunosDesmatriculados || []).filter(id => validUserIds.includes(id));
             
-            // Setup search functionality for bulk add
-            const bulkSearch = document.getElementById('bulkStudentSearch');
-            if (bulkSearch) {
-                 bulkSearch.addEventListener('input', (e) => this.handleBulkStudentSearch(e));
-            }
-
-            this.studentsManager.setupCheckboxEventListeners();
-            
-            // ... (restante do código original dos botões) ...
-            const addBtn = document.getElementById('addSelectedStudents');
-             if (addBtn) {
-                addBtn.addEventListener('click', async () => {
-                    const selectedCheckboxes = document.querySelectorAll('.student-checkbox:checked');
-                    const studentIds = Array.from(selectedCheckboxes).map(cb => cb.value);
-                    
-                    const success = await this.studentsManager.addSelectedStudentsToTurma(turmaId, studentIds);
-                    if (success) {
-                        await this.studentsManager.refreshEnrolledStudentsList(turmaId);
-                        await this.studentsManager.refreshAvailableStudentsList(turmaId);
-                        selectedCheckboxes.forEach(cb => cb.checked = false);
-                        const selectedCount = document.getElementById('selectedCount');
-                        if (selectedCount) selectedCount.textContent = '0';
-                        addBtn.disabled = true;
-                    }
-                });
-            }
-
-            const removeAllBtn = document.getElementById('removeAllStudents');
-            if (removeAllBtn) {
-                removeAllBtn.addEventListener('click', async () => {
-                    if (confirm('Tem certeza que deseja remover TODOS os alunos desta turma?')) {
-                        const success = await this.studentsManager.removeAllStudentsFromTurma(turmaId);
-                        if (success) {
-                            await this.studentsManager.refreshEnrolledStudentsList(turmaId);
-                            await this.studentsManager.refreshAvailableStudentsList(turmaId);
-                            this.showSuccessMessage('Todos os alunos foram removidos da turma.');
-                        }
-                    }
-                });
-            }
-
-        } catch (error) {
-            console.error('Erro ao carregar alunos da turma:', error);
-            // Atualiza o modal para mostrar erro se falhar
-            document.getElementById('modal-body').innerHTML = `
-                <div class="error-container" style="text-align: center; padding: 20px;">
-                    <p style="color: #ef4444;">Erro ao carregar dados. Tente novamente.</p>
-                </div>
-            `;
+            await this.turmasCRUD.updateTurma(turmaId, { 
+                alunosInscritos: validStudents,
+                alunosDesmatriculados: validDesmatriculados 
+            });
+            await this.refreshModalData(turmaId);
+        } catch (e) {
+            console.error(e);
         }
     }
 
     handleBulkStudentSearch(e) {
         const searchTerm = e.target.value.toLowerCase();
-        const studentItems = document.querySelectorAll('.student-checkbox-item');
-        const searchResults = document.getElementById('searchResults');
-        
-        let visibleCount = 0;
-        
-        studentItems.forEach(item => {
-            const searchText = item.dataset.searchText;
-            const isVisible = searchText.includes(searchTerm);
+        document.querySelectorAll('.student-checkbox-item').forEach(item => {
+            const isVisible = item.dataset.searchText.includes(searchTerm);
             item.style.display = isVisible ? 'block' : 'none';
-            if (isVisible) visibleCount++;
-        });
-        
-        if (searchResults) {
-            searchResults.textContent = `Mostrando ${visibleCount} aluno${visibleCount !== 1 ? 's' : ''} ${searchTerm ? 'encontrado' + (visibleCount !== 1 ? 's' : '') : 'disponíveis'}`;
-        }
-        
-        // Update selected count to only count visible checkboxes
-        const visibleSelected = document.querySelectorAll('.student-checkbox-item:not([style*="display: none"]) .student-checkbox:checked');
-        const selectedCount = document.getElementById('selectedCount');
-        const addSelectedBtn = document.getElementById('addSelectedStudents');
-        
-        if (selectedCount) selectedCount.textContent = visibleSelected.length;
-        if (addSelectedBtn) addSelectedBtn.disabled = visibleSelected.length === 0;
-    }
-
-    async openMissingStudentsForm(missingStudentIds) {
-        const turmaId = this.studentsManager.getCurrentTurmaId();
-        const modalContent = this.modalsManager.createMissingStudentsModal(missingStudentIds, turmaId);
-        this.modalsManager.showModal('Usuários Ausentes', modalContent);
-
-        document.getElementById('missingStudentsForm').addEventListener('submit', async (e) => {
-            const result = await this.studentsManager.handleMissingStudentsSubmit(e);
-            if (result.success) {
-                document.getElementById('modal-overlay').style.display = 'none';
-                await this.openStudentsModal(result.turmaId);
-            }
         });
     }
 
-    async addStudentToTurma(turmaId, type) {
-        // Remove the 'new' type handling since we're removing student creation
-        if (type === 'existing') {
-            const studentId = document.getElementById('existingStudentSelect')?.value;
-            if (!studentId) {
-                alert('Selecione um aluno existente.');
-                return;
-            }
-
-            const success = await this.studentsManager.addSelectedStudentsToTurma(turmaId, [studentId]);
-            if (success) {
-                await this.studentsManager.refreshEnrolledStudentsList(turmaId);
-                await this.studentsManager.refreshAvailableStudentsList(turmaId);
-                this.showSuccessMessage('Aluno adicionado com sucesso!');
-            }
-        }
-    }
-
-    async removeStudentFromTurma(studentId) {
-        const turmaId = window.currentTurmaId;
-        const success = await this.studentsManager.removeStudentFromTurma(studentId, turmaId);
-        if (success) {
-            await this.studentsManager.refreshEnrolledStudentsList(turmaId);
-            await this.studentsManager.refreshAvailableStudentsList(turmaId);
-            this.showSuccessMessage('Aluno removido com sucesso!');
-        }
-    }
-
-    showSuccessMessage(message) {
-        const successDiv = document.createElement('div');
-        successDiv.className = 'success-notification';
-        successDiv.innerHTML = `
-            <span class="material-icons">check_circle</span>
-            <span>${message}</span>
-        `;
-        
-        document.body.appendChild(successDiv);
-        
-        setTimeout(() => {
-            successDiv.remove();
-        }, 3000);
-    }
+    // Mantivemos estas funções para não quebrar o HTML existente dos alunos (Parte 2 resolve isto)
+    showSuccessMessage(message) { alert(message); }
 }
-
-// Global functions for table actions
-window.viewTurma = async (id) => {
-    try {
-        const turmasManager = new TurmasManager();
-        const turma = await turmasManager.turmasCRUD.getTurma(id);
-        
-        const modalContent = turmasManager.modalsManager.createViewModal(turma);
-        turmasManager.modalsManager.showModal('Detalhes da Turma', modalContent);
-    } catch (error) {
-        console.error('Erro ao carregar turma:', error);
-        alert('Erro ao carregar detalhes da turma.');
-    }
-};
-
-window.editTurma = async (id) => {
-    const turmasManager = new TurmasManager();
-    await turmasManager.openEditModal(id);
-};
-
-window.manageStudents = async (id) => {
-    const turmasManager = new TurmasManager();
-    await turmasManager.openStudentsModal(id);
-};
-
-window.addStudentToTurma = async (turmaId, type) => {
-    const turmasManager = new TurmasManager();
-    await turmasManager.addStudentToTurma(turmaId, type);
-};
-
-window.removeStudentFromTurma = async (studentId) => {
-    const turmasManager = new TurmasManager();
-    await turmasManager.removeStudentFromTurma(studentId);
-};
-
-window.deleteTurma = async (id) => {
-    if (confirm('Tem certeza que deseja excluir esta turma?\n\nEsta ação não pode ser desfeita e pode afetar avaliações existentes.')) {
-        try {
-            const turmasManager = new TurmasManager();
-            await turmasManager.turmasCRUD.deleteTurma(id);
-            alert('Turma excluída com sucesso!');
-            location.reload();
-        } catch (error) {
-            console.error('Erro ao excluir turma:', error);
-            alert('Erro ao excluir turma. Tente novamente.');
-        }
-    }
-};
-
-window.addSingleStudent = async (studentId) => {
-    const turmaId = window.currentTurmaId;
-    const turmasManager = new TurmasManager();
-    await turmasManager.addStudentToTurma(turmaId, 'existing');
-    
-    // Manually trigger the addition since we removed the form
-    const success = await turmasManager.studentsManager.addSelectedStudentsToTurma(turmaId, [studentId]);
-    if (success) {
-        await turmasManager.studentsManager.refreshEnrolledStudentsList(turmaId);
-        await turmasManager.studentsManager.refreshAvailableStudentsList(turmaId);
-        turmasManager.showSuccessMessage('Aluno adicionado com sucesso!');
-    }
-};
-
-window.cleanupMissingStudents = async () => {
-    const turmaId = window.currentTurmaId;
-    if (confirm('Tem certeza que deseja remover os IDs inválidos da turma?')) {
-        try {
-            const turmasManager = new TurmasManager();
-            const turma = await turmasManager.turmasCRUD.getTurma(turmaId);
-            const allUsers = await turmasManager.turmasCRUD.getAllUsers();
-            const validUserIds = allUsers.map(u => u.id);
-            
-            const validStudents = (turma.alunosInscritos || []).filter(id => validUserIds.includes(id));
-            
-            await turmasManager.turmasCRUD.updateTurma(turmaId, { alunosInscritos: validStudents });
-            
-            await turmasManager.studentsManager.refreshEnrolledStudentsList(turmaId);
-            turmasManager.showSuccessMessage('IDs inválidos removidos com sucesso!');
-        } catch (error) {
-            console.error('Erro ao limpar IDs inválidos:', error);
-            alert('Erro ao limpar IDs inválidos.');
-        }
-    }
-};
