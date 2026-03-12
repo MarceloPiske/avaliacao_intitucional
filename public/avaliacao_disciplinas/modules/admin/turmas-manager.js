@@ -148,41 +148,54 @@ export class TurmasManager {
 
     async openStudentsModal(turmaId) {
         try {
+            // 1. UX: Mostra feedback de carregamento IMEDIATAMENTE
+            const loadingContent = `
+                <div style="padding: 40px; text-align: center;">
+                    <div class="loader" style="margin: 0 auto 20px;"></div>
+                    <p style="color: #64748b;">Carregando dados dos alunos...</p>
+                </div>
+            `;
+            this.modalsManager.showModal('Gerenciar Alunos', loadingContent);
+
+            // 2. Agora faz o processamento pesado (que vai demorar um pouco)
             const modalContent = await this.modalsManager.createStudentsModal(turmaId);
-            this.modalsManager.showModal('Gerenciar Alunos', modalContent);
+            
+            // 3. Substitui o conteúdo do modal (sem fechar e abrir de novo, para não piscar)
+            document.getElementById('modal-body').innerHTML = modalContent;
 
             // Store the turma ID globally for easy access
             window.currentTurmaId = turmaId;
             window.turmasModalsManager = this.modalsManager;
 
-            // Setup search functionality for bulk add
-            document.getElementById('bulkStudentSearch').addEventListener('input', this.handleBulkStudentSearch);
+            // ... (resto da configuração dos eventos como corrigimos anteriormente) ...
             
-            // Setup search functionality for individual add
-            document.getElementById('individualStudentSearch').addEventListener('input', this.renderer.filterStudents);
+            // Setup search functionality for bulk add
+            const bulkSearch = document.getElementById('bulkStudentSearch');
+            if (bulkSearch) {
+                 bulkSearch.addEventListener('input', (e) => this.handleBulkStudentSearch(e));
+            }
 
-            // Setup bulk selection event listeners
             this.studentsManager.setupCheckboxEventListeners();
-
-            // Setup bulk add button
-            document.getElementById('addSelectedStudents').addEventListener('click', async () => {
-                const selectedCheckboxes = document.querySelectorAll('.student-checkbox:checked');
-                const studentIds = Array.from(selectedCheckboxes).map(cb => cb.value);
-                
-                const success = await this.studentsManager.addSelectedStudentsToTurma(turmaId, studentIds);
-                if (success) {
-                    // Refresh both lists
-                    await this.studentsManager.refreshEnrolledStudentsList(turmaId);
-                    await this.studentsManager.refreshAvailableStudentsList(turmaId);
+            
+            // ... (restante do código original dos botões) ...
+            const addBtn = document.getElementById('addSelectedStudents');
+             if (addBtn) {
+                addBtn.addEventListener('click', async () => {
+                    const selectedCheckboxes = document.querySelectorAll('.student-checkbox:checked');
+                    const studentIds = Array.from(selectedCheckboxes).map(cb => cb.value);
                     
-                    // Clear selections
-                    selectedCheckboxes.forEach(cb => cb.checked = false);
-                    document.getElementById('selectedCount').textContent = '0';
-                    document.getElementById('addSelectedStudents').disabled = true;
-                }
-            });
+                    const success = await this.studentsManager.addSelectedStudentsToTurma(turmaId, studentIds);
+                    if (success) {
+                        await this.studentsManager.refreshEnrolledStudentsList(turmaId);
+                        await this.studentsManager.refreshAvailableStudentsList(turmaId);
+                        selectedCheckboxes.forEach(cb => cb.checked = false);
+                        const selectedCount = document.getElementById('selectedCount');
+                        if (selectedCount) selectedCount.textContent = '0';
+                        addBtn.disabled = true;
+                    }
+                });
+            }
 
-            // Setup remove all students button
             const removeAllBtn = document.getElementById('removeAllStudents');
             if (removeAllBtn) {
                 removeAllBtn.addEventListener('click', async () => {
@@ -199,7 +212,12 @@ export class TurmasManager {
 
         } catch (error) {
             console.error('Erro ao carregar alunos da turma:', error);
-            alert('Erro ao carregar alunos da turma.');
+            // Atualiza o modal para mostrar erro se falhar
+            document.getElementById('modal-body').innerHTML = `
+                <div class="error-container" style="text-align: center; padding: 20px;">
+                    <p style="color: #ef4444;">Erro ao carregar dados. Tente novamente.</p>
+                </div>
+            `;
         }
     }
 

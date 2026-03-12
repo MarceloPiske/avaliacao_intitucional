@@ -1,42 +1,153 @@
 {
-  "JAMuFhjlE5oAPMUIPnHL": {
-    "name": "Sistemática I – Introdução à Teologia",
-    "professor": "Francis",
-    "status": "pending"
+  "0X6UT39g6JmvVwOjE6pB": {
+    "codigo": "24002",
+    "dataCriacao": {
+      "_seconds": 1752452699,
+      "_nanoseconds": 67000000
+    },
+    "name": "Arte sacra II: teoria e prática da música"
   },
-  "QgF2g6l1Lvde83KO1FpG": {
-    "name": "Lógica e Linguagem",
-    "professor": "Gedrat",
-    "status": "pending"
+  "24YWLhFKXioLjAVXLxGC": {
+    "codigo": "24036",
+    "dataCriacao": {
+      "_seconds": 1752452681,
+      "_nanoseconds": 659000000
+    },
+    "name": "Lógica e Linguagem"
   },
-  "eztDD62Z2U7kVoIS4M5d": {
-    "name": "Metodologia e pesquisa científica",
-    "professor": "Graff",
-    "status": "pending"
+  "2bPcpcWCZM17z4tEfP8A": {
+    "codigo": "24001",
+    "nome": "Arte sacra I: teoria e prática da música",
+    "dataCriacao": {
+      "_seconds": 1752452697,
+      "_nanoseconds": 122000000
+    },
+    "name": "Arte sacra I: teoria e prática da música"
   },
-  "ngGg6IEmx9DsdlyygzEy": {
-    "name": "Língua Portuguesa",
-    "professor": "Carla",
-    "status": "pending"
+  "AUKtVu9hRRn1xT4QBURC": {
+    "codigo": "24035",
+    "nome": "Línguas bíblicas – Hebraico II",
+    "dataCriacao": {
+      "_seconds": 1752452692,
+      "_nanoseconds": 787000000
+    },
+    "name": "Línguas bíblicas – Hebraico II"
   },
-  "nq9APjoJYSzkyGOHqW9C": {
-    "name": "Bíblia I: Introdução aos livros do Antigo Testamento",
-    "professor": "Graff",
-    "status": "pending"
+  "GkSQBuVM0J22YuTq0CFj": {
+    "codigo": "24031",
+    "nome": "Língua Portuguesa",
+    "dataCriacao": {
+      "_seconds": 1752452683,
+      "_nanoseconds": 400000000
+    },
+    "name": "Língua Portuguesa"
   },
-  "sue9oMnkNNbxRzoPR8bl": {
-    "name": "Formação e pessoa do teólogo",
-    "professor": "Görl",
-    "status": "pending"
+  "Ic9aiF2O9VtVhS0pJiZf": {
+    "codigo": "24014",
+    "nome": "Estudos na cultura e religiosidade brasileira",
+    "dataCriacao": {
+      "_seconds": 1752452704,
+      "_nanoseconds": 495000000
+    },
+    "name": "Estudos na cultura e religiosidade brasileira"
   },
-  "tvFOapc4NrKBh9wsvx8V": {
-    "name": "Bíblia II: Introdução aos livros do Novo Testamento",
-    "professor": "Linden",
-    "status": "pending"
+  "PTeXRASPApgmPkMwXuRj": {
+    "codigo": "24023",
+    "nome": "História da Igreja Antiga e Medieval",
+    "dataCriacao": {
+      "_seconds": 1752452702,
+      "_nanoseconds": 653000000
+    },
+    "name": "História da Igreja Antiga e Medieval"
   },
-  "yZiv2uEi6dJVRwnftKE6": {
-    "name": "Introdução à Sociologia",
-    "professor": "Prunzel",
-    "status": "pending"
+  "S82b5GTuk0hXnzQJQzb8": {
+    "codigo": "24037",
+    "nome": "Metodologia e pesquisa científica",
+    "dataCriacao": {
+      "_seconds": 1752452686,
+      "_nanoseconds": 370000000
+    },
+    "name": "Metodologia e pesquisa científica"
+  },
+  "cgKGjpALfP7NfvT1hXmh": {
+    "codigo": "24022",
+    "nome": "História da Filosofia",
+    "dataCriacao": {
+      "_seconds": 1752452694,
+      "_nanoseconds": 972000000
+    },
+    "name": "História da Filosofia"
+  },
+  "gEX2OjvDgiPBG9QbTydG": {
+    "codigo": "24004",
+    "nome": "Bíblia I: Introdução aos livros do Antigo Testamento",
+    "dataCriacao": {
+      "_seconds": 1752452685,
+      "_nanoseconds": 39000000
+    },
+    "name": "Bíblia I: Introdução aos livros do Antigo Testamento"
+  },
+  "gl93f2i7yJWnF60qNHBR": {
+    "codigo": "24056",
+    "nome": "Tópicos em estudos nos Direitos Humanos",
+    "dataCriacao": {
+      "_seconds": 1752452703,
+      "_nanoseconds": 543000000
+    },
+    "name": "Tópicos em estudos nos Direitos Humanos"
+  },
+  "iGPqMUAoY0YYj5DXNTJY": {
+    "codigo": "24034",
+    "nome": "Línguas bíblicas – Hebraico I",
+    "dataCriacao": {
+      "_seconds": 1752452690,
+      "_nanoseconds": 464000000
+    },
+    "name": "Línguas bíblicas – Hebraico I"
+  },
+  "o1CA2ANrk22GM3se09gP": {
+    "codigo": "24029",
+    "nome": "Introdução à Sociologia",
+    "dataCriacao": {
+      "_seconds": 1752452688,
+      "_nanoseconds": 7000000
+    },
+    "name": "Introdução à Sociologia"
+  },
+  "oSmrEsd1psN663WVZRCS": {
+    "codigo": "24021",
+    "nome": "Formação e pessoa do teólogo",
+    "dataCriacao": {
+      "_seconds": 1752452678,
+      "_nanoseconds": 792000000
+    },
+    "name": "Formação e pessoa do teólogo"
+  },
+  "pnjAdLZP1dwhCdQHYnqJ": {
+    "codigo": "24005",
+    "nome": "Bíblia II: Introdução aos livros do Novo Testamento",
+    "dataCriacao": {
+      "_seconds": 1752452676,
+      "_nanoseconds": 296000000
+    },
+    "name": "Bíblia II: Introdução aos livros do Novo Testamento"
+  },
+  "wKuT3SOuEZscgLp1ozDS": {
+    "codigo": "24048",
+    "nome": "Sistemática I – Introdução à Teologia",
+    "dataCriacao": {
+      "_seconds": 1752452673,
+      "_nanoseconds": 902000000
+    },
+    "name": "Sistemática I – Introdução à Teologia"
+  },
+  "xqMEqJPgMlj0y0AG4CcP": {
+    "codigo": "24059",
+    "nome": "Princípios de Interpretação Bíblica",
+    "dataCriacao": {
+      "_seconds": 1752452701,
+      "_nanoseconds": 133000000
+    },
+    "name": "Princípios de Interpretação Bíblica"
   }
 }

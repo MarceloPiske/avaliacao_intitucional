@@ -118,7 +118,7 @@ export class AnalyticsCharts {
         });
     }
 
-    createTimelineChart(data, groupByMonth) {
+    /* createTimelineChart(data, groupByMonth) {
         const ctx = document.getElementById('timelineChart');
         if (!ctx) return;
         
@@ -150,7 +150,7 @@ export class AnalyticsCharts {
                 }
             }
         });
-    }
+    } */
 
     destroyAllCharts() {
         Object.values(this.charts).forEach(chart => {

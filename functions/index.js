@@ -1,3 +1,5 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable no-multiple-empty-lines */
 /* eslint-disable valid-jsdoc */
 /* eslint-disable require-jsdoc */
 /* eslint-disable guard-for-in */
@@ -14,10 +16,207 @@ admin.initializeApp();
 const db = getFirestore();
 const auth = admin.auth();
 
+
+
+exports.importarAlunosEmLote = onRequest(async (req, res) => {
+  // Lista de IDs dos Alunos a serem inseridos (Atualizada conforme solicitado)
+  const alunosNovos = [
+    "35tu0tiMG8eIm2weznB2gwaGlSC2", "BMppLXNKNMaxCu5iHmZ9vuXxTIs2",
+    "BxViW4XcRGbwU3dbr2QcQV8QAo23", "GUjhTgNthhYv7spMtt3pYteL8pi1",
+    "ICdZ5PtB3OQdg9mEGsbghBHSQvs1", "IHGYU3Rm9hMb1taWnIfLJRLJqdy2",
+    "IUZjvzUtKmdiAuRfMxSpx5q9U412", "LTHYuisPiaYaExXfzjC78YsmsAn1",
+    "IoHrP0PXEkQuRQ7DUHfJh2yo0B73", "LTIqxaeRXWY0p07UY2jmPelSUcf2",
+    "NKHFJ3GabhRSpY9mqV6BmeH6mRr2", "ReKKikNAModps5cp77hUypuExCX2",
+    "QgjMfDLRyXPM6pqQTXahKXiDHe12", "VJ7TFlLiXDZO71HYLBYhjRf5uS03",
+    "hIZoA6SJMjeArQhCPqa1r1jcf3s1", "jJX4L7qxiWXeEPODKhKA5PHC6du2",
+    "75W716SD4ZTr2ZQsGHNgkYUAxh63", "nGIjFhMutzMiPgXlygNRaaVoRr72",
+    "ywbMhjglTWd0Nm7XtNXPxmouyci1",
+  ];
+
+  try {
+    // 1. Consulta para buscar turmas do semestre 2025.2
+    // Nota: Assumi que "2025.2" é string. Se no seu banco for number, remova as aspas.
+    const turmasSnapshot = await db.collection("ad_turmas")
+        .where("semestre", "==", "2025.2")
+        .get();
+
+    if (turmasSnapshot.empty) {
+      return res.status(404).send({message: "Nenhuma turma encontrada para o semestre 2025.2."});
+    }
+
+    const batch = db.batch();
+    let contadorAtualizacoes = 0;
+
+    // 2. Itera sobre os documentos encontrados
+    turmasSnapshot.forEach((doc) => {
+      const data = doc.data();
+
+      // 3. Verifica se o array alunosInscritos está vazio ou não existe
+      // A verificação de array vazio é feita aqui no código para garantir precisão
+      if (!data.alunosInscritos || data.alunosInscritos.length === 0) {
+        console.log(`Atualizando turma ${doc.id} com novos alunos...`);
+        batch.update(doc.ref, {
+          alunosInscritos: FieldValue.arrayUnion(...alunosNovos),
+        });
+
+        contadorAtualizacoes++;
+      }
+    });
+
+    // Se não houver documentos para atualizar, retorna antes do commit
+    if (contadorAtualizacoes === 0) {
+      return res.status(200).send({
+        message: "Nenhuma turma precisou ser atualizada (todas já possuíam alunos ou não atenderam aos critérios).",
+      });
+    }
+
+    // 4. Executa o lote de atualizações
+    await batch.commit();
+
+    res.status(200).send({
+      message: `Sucesso! ${alunosNovos.length} alunos inseridos em ${contadorAtualizacoes} turmas de 2025.2.`,
+    });
+  } catch (error) {
+    console.error("Erro ao atualizar documentos:", error);
+    res.status(500).send("Erro interno ao processar a atualização.");
+  }
+});
+/**
+ * Função HTTP para CORREÇÃO EM MASSA.
+ * Varre todas as respostas e corrige o campo 'tipo' baseado no mapa de questões.
+ */
+const QUESTOES_DO_FORMULARIO = [
+  // Categoria Disciplina
+  {id: "disciplina_q1", texto: "O professor apresenta o Plano de Aprendizagem da disciplina com objetivos, metodologia de ensino e procedimentos de avaliação.", tipo: "escala_1_a_5", categoria: "disciplina", ordem: 1},
+  {id: "disciplina_q2", texto: "A disciplina é relevante para minha formação.", tipo: "escala_1_a_5", categoria: "disciplina", ordem: 2},
+  {id: "disciplina_q3", texto: "O Plano de Aprendizagem da disciplina foi cumprido conforme previsto.", tipo: "escala_1_a_5", categoria: "disciplina", ordem: 3},
+  {id: "disciplina_q4", texto: "O material didático fornecido ou recomendado agrega conteúdo ao Plano de Aprendizagem.", tipo: "escala_1_a_5", categoria: "disciplina", ordem: 4},
+  {id: "disciplina_q5", texto: "A biblioteca tem material de apoio para a disciplina.", tipo: "escala_1_a_5", categoria: "disciplina", ordem: 5},
+  {id: "disciplina_q6", texto: "Esta disciplina precisa de mais tempo semanal (mais créditos).", tipo: "escala_1_a_5", categoria: "disciplina", ordem: 6},
+  // Categoria Professor
+  {id: "professor_q1", texto: "O professor demonstra domínio sobre o conteúdo.", tipo: "escala_1_a_5", categoria: "professor", ordem: 7},
+  {id: "professor_q2", texto: "As aulas são bem preparadas pelo professor.", tipo: "escala_1_a_5", categoria: "professor", ordem: 8},
+  {id: "professor_q3", texto: "A pedagogia do professor é adequada ao conteúdo.", tipo: "escala_1_a_5", categoria: "professor", ordem: 9},
+  {id: "professor_q4", texto: "O professor utiliza metodologias diversificadas e criativas no processo de ensino com vista a qualificar a aprendizagem.", tipo: "escala_1_a_5", categoria: "professor", ordem: 10},
+  {id: "professor_q5", texto: "O professor é pontual com os horários e prazos de atividades.", tipo: "escala_1_a_5", categoria: "professor", ordem: 11},
+  {id: "professor_q6", texto: "As avaliações requeridas pelo professor são compatíveis com o conteúdo apresentado em sala.", tipo: "escala_1_a_5", categoria: "professor", ordem: 12},
+  {id: "professor_q7", texto: "O professor estimula a participação dos alunos (abertura para dúvidas, preocupação em aplicação prática e entendimento dos alunos).", tipo: "escala_1_a_5", categoria: "professor", ordem: 13},
+  {id: "professor_q8", texto: "O grau de disponibilidade do professor fora da aula para os alunos aprenderem (horário de atendimento, resposta a mensagens e etc.) é satisfatório.", tipo: "escala_1_a_5", categoria: "professor", ordem: 14},
+  {id: "professor_q9", texto: "Eu faria outra disciplina com o mesmo professor.", tipo: "escala_1_a_5", categoria: "professor", ordem: 15},
+  // Categoria Aluno (Autoavaliação)
+  {id: "aluno_q1", texto: "É a primeira vez que eu curso essa disciplina.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 16},
+  {id: "aluno_q2", texto: "A minha participação em aula desta disciplina é ativa.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 17},
+  {id: "aluno_q3", texto: "A minha interação com o professor (fora de aula) para tirar dúvidas é frequente.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 18},
+  {id: "aluno_q4", texto: "Compreendi o conteúdo desta disciplina.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 19},
+  {id: "aluno_q5", texto: "Durante esta disciplina foquei meus esforços no aprendizado.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 20},
+  {id: "aluno_q6", texto: "Os pré-requisitos da disciplina são adequados.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 21},
+  {id: "aluno_q7", texto: "Após cursar a disciplina, meu interesse pelo assunto aumentou.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 22},
+  {id: "aluno_q8", texto: "Esta disciplina proporcionou novos conhecimentos.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 23},
+  {id: "aluno_q9", texto: "Percebo crescimento cognitivo da turma no decorrer da disciplina.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 24},
+  {id: "aluno_q10", texto: "Houve entrosamento da turma na disciplina.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 25},
+  {id: "aluno_q11", texto: "Eu percebi colaboração e dedicação mútua da turma na disciplina.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 26},
+];
+// Criar o Mapa de Referência (Chave: 'texto', Valor: 'categoria')
+// Isso é feito UMA VEZ na inicialização da função (cold start) e fica em memória.
+const mapaTipoCorreto = new Map(
+    QUESTOES_DO_FORMULARIO.map((q) => [q.texto, q.categoria]),
+);
+
+// --- PASSO 2: A Função HTTP V2 ---
+exports.corrigirTiposRespostasV2 = onRequest(
+    // Opções da função: 9 minutos de timeout
+    {
+      timeoutSeconds: 540,
+      memory: "1GiB",
+    },
+    async (req, res) => {
+      logger.info(`Iniciando correção V2. Mapa local carregado com ${mapaTipoCorreto.size} questões.`);
+
+      try {
+      // 1. Busca TODAS as coleções chamadas 'respostas'
+        const respostasSnapshot = await db.collectionGroup("respostas").get();
+
+        if (respostasSnapshot.empty) {
+          logger.info("Nenhuma subcoleção \"respostas\" encontrada no banco.");
+          res.status(200).send("Nenhuma subcoleção \"respostas\" encontrada.");
+          return;
+        }
+
+        let batch = db.batch();
+        let operacoesNoBatch = 0;
+        let totalCorrigido = 0;
+        let totalVarrido = 0;
+        let totalIgnorado = 0; // Contador para documentos fora de 'ad_avaliacoes'
+
+        for (const doc of respostasSnapshot.docs) {
+          totalVarrido++;
+
+          //
+          // *** VERIFICAÇÃO DE CAMINHO CRUCIAL ***
+          // doc.ref.path é o caminho completo (ex: "colecao/docId/subcolecao/docId2")
+          // Verificamos se o caminho começa com "ad_avaliacoes/"
+          //
+          if (!doc.ref.path.startsWith("ad_avaliacoes/")) {
+            totalIgnorado++;
+            continue; // Pula este documento, pois não está em 'ad_avaliacoes'
+          }
+
+          // Se chegou aqui, o documento ESTÁ em 'ad_avaliacoes/.../respostas'
+          const resposta = doc.data();
+
+          if (!resposta || !resposta.questaoTexto || typeof resposta.tipo === "undefined") {
+            logger.warn(`Documento ${doc.ref.path} ignorado (formato inválido)`);
+            continue;
+          }
+
+          const tipoAtual = resposta.tipo;
+          const textoDaQuestao = resposta.questaoTexto;
+          const tipoCorreto = mapaTipoCorreto.get(textoDaQuestao);
+
+          // Se o tipo existe no mapa E está diferente do atual, corrige
+          if (tipoCorreto && tipoAtual !== tipoCorreto) {
+            batch.update(doc.ref, {tipo: tipoCorreto});
+            operacoesNoBatch++;
+            totalCorrigido++;
+
+            // Limite do batch (500 operações)
+            if (operacoesNoBatch >= 490) {
+              logger.info(`Commitando lote de ${operacoesNoBatch} correções...`);
+              await batch.commit();
+              batch = db.batch();
+              operacoesNoBatch = 0;
+            }
+          } else if (!tipoCorreto) {
+            logger.warn(`ATENÇÃO: Resposta em ${doc.ref.path} não encontrada no mapa local.`);
+          }
+        }
+
+        // Commita o lote final
+        if (operacoesNoBatch > 0) {
+          logger.info(`Commitando lote final de ${operacoesNoBatch} correções...`);
+          await batch.commit();
+        }
+
+        const summary = `Correção Concluída! Total varrido: ${totalVarrido}. Corrigido (em ad_avaliacoes): ${totalCorrigido}. Ignorado (outros paths): ${totalIgnorado}.`;
+        logger.info(summary);
+        res.status(200).send(summary);
+      } catch (error) {
+        logger.error("Erro fatal durante a execução da correção:", error);
+        if (error.code === "FAILED_PRECONDITION") {
+          logger.error("ERRO: Índice do Firestore faltando. Verifique o log de erro para o link de criação do índice.");
+          res.status(500).send("Erro: Índice do Firestore faltando. Verifique os logs da função para o link de criação.");
+        } else {
+          res.status(500).send("Erro interno do servidor. Verifique os logs da função.");
+        }
+      }
+    },
+);
+
+
 // Pasta onde os arquivos serão salvos
 const OUTPUT_DIR = path.join(__dirname, "firestore-dumps");
 
-exports.backupFirestore = async function backupFirestore() {
+exports.backupFirestore = onRequest(async (req, res) => {
   // Garante que a pasta exista
   fs.mkdirSync(OUTPUT_DIR, {recursive: true});
 
@@ -40,7 +239,7 @@ exports.backupFirestore = async function backupFirestore() {
   }
 
   console.log("\n🚀 Backup concluído!");
-};
+});
 
 
 setGlobalOptions({timeoutSeconds: 540, memory: "2GiB"});
@@ -772,37 +971,7 @@ const DADOS_NOVO_FORMULARIO = {
   ativo: true,
 };
 
-const QUESTOES_DO_FORMULARIO = [
-  // Categoria Disciplina
-  {id: "disciplina_q1", texto: "O professor apresenta o Plano de Aprendizagem da disciplina com objetivos, metodologia de ensino e procedimentos de avaliação.", tipo: "escala_1_a_5", categoria: "disciplina", ordem: 1},
-  {id: "disciplina_q2", texto: "A disciplina é relevante para minha formação.", tipo: "escala_1_a_5", categoria: "disciplina", ordem: 2},
-  {id: "disciplina_q3", texto: "O Plano de Aprendizagem da disciplina foi cumprido conforme previsto.", tipo: "escala_1_a_5", categoria: "disciplina", ordem: 3},
-  {id: "disciplina_q4", texto: "O material didático fornecido ou recomendado agrega conteúdo ao Plano de Aprendizagem.", tipo: "escala_1_a_5", categoria: "disciplina", ordem: 4},
-  {id: "disciplina_q5", texto: "A biblioteca tem material de apoio para a disciplina.", tipo: "escala_1_a_5", categoria: "disciplina", ordem: 5},
-  {id: "disciplina_q6", texto: "Esta disciplina precisa de mais tempo semanal (mais créditos).", tipo: "escala_1_a_5", categoria: "disciplina", ordem: 6},
-  // Categoria Professor
-  {id: "professor_q1", texto: "O professor demonstra domínio sobre o conteúdo.", tipo: "escala_1_a_5", categoria: "professor", ordem: 7},
-  {id: "professor_q2", texto: "As aulas são bem preparadas pelo professor.", tipo: "escala_1_a_5", categoria: "professor", ordem: 8},
-  {id: "professor_q3", texto: "A pedagogia do professor é adequada ao conteúdo.", tipo: "escala_1_a_5", categoria: "professor", ordem: 9},
-  {id: "professor_q4", texto: "O professor utiliza metodologias diversificadas e criativas no processo de ensino com vista a qualificar a aprendizagem.", tipo: "escala_1_a_5", categoria: "professor", ordem: 10},
-  {id: "professor_q5", texto: "O professor é pontual com os horários e prazos de atividades.", tipo: "escala_1_a_5", categoria: "professor", ordem: 11},
-  {id: "professor_q6", texto: "As avaliações requeridas pelo professor são compatíveis com o conteúdo apresentado em sala.", tipo: "escala_1_a_5", categoria: "professor", ordem: 12},
-  {id: "professor_q7", texto: "O professor estimula a participação dos alunos (abertura para dúvidas, preocupação em aplicação prática e entendimento dos alunos).", tipo: "escala_1_a_5", categoria: "professor", ordem: 13},
-  {id: "professor_q8", texto: "O grau de disponibilidade do professor fora da aula para os alunos aprenderem (horário de atendimento, resposta a mensagens e etc.) é satisfatório.", tipo: "escala_1_a_5", categoria: "professor", ordem: 14},
-  {id: "professor_q9", texto: "Eu faria outra disciplina com o mesmo professor.", tipo: "escala_1_a_5", categoria: "professor", ordem: 15},
-  // Categoria Aluno (Autoavaliação)
-  {id: "aluno_q1", texto: "É a primeira vez que eu curso essa disciplina.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 16},
-  {id: "aluno_q2", texto: "A minha participação em aula desta disciplina é ativa.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 17},
-  {id: "aluno_q3", texto: "A minha interação com o professor (fora de aula) para tirar dúvidas é frequente.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 18},
-  {id: "aluno_q4", texto: "Compreendi o conteúdo desta disciplina.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 19},
-  {id: "aluno_q5", texto: "Durante esta disciplina foquei meus esforços no aprendizado.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 20},
-  {id: "aluno_q6", texto: "Os pré-requisitos da disciplina são adequados.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 21},
-  {id: "aluno_q7", texto: "Após cursar a disciplina, meu interesse pelo assunto aumentou.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 22},
-  {id: "aluno_q8", texto: "Esta disciplina proporcionou novos conhecimentos.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 23},
-  {id: "aluno_q9", texto: "Percebo crescimento cognitivo da turma no decorrer da disciplina.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 24},
-  {id: "aluno_q10", texto: "Houve entrosamento da turma na disciplina.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 25},
-  {id: "aluno_q11", texto: "Eu percebi colaboração e dedicação mútua da turma na disciplina.", tipo: "escala_1_a_5", categoria: "aluno", ordem: 26},
-];
+
 
 /**
  * =================================================================

@@ -3,7 +3,7 @@ export class TurmasStudents {
         this.turmasCRUD = turmasCRUD;
     }
 
-    async renderEnrolledStudents(alunosInscritos) {
+    async renderEnrolledStudents(alunosInscritos, preloadedUsers = null) {
         if (!alunosInscritos || alunosInscritos.length === 0) {
             return `
                 <div class="no-enrolled-students">
@@ -21,7 +21,18 @@ export class TurmasStudents {
 
         for (const alunoId of alunosInscritos) {
             try {
-                const student = await this.turmasCRUD.getUser(alunoId);
+                let student = null;
+                
+                // PERFORMANCE: Se temos a lista na memória, busca nela (O(1) ou O(n)) em vez de ir na rede
+                if (preloadedUsers) {
+                    student = preloadedUsers.find(u => u.id === alunoId);
+                }
+
+                // Só vai no banco se realmente não achou na memória (fallback)
+                if (!student) {
+                    student = await this.turmasCRUD.getUser(alunoId);
+                }
+
                 if (student) {
                     studentsData.push(student);
                 } else {

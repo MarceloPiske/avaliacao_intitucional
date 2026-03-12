@@ -118,59 +118,29 @@ export class TurmasModals {
     }
 
     async createStudentsModal(turmaId) {
-        const turma = await this.turmasCRUD.getTurma(turmaId);
-        const allUsers = await this.turmasCRUD.getAllUsers();
+        // PERFORMANCE: Busca turma e usuários em PARALELO em vez de sequencial
+        const [turma, allUsers] = await Promise.all([
+            this.turmasCRUD.getTurma(turmaId),
+            this.turmasCRUD.getAllUsers()
+        ]);
+
         const students = allUsers.filter(user => user.tipos?.includes('aluno'));
         const enrolledStudentIds = turma.alunosInscritos || [];
         
+        // PERFORMANCE: Passamos 'allUsers' para o renderEnrolledStudents para ele não buscar no banco de novo
+        const enrolledHtml = await this.turmasStudents.renderEnrolledStudents(enrolledStudentIds, allUsers);
+
         return `
             <div class="students-management">
                 <h4>Gerenciar Alunos - ${turma.disciplinaNome}</h4>
                 
-                <!-- Enhanced Bulk Add Students Section -->
-                <div class="bulk-add-section">
-                    <div class="section-header">
-                        <h5>📋 Adicionar Alunos</h5>
-                        <div class="students-stats">
-                            <span class="stat-item">
-                                <span class="stat-number">${students.filter(s => !enrolledStudentIds.includes(s.id)).length}</span>
-                                <span class="stat-label">Disponíveis</span>
-                            </span>
-                            <span class="stat-item">
-                                <span class="stat-number" id="selectedCount">0</span>
-                                <span class="stat-label">Selecionados</span>
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <div class="bulk-actions-toolbar">
-                        <div class="search-container">
-                            <input type="text" id="bulkStudentSearch" placeholder="🔍 Buscar alunos por nome ou email..." class="search-input">
-                            <div class="search-results" id="searchResults">
-                                Mostrando ${students.filter(s => !enrolledStudentIds.includes(s.id)).length} alunos disponíveis
-                            </div>
-                        </div>
-                        <div class="bulk-actions">
-                            <button type="button" class="btn btn-outline" id="selectAllStudents">
-                                <span class="material-icons">select_all</span> Selecionar Todos
-                            </button>
-                            <button type="button" class="btn btn-outline" id="deselectAllStudents">
-                                <span class="material-icons">deselect</span> Desmarcar Todos
-                            </button>
-                            <button type="button" class="btn btn-primary" id="addSelectedStudents" disabled>
-                                <span class="material-icons">person_add</span> Adicionar Selecionados
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="students-grid-container">
-                        <div class="students-grid" id="studentsGrid">
-                            ${this.renderStudentCheckboxList(students, enrolledStudentIds)}
-                        </div>
+                <div class="students-grid-container">
+                    <div class="students-grid" id="studentsGrid">
+                        ${this.renderStudentCheckboxList(students, enrolledStudentIds)}
                     </div>
                 </div>
+                </div>
                 
-                <!-- Enhanced Enrolled Students Section -->
                 <div class="enrolled-students-section">
                     <div class="section-header">
                         <h5>👥 Alunos Inscritos</h5>
@@ -189,8 +159,7 @@ export class TurmasModals {
                     
                     <div class="enrolled-students-container">
                         <div id="enrolledStudentsList">
-                            ${await this.turmasStudents.renderEnrolledStudents(turma.alunosInscritos || [])}
-                        </div>
+                            ${enrolledHtml} </div>
                     </div>
                 </div>
             </div>

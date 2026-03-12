@@ -1,7 +1,209 @@
 {
+  "0zyXUsCwXzALEIFf5VWf": {
+    "displayName": "Gerson Linden",
+    "emailsSecundarios": [
+      "gersonlinden@faculdadeluteranaconcordia.com.br"
+    ],
+    "role": "professor",
+    "tipos": [
+      "professor"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752416645,
+      "_nanoseconds": 88000000
+    },
+    "isPlaceholder": true,
+    "nome": "Gerson Luis Linden",
+    "email": "gersonlinden@faculdadeluteranaconcordia.com.br"
+  },
+  "12xtBP6idskyLnbQ3uGq": {
+    "displayName": "Vitor Emanuel Viante Paulino dos Santos",
+    "email": "vitorviante@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496291,
+      "_nanoseconds": 307000000
+    },
+    "uid": "leVIguvb1LRbXKHeyAVbmYeBPwB3",
+    "role": "aluno",
+    "nome": "Vitor Emanuel Viante Paulino dos Santos"
+  },
+  "1QS1KPH4pXYjPBOrhn9v": {
+    "displayName": "Lucas Haniel Munchow Klug",
+    "email": "lklug@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496287,
+      "_nanoseconds": 989000000
+    },
+    "uid": "gUdMMD9KmLTWQh4ERzBBETEnJHQ2",
+    "role": "aluno",
+    "nome": "Lucas Haniel Munchow Klug"
+  },
+  "1fEcI25p7ZbsAKmmajG9": {
+    "displayName": "Vitor Augusto Piló Dos Santos",
+    "email": "vsantos@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496290,
+      "_nanoseconds": 803000000
+    },
+    "uid": "axA6NvG7ZnS6BZn3oxUpn8t24Ao2",
+    "role": "aluno",
+    "nome": "Vitor Augusto Piló Dos Santos"
+  },
+  "35tu0tiMG8eIm2weznB2gwaGlSC2": {
+    "createdAt": {
+      "_seconds": 1734004981,
+      "_nanoseconds": 0
+    },
+    "uid": "35tu0tiMG8eIm2weznB2gwaGlSC2",
+    "email": "andrei@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "displayName": "Andrei Guilherme Bobato de Paula",
+    "role": "aluno",
+    "nome": "Andrei Guilherme Bobato de Paula"
+  },
+  "3a4sWweaql3ccuK1GRSv": {
+    "displayName": "Matheus Vitor Peres Pereira",
+    "email": "mpereira@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496288,
+      "_nanoseconds": 534000000
+    },
+    "uid": "SnMRIXWraOTtbGIMq5r413V67hx1",
+    "role": "aluno",
+    "nome": "Matheus Vitor Peres Pereira"
+  },
+  "4CMpbYrSnI7XNXAylSF0": {
+    "displayName": "Hítalo Werneck Frederico",
+    "email": "hfrederico@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496284,
+      "_nanoseconds": 765000000
+    },
+    "uid": "CR5sx5PPGdX5pA3n3AxRsU5WVSu1",
+    "role": "aluno",
+    "nome": "Hítalo Werneck Frederico"
+  },
+  "63so1KPdPNV7WixZBZqI": {
+    "nome": "Secretaria ETE",
+    "email": "secretariaete@faculdadeluteranaconcordia.com.br",
+    "tipo": "tecnico",
+    "createdAt": {
+      "_seconds": 1759687189,
+      "_nanoseconds": 8000000
+    },
+    "role": "tecnico"
+  },
+  "6MmiLVm9Gh6Pg8q5pf2S": {
+    "displayName": "Ícaro Fonseca Dias",
+    "email": "idias@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496285,
+      "_nanoseconds": 299000000
+    },
+    "role": "aluno",
+    "nome": "Ícaro Fonseca Dias"
+  },
+  "6k0cxyPSNYCJMLi4pex3": {
+    "displayName": "Francis Hoffmann",
+    "emailsSecundarios": [
+      "francis@faculdadeluteranaconcordia.com.br"
+    ],
+    "role": "professor",
+    "tipos": [
+      "professor"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752416645,
+      "_nanoseconds": 88000000
+    },
+    "isPlaceholder": true,
+    "nome": "Francis Dietrich Hoffmann",
+    "email": "francis@faculdadeluteranaconcordia.com.br"
+  },
+  "6ysKS2KsboYwRwWb2ZC4": {
+    "nome": "Secretaria",
+    "email": "secretaria@faculdadeluteranaconcordia.com.br",
+    "tipo": "tecnico",
+    "createdAt": {
+      "_seconds": 1759687229,
+      "_nanoseconds": 937000000
+    },
+    "role": "tecnico"
+  },
+  "75W716SD4ZTr2ZQsGHNgkYUAxh63": {
+    "createdAt": {
+      "_seconds": 1733756029,
+      "_nanoseconds": 0
+    },
+    "uid": "75W716SD4ZTr2ZQsGHNgkYUAxh63",
+    "email": "gabriel@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "displayName": "Gabriel do Amaral Rodrigues",
+    "role": "aluno",
+    "nome": "Gabriel do Amaral Rodrigues"
+  },
+  "77dHmZvwNvs3g5pLHWmG": {
+    "email": "leonidiosg@seminarioconcordia.com.br",
+    "nome": "Leonidio Schulz Görl",
+    "role": "aluno",
+    "createdAt": {
+      "_seconds": 1760639331,
+      "_nanoseconds": 546000000
+    }
+  },
+  "8oipNtBySy1hqTeGelle": {
+    "displayName": "Abner Campos",
+    "email": "acampos@faculdadeluteranaconcordia.com.br",
+    "emailsSecundarios": [],
+    "role": "professor",
+    "tipos": [
+      "professor"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752416645,
+      "_nanoseconds": 88000000
+    },
+    "isPlaceholder": true,
+    "nome": "Abner Elpino Campos"
+  },
+  "ADRXNK4tTjgmX3EUOPlf": {
+    "displayName": "Adelso Schultz",
+    "email": "adelso@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496277,
+      "_nanoseconds": 956000000
+    },
+    "uid": "6nurHJeypvf0kGWQm2G9ae003VM2",
+    "role": "aluno",
+    "nome": "Adelso Schultz"
+  },
   "AVsAxNeUecU7W0S41eH8goxBUXO2": {
     "email": "marcelohauch@seminarioconcordia.com.br",
-    "role": "aluno",
     "displayName": "Marcelo Hauch Piske",
     "created_at": {
       "_seconds": 1747059498,
@@ -11,51 +213,682 @@
     "submitted_at": {
       "_seconds": 1747061286,
       "_nanoseconds": 208000000
-    }
+    },
+    "tipos": [
+      "admin"
+    ],
+    "nomeCompleto": "Marcelo Hauch Piske",
+    "createdAt": {
+      "_seconds": 1733695383,
+      "_nanoseconds": 0
+    },
+    "uid": "AVsAxNeUecU7W0S41eH8goxBUXO2",
+    "tipo": "professores",
+    "nome": "Marcelo Piske",
+    "role": "admin"
   },
-  "AvWliEqI9mY2UNVFanMWAF2IP6B2": {
-    "email": "damal@seminarioconcordia.com.br",
-    "displayName": "Damal Seminário",
-    "created_at": {
-      "_seconds": 1746021369,
-      "_nanoseconds": 715000000
+  "BMppLXNKNMaxCu5iHmZ9vuXxTIs2": {
+    "createdAt": {
+      "_seconds": 1733766317,
+      "_nanoseconds": 0
     },
-    "submitted": true,
-    "submitted_at": {
-      "_seconds": 1746021395,
-      "_nanoseconds": 42000000
+    "uid": "BMppLXNKNMaxCu5iHmZ9vuXxTIs2",
+    "displayName": "Luciano Brunow",
+    "email": "luciano@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "role": "aluno",
+    "nome": "Luciano Brunow"
+  },
+  "BxViW4XcRGbwU3dbr2QcQV8QAo23": {
+    "createdAt": {
+      "_seconds": 1733755650,
+      "_nanoseconds": 0
     },
-    "role": "professor"
+    "uid": "BxViW4XcRGbwU3dbr2QcQV8QAo23",
+    "email": "wellington@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "displayName": "Wellington Calixto dos Santos",
+    "role": "aluno",
+    "nome": "Wellington Calixto dos Santos"
+  },
+  "EXTC6vBwhlNjbtV1ilYo": {
+    "displayName": "Diego Rafael Gonçalves",
+    "email": "dgoncalves@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496280,
+      "_nanoseconds": 311000000
+    },
+    "uid": "ASr3H8Azmlc6sYldAm5EtIBxLut2",
+    "role": "aluno",
+    "nome": "Diego Rafael Gonçalves"
+  },
+  "FMJ89K4ggBwi9T3UQ2Mb": {
+    "nome": "Recursos Humanos",
+    "email": "recursoshumanos@faculdadeluteranaconcordia.com.br",
+    "tipo": "tecnico",
+    "createdAt": {
+      "_seconds": 1759687140,
+      "_nanoseconds": 365000000
+    },
+    "role": "tecnico"
+  },
+  "GUjhTgNthhYv7spMtt3pYteL8pi1": {
+    "createdAt": {
+      "_seconds": 1734689621,
+      "_nanoseconds": 0
+    },
+    "uid": "GUjhTgNthhYv7spMtt3pYteL8pi1",
+    "displayName": "Gabriel Santana Fernandes Gabre",
+    "email": "ggabre@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "role": "aluno",
+    "nome": "Gabriel Santana Fernandes Gabre"
+  },
+  "HCnCCxGRVR57j1TFFXtI": {
+    "displayName": "Leonardo Hoffmann Petrich",
+    "email": "lpetrich@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496287,
+      "_nanoseconds": 368000000
+    },
+    "uid": "wO4bCsvKCvg90l2YcYIr0NVHUWq1",
+    "role": "aluno",
+    "nome": "Leonardo Hoffmann Petrich"
+  },
+  "ICdZ5PtB3OQdg9mEGsbghBHSQvs1": {
+    "createdAt": {
+      "_seconds": 1734994550,
+      "_nanoseconds": 0
+    },
+    "uid": "ICdZ5PtB3OQdg9mEGsbghBHSQvs1",
+    "displayName": "Thiago Vasconcellos Sazana",
+    "email": "thiago@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "role": "aluno",
+    "nome": "Thiago Vasconcellos Sazana"
+  },
+  "IHGYU3Rm9hMb1taWnIfLJRLJqdy2": {
+    "createdAt": {
+      "_seconds": 1733924766,
+      "_nanoseconds": 0
+    },
+    "uid": "IHGYU3Rm9hMb1taWnIfLJRLJqdy2",
+    "displayName": "Vinícius Arnholz Kloss",
+    "email": "viniciuskloss@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "role": "aluno",
+    "nome": "Vinícius Arnholz Kloss"
+  },
+  "IUZjvzUtKmdiAuRfMxSpx5q9U412": {
+    "createdAt": {
+      "_seconds": 1733757898,
+      "_nanoseconds": 0
+    },
+    "uid": "IUZjvzUtKmdiAuRfMxSpx5q9U412",
+    "displayName": "Cassiano Marquardt Mueller",
+    "email": "cassiano@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "role": "aluno",
+    "nome": "Cassiano Marquardt Mueller"
+  },
+  "Ie1P2gBHgUZF7FZomh9z": {
+    "displayName": "Telmo Daniel Adams",
+    "email": "tadams@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496290,
+      "_nanoseconds": 215000000
+    },
+    "uid": "HzxR4iFeUYRlLdgJoqGXfYsXONF3",
+    "role": "aluno",
+    "nome": "Telmo Daniel Adams"
+  },
+  "IoHrP0PXEkQuRQ7DUHfJh2yo0B73": {
+    "createdAt": {
+      "_seconds": 1734738736,
+      "_nanoseconds": 0
+    },
+    "uid": "IoHrP0PXEkQuRQ7DUHfJh2yo0B73",
+    "displayName": "Gean Elias Wagner Marquarte",
+    "tipos": [
+      "aluno"
+    ],
+    "email": "gean@faculdadeluteranaconcordia.com.br",
+    "role": "aluno",
+    "nome": "Gean Elias Wagner Marquarte"
+  },
+  "IuN0oAkV7rVFRKyDZYrJcbgMQvR2": {
+    "createdAt": {
+      "_seconds": 1741971162,
+      "_nanoseconds": 0
+    },
+    "uid": "IuN0oAkV7rVFRKyDZYrJcbgMQvR2",
+    "displayName": "IELB-Airton S. Schroeder",
+    "email": "airton@ielb.org.br"
+  },
+  "KaLx2WFcVhfi14TRnoiFc7ORZsQ2": {
+    "createdAt": {
+      "_seconds": 1733695936,
+      "_nanoseconds": 0
+    },
+    "uid": "KaLx2WFcVhfi14TRnoiFc7ORZsQ2",
+    "displayName": "Secretaria Faculdade Luterana Concórdia",
+    "email": "secretaria@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "admin"
+    ],
+    "role": "tecnico",
+    "nome": "Secretaria Faculdade Luterana Concórdia"
+  },
+  "KphGJljiIXnYTJjYOMnR": {
+    "displayName": "Samuel Fuhrmann",
+    "emailsSecundarios": [
+      "samuel@faculdadeluteranaconcordia.com.br"
+    ],
+    "role": "professor",
+    "tipos": [
+      "professor"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752416645,
+      "_nanoseconds": 88000000
+    },
+    "isPlaceholder": true,
+    "nome": "Samuel Reduss Fuhrmann",
+    "email": "samuel@faculdadeluteranaconcordia.com.br"
+  },
+  "LTHYuisPiaYaExXfzjC78YsmsAn1": {
+    "createdAt": {
+      "_seconds": 1734616840,
+      "_nanoseconds": 0
+    },
+    "uid": "LTHYuisPiaYaExXfzjC78YsmsAn1",
+    "displayName": "Herick Goese Schellmann",
+    "email": "herick@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "role": "aluno",
+    "nome": "Herick Goese Schellmann"
+  },
+  "LTIqxaeRXWY0p07UY2jmPelSUcf2": {
+    "createdAt": {
+      "_seconds": 1733790359,
+      "_nanoseconds": 0
+    },
+    "uid": "LTIqxaeRXWY0p07UY2jmPelSUcf2",
+    "email": "brunocesar@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "displayName": "Bruno César Malaquias de Souza",
+    "role": "aluno",
+    "nome": "Bruno César Malaquias de Souza"
+  },
+  "MAzBZFh9dtCKNxBwxmFu": {
+    "displayName": "Fredi Erdmann Euzébio",
+    "email": "feuzebio@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496282,
+      "_nanoseconds": 640000000
+    },
+    "uid": "DX85G1TmnkO8h0ugEhSWf4Wkej92",
+    "role": "aluno",
+    "nome": "Fredi Erdmann Euzébio"
+  },
+  "MHClaGo7dnd1sZbo7NDN": {
+    "displayName": "Raul Blum",
+    "email": "raulb@seminarioconcordia.com.br",
+    "emailsSecundarios": [],
+    "role": "professor",
+    "tipos": [
+      "professor"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752416645,
+      "_nanoseconds": 89000000
+    },
+    "isPlaceholder": true,
+    "nome": "Raul Blum"
+  },
+  "NKHFJ3GabhRSpY9mqV6BmeH6mRr2": {
+    "createdAt": {
+      "_seconds": 1734624245,
+      "_nanoseconds": 0
+    },
+    "uid": "NKHFJ3GabhRSpY9mqV6BmeH6mRr2",
+    "email": "joaopedro@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "displayName": "João Pedro Verdum Moré Rodrigues",
+    "role": "aluno",
+    "nome": "João Pedro Verdum Moré Rodrigues"
+  },
+  "Neebi5KqfK4b5dM1C37k": {
+    "displayName": "Clovis Gedrat",
+    "emailsSecundarios": [
+      "clovisgedrat@faculdadeluteranaconcordia.com.br"
+    ],
+    "role": "professor",
+    "tipos": [
+      "professor"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752416645,
+      "_nanoseconds": 88000000
+    },
+    "isPlaceholder": true,
+    "nome": "Clóvis Vitor Gedrat",
+    "email": "clovisgedrat@faculdadeluteranaconcordia.com.br"
+  },
+  "QgjMfDLRyXPM6pqQTXahKXiDHe12": {
+    "createdAt": {
+      "_seconds": 1733846337,
+      "_nanoseconds": 0
+    },
+    "uid": "QgjMfDLRyXPM6pqQTXahKXiDHe12",
+    "displayName": "Frederico Guilherme Doege Hoffmann",
+    "email": "frederico@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "role": "aluno",
+    "nome": "Frederico Guilherme Doege Hoffmann"
+  },
+  "ReKKikNAModps5cp77hUypuExCX2": {
+    "createdAt": {
+      "_seconds": 1733970634,
+      "_nanoseconds": 0
+    },
+    "uid": "ReKKikNAModps5cp77hUypuExCX2",
+    "displayName": "Gilson Hoffmann Júnior",
+    "email": "gilson@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "role": "aluno",
+    "nome": "Gilson Hoffmann Júnior"
+  },
+  "RnLABzG2kmBxkFRdJk9N": {
+    "displayName": "Rafael Linhares Teixeira",
+    "email": "rteixeira@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496289,
+      "_nanoseconds": 62000000
+    },
+    "uid": "18Nqs2iFy3UT57FWacox2Jbfojj2",
+    "role": "aluno",
+    "nome": "Rafael Linhares Teixeira"
   },
   "S97sTwYzOLZJ9ZjdbivcHVNeVZ52": {
-    "email": "leonidiosg@seminarioconcordia.com.br",
     "displayName": "Leonidio Schulz Görl",
     "submitted": false,
     "created_at": {
       "_seconds": 1746033519,
       "_nanoseconds": 35000000
     },
-    "role": "professor"
-  },
-  "hA8QutsvtrfTtUNeWtcp": {
-    "tipo": "tecnicos",
-    "dataCriacao": {
-      "_seconds": 1748872301,
-      "_nanoseconds": 685000000
+    "role": "professor",
+    "createdAt": {
+      "_seconds": 1733749993,
+      "_nanoseconds": 0
     },
-    "codigo": "936924",
-    "nome": "Técnico Administrativo Teste",
-    "email": "tectest@gmai.com",
-    "senha": "1234"
+    "uid": "S97sTwYzOLZJ9ZjdbivcHVNeVZ52",
+    "tipos": [
+      "aluno"
+    ],
+    "nome": "Leonidio Schulz Görl",
+    "email": "leonidio@faculdadeluteranaconcordia.com.br"
+  },
+  "UAFgqX6fdpZEBbwliocrXkFEKxB3": {
+    "createdAt": {
+      "_seconds": 1741969785,
+      "_nanoseconds": 0
+    },
+    "uid": "UAFgqX6fdpZEBbwliocrXkFEKxB3",
+    "displayName": "ETE Seminário Concórdia",
+    "email": "ete@seminarioconcordia.com.br",
+    "role": "tecnico",
+    "nome": "ETE Seminário Concórdia"
+  },
+  "URZAicQtI0SkpSNM4crx": {
+    "displayName": "Felipe Neiverth Amsberg",
+    "email": "famsberg@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496281,
+      "_nanoseconds": 458000000
+    },
+    "uid": "mQ4QNSDiO9chvqXxCNcj6DsWsKP2",
+    "role": "aluno",
+    "nome": "Felipe Neiverth Amsberg"
+  },
+  "VJ7TFlLiXDZO71HYLBYhjRf5uS03": {
+    "createdAt": {
+      "_seconds": 1734386066,
+      "_nanoseconds": 0
+    },
+    "uid": "VJ7TFlLiXDZO71HYLBYhjRf5uS03",
+    "email": "samuelg@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "displayName": "Samuel Grützmann Nörnberg",
+    "role": "aluno",
+    "nome": "Samuel Grützmann Nörnberg"
+  },
+  "VnZNGXkkBWhvoV4ZvQBX": {
+    "displayName": "Guilherme Ferreira Schulke",
+    "email": "gschulke@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496284,
+      "_nanoseconds": 203000000
+    },
+    "uid": "1z4tKyLv7CfaX78iivPcXTQmBAo2",
+    "role": "aluno",
+    "nome": "Guilherme Ferreira Schulke"
+  },
+  "X97y1GDXcx1oDWN2kvyc": {
+    "displayName": "Dwayne Johnson Olay Vazquez",
+    "email": "dvazquez@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496279,
+      "_nanoseconds": 14000000
+    },
+    "role": "aluno",
+    "nome": "Dwayne Johnson Olay Vazquez"
+  },
+  "YSSrqbhhUySeubIq2112": {
+    "displayName": "Jessé Cominesi",
+    "email": "jesse@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496285,
+      "_nanoseconds": 893000000
+    },
+    "role": "aluno",
+    "nome": "Jessé Cominesi"
+  },
+  "cHhhzg8simSqHHu7vSsu": {
+    "displayName": "Vilson Scholz",
+    "emailsSecundarios": [],
+    "role": "professor",
+    "tipos": [
+      "professor"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752416645,
+      "_nanoseconds": 89000000
+    },
+    "isPlaceholder": true,
+    "nome": "Vilson Scholz",
+    "email": "vilson@faculdadeluteranaconcordia.com.br"
+  },
+  "d96mnv2js9zwhr3XeCXw": {
+    "displayName": "Clovis Prunzel",
+    "emailsSecundarios": [
+      "clovisprunzel@faculdadeluteranaconcordia.com.br"
+    ],
+    "role": "professor",
+    "tipos": [
+      "professor"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752416645,
+      "_nanoseconds": 87000000
+    },
+    "isPlaceholder": true,
+    "nome": "Clóvis Jair Prunzel",
+    "email": "clovisprunzel@faculdadeluteranaconcordia.com.br"
+  },
+  "dtaJqTgyNKB5vD8cEZ0z": {
+    "displayName": "Solivan Charles Schroeder Schvanz",
+    "email": "sschvanz@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496289,
+      "_nanoseconds": 571000000
+    },
+    "uid": "FPpkTiwTB6QamHkxui4OmCDhEZs2",
+    "role": "aluno",
+    "nome": "Solivan Charles Schroeder Schvanz"
+  },
+  "eVpzrP7MrcOZQySTzasU": {
+    "nome": "Administração",
+    "email": "administracao@faculdadeluteranaconcordia.com.br",
+    "tipo": "tecnico",
+    "createdAt": {
+      "_seconds": 1759687206,
+      "_nanoseconds": 974000000
+    },
+    "role": "tecnico"
+  },
+  "ftBtBRoPJLI5iDtbDo9I": {
+    "displayName": "Cesar Rios",
+    "email": "cesarmr@seminarioconcordia.com.br",
+    "emailsSecundarios": [],
+    "role": "professor",
+    "tipos": [
+      "professor"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752416645,
+      "_nanoseconds": 88000000
+    },
+    "isPlaceholder": true,
+    "nome": "Cesar Rios"
+  },
+  "hIZoA6SJMjeArQhCPqa1r1jcf3s1": {
+    "createdAt": {
+      "_seconds": 1735308644,
+      "_nanoseconds": 0
+    },
+    "uid": "hIZoA6SJMjeArQhCPqa1r1jcf3s1",
+    "displayName": "Mateus Schneider Pieper",
+    "email": "mateus@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "role": "aluno",
+    "nome": "Mateus Schneider Pieper"
+  },
+  "hZXAduo57QZrz5ZolPCw": {
+    "displayName": "Silvio FSF",
+    "email": "silviofsf@seminarioconcordia.com.br",
+    "emailsSecundarios": [],
+    "role": "professor",
+    "tipos": [
+      "professor"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752416645,
+      "_nanoseconds": 88000000
+    },
+    "isPlaceholder": true,
+    "nome": "Silvio FSF"
+  },
+  "jJX4L7qxiWXeEPODKhKA5PHC6du2": {
+    "createdAt": {
+      "_seconds": 1734052079,
+      "_nanoseconds": 0
+    },
+    "uid": "jJX4L7qxiWXeEPODKhKA5PHC6du2",
+    "displayName": "Daniel Wilske Neto",
+    "email": "daniel@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "role": "aluno",
+    "nome": "Daniel Wilske Neto"
+  },
+  "lMClXPiNZUyAP6kS37BU": {
+    "displayName": "Gabriel Dutra",
+    "email": "gabrieldutra@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496283,
+      "_nanoseconds": 558000000
+    },
+    "role": "aluno",
+    "nome": "Gabriel Dutra"
+  },
+  "mTGiHU4KWQPAttIeJGWZcih8eYc2": {
+    "createdAt": {
+      "_seconds": 1738669065,
+      "_nanoseconds": 0
+    },
+    "uid": "mTGiHU4KWQPAttIeJGWZcih8eYc2",
+    "displayName": "Diretor Seminário Concórdia",
+    "email": "diretor@seminarioconcordia.com.br",
+    "tipos": [
+      "admin"
+    ],
+    "role": "tecnico",
+    "nome": "Diretor Seminário Concórdia"
+  },
+  "nGIjFhMutzMiPgXlygNRaaVoRr72": {
+    "createdAt": {
+      "_seconds": 1734095739,
+      "_nanoseconds": 0
+    },
+    "uid": "nGIjFhMutzMiPgXlygNRaaVoRr72",
+    "displayName": "Hendreo Lucas Oliveira",
+    "tipos": [
+      "aluno"
+    ],
+    "email": "holiveira@faculdadeluteranaconcordia.com.br",
+    "role": "aluno",
+    "nome": "Hendreo Lucas Oliveira"
+  },
+  "nSv3QPUBbcgqC3Jc0cB3": {
+    "displayName": "Joaquim Airton Moreira Silva",
+    "email": "jsilva@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752496286,
+      "_nanoseconds": 856000000
+    },
+    "role": "aluno",
+    "nome": "Joaquim Airton Moreira Silva"
+  },
+  "tsaxGUiDp21Kea4d7IOH": {
+    "nome": "Biblioteca",
+    "email": "biblioteca@faculdadeluteranaconcordia.com.br",
+    "tipo": "tecnico",
+    "createdAt": {
+      "_seconds": 1759687169,
+      "_nanoseconds": 772000000
+    },
+    "role": "tecnico"
+  },
+  "wLr2WBsEJSaN2LMSqr6l": {
+    "displayName": "Carla Rosana",
+    "email": "carlarosana@seminarioconcordia.com.br",
+    "emailsSecundarios": [
+      "carla@faculdadeluteranaconcordia.com.br"
+    ],
+    "role": "professor",
+    "tipos": [
+      "professor"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752416645,
+      "_nanoseconds": 88000000
+    },
+    "isPlaceholder": true,
+    "nome": "Carla Rosana"
+  },
+  "ywbMhjglTWd0Nm7XtNXPxmouyci1": {
+    "createdAt": {
+      "_seconds": 1734654849,
+      "_nanoseconds": 0
+    },
+    "uid": "ywbMhjglTWd0Nm7XtNXPxmouyci1",
+    "displayName": "Felipe Alves Ferreira",
+    "email": "felipe@faculdadeluteranaconcordia.com.br",
+    "tipos": [
+      "aluno"
+    ],
+    "role": "aluno",
+    "nome": "Felipe Alves Ferreira"
   },
   "z2if0pj7k1gldcboOEwrGeXvdY13": {
     "email": "cpa@faculdadeluteranaconcordia.com.br",
-    "role": "aluno",
     "displayName": "CPA cpa",
     "submitted": false,
     "created_at": {
       "_seconds": 1747059592,
       "_nanoseconds": 229000000
-    }
+    },
+    "tipos": [
+      "admin"
+    ],
+    "nomeCompleto": "CPA",
+    "createdAt": {
+      "_seconds": 1747059349,
+      "_nanoseconds": 0
+    },
+    "uid": "z2if0pj7k1gldcboOEwrGeXvdY13",
+    "role": "admin",
+    "nome": "CPA"
+  },
+  "zbUjgbihZztXjoemFBTx": {
+    "displayName": "Anselmo Graff",
+    "emailsSecundarios": [
+      "agraff@faculdadeluteranaconcordia.com.br"
+    ],
+    "role": "professor",
+    "tipos": [
+      "professor"
+    ],
+    "dataCriacao": {
+      "_seconds": 1752416645,
+      "_nanoseconds": 88000000
+    },
+    "isPlaceholder": true,
+    "nome": "Anselmo Ernesto Graff",
+    "email": "agraff@faculdadeluteranaconcordia.com.br"
   }
 }

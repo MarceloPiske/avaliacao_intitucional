@@ -18,6 +18,10 @@
     
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
 </head>
 
 <body>
@@ -283,6 +287,10 @@
                             <p>Análise completa das respostas e relatórios estatísticos</p>
                         </div>
                         <div class="analytics-actions">
+                            <div class="export-options" style="margin-bottom: 10px;">
+    <input type="checkbox" id="detailedExportCheckbox">
+    <label for="detailedExportCheckbox">Incluir relatório detalhado (resposta por resposta)</label>
+</div>
                             <button id="exportAnalyticsBtn" class="btn btn-primary">
                                 <span class="material-icons">file_download</span>
                                 Exportar Relatório
@@ -475,10 +483,10 @@
                                     <h3>Distribuição de Notas</h3>
                                     <canvas id="distributionChart"></canvas>
                                 </div>
-                                <div class="chart-container">
+                                <!-- <div class="chart-container">
                                     <h3>Evolução Temporal</h3>
                                     <canvas id="timelineChart"></canvas>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
 

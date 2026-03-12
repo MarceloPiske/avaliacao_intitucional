@@ -1,19 +1,36 @@
-import { FirebaseCRUD } from '../../shared/firebase.js';
+import { FirebaseCRUD, db } from '../../shared/firebase.js';
 import { AnalyticsDataUtils } from './analytics-data-utils.js';
+
+import {
+    collectionGroup,
+    getDocs,
+    query
+} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+// Importa a nossa nova classe de cache
+import { AnalyticsCache } from './analytics-cache.js';
 
 export class AnalyticsDataProcessor {
     constructor() {
+        // Agora usamos o 'db' importado. O erro 'firebase is not defined' desaparece.
+        this.db = db; 
+        
+        // Inicializa o nosso cache
+        this.cache = new AnalyticsCache();
+
+        // CRUDs para as coleções de topo (como no seu original)
         this.avaliacoesCRUD = new FirebaseCRUD("ad_avaliacoes");
         this.turmasCRUD = new FirebaseCRUD("ad_turmas");
         this.usersCRUD = new FirebaseCRUD("users");
         this.disciplinasCRUD = new FirebaseCRUD("disciplinas");
         this.formulariosCRUD = new FirebaseCRUD("ad_formularios");
         
+        // Propriedades de estado
         this.allAvaliacoes = [];
         this.allTurmas = [];
         this.allUsers = [];
         this.allDisciplinas = [];
         this.allFormularios = [];
+        this.respostasMap = new Map(); // Chave: avaliacaoId
         this.processedData = [];
         this.detailedAnalytics = {
             byStudent: new Map(),
@@ -23,7 +40,58 @@ export class AnalyticsDataProcessor {
         };
     }
 
-    async loadAllData() {
+    async loadAllData(forceRefresh = false) {
+        if (!forceRefresh) {
+            const cachedData = await this.cache.getCachedAnalyticsData();
+            if (cachedData) {
+                // ... (carrega os dados do cache para 'this.allAvaliacoes', etc.) ...
+                this.allAvaliacoes = cachedData.allAvaliacoes;
+                this.allTurmas = cachedData.allTurmas;
+                this.allUsers = cachedData.allUsers;
+                this.allDisciplinas = cachedData.allDisciplinas;
+                this.allFormularios = cachedData.allFormularios;
+                this.respostasMap = new Map(cachedData.respostasMapArray); 
+                
+                this.processData(); // Popula 'this.processedData'
+                this.processDetailedAnalytics();
+                
+                // --- CORREÇÃO AQUI ---
+                // Retorne os dados que o manager precisa
+                return {
+                    processedData: this.processedData,
+                    allAvaliacoes: this.allAvaliacoes,
+                    allTurmas: this.allTurmas
+                };
+            }
+        }
+        
+        // CACHE MISS ou forceRefresh: Busca do Firestore
+        console.log("Buscando dados frescos do Firestore...");
+        await this._fetchDataFromFirestore();
+        
+        // Salva no cache para a próxima vez
+        await this.cache.setCachedAnalyticsData({
+            allAvaliacoes: this.allAvaliacoes,
+            allTurmas: this.allTurmas,
+            allUsers: this.allUsers,
+            allDisciplinas: this.allDisciplinas,
+            allFormularios: this.allFormularios,
+            respostasMapArray: Array.from(this.respostasMap.entries())
+        });
+        
+        this.processData(); // Popula 'this.processedData'
+        this.processDetailedAnalytics();
+        
+        // --- CORREÇÃO AQUI ---
+        // Retorne os dados que o manager precisa
+        return {
+            processedData: this.processedData,
+            allAvaliacoes: this.allAvaliacoes,
+            allTurmas: this.allTurmas
+        };
+    }
+
+    async _fetchDataFromFirestore() {
         const [avaliacoes, turmas, users, disciplinas, formularios] = await Promise.all([
             this.avaliacoesCRUD.readAll(),
             this.turmasCRUD.readAll(),
@@ -37,21 +105,36 @@ export class AnalyticsDataProcessor {
         this.allUsers = users || [];
         this.allDisciplinas = disciplinas || [];
         this.allFormularios = formularios || [];
+
+        // --- A GRANDE OTIMIZAÇÃO (RESOLVENDO O N+1) ---
+        console.log("Buscando todas as respostas com CollectionGroup...");
+        this.respostasMap.clear();
         
-        await this.processData();
-        this.processDetailedAnalytics();
+        // 1. Cria a consulta 'collectionGroup' usando o 'db' importado
+        const respostasQuery = query(collectionGroup(this.db, 'respostas'));
         
-        return {
-            avaliacoes: this.allAvaliacoes,
-            turmas: this.allTurmas,
-            users: this.allUsers,
-            disciplinas: this.allDisciplinas,
-            formularios: this.allFormularios,
-            processedData: this.processedData
-        };
+        // 2. Executa a consulta UMA SÓ VEZ
+        const respostasSnap = await getDocs(respostasQuery);
+        
+        // 3. Organiza as respostas em um Mapa
+        respostasSnap.forEach(doc => {
+            if (doc.ref.path.startsWith('ad_avaliacoes/')) {
+                const avaliacaoId = doc.ref.parent.parent.id;
+                if (!this.respostasMap.has(avaliacaoId)) {
+                    this.respostasMap.set(avaliacaoId, []);
+                }
+                this.respostasMap.get(avaliacaoId).push(doc.data());
+            }
+        });
+        console.log(`Respostas encontradas e mapeadas para ${this.respostasMap.size} avaliações.`);
     }
 
-    async processData() {
+    // O resto do seu ficheiro (processData, calculateSummary, etc.)
+    // permanece EXATAMENTE IGUAL ao que eu tinha sugerido antes.
+    // Cole o resto do seu ficheiro original (ou da minha sugestão anterior) aqui.
+    // ...
+    // Exemplo de processData (sem async):
+    processData() {
         this.processedData = [];
         
         for (const avaliacao of this.allAvaliacoes) {
@@ -59,8 +142,9 @@ export class AnalyticsDataProcessor {
                 const turma = this.allTurmas.find(t => t.id === avaliacao.turmaId);
                 if (!turma) continue;
                 
-                const respostasCRUD = new FirebaseCRUD(`ad_avaliacoes/${avaliacao.id}/respostas`);
-                const respostas = await respostasCRUD.readAll();
+                // DEPOIS (A SOLUÇÃO):
+                const respostas = this.respostasMap.get(avaliacao.id) || []; // Busca instantânea
+                if (respostas.length === 0) continue;
                 
                 const aluno = this.allUsers.find(u => u.id === avaliacao.alunoId);
                 const disciplina = this.allDisciplinas.find(d => d.id === turma.disciplinaId);
@@ -86,7 +170,7 @@ export class AnalyticsDataProcessor {
                         dataResposta: avaliacao.dataResposta,
                         questaoTexto: resposta.questaoTexto,
                         respostaValor: resposta.respostaValor,
-                        tipo: resposta.tipo,
+                        tipo: resposta.tipo, // O tipo corrigido do Problema 1
                         ordem: resposta.ordem,
                         comentarios: avaliacao.comentarios,
                         sugestoes: avaliacao.sugestoes
@@ -96,7 +180,7 @@ export class AnalyticsDataProcessor {
                 }
                 
             } catch (error) {
-                console.error('Erro ao processar avaliação:', avaliacao.id, error);
+                console.error('Erro ao processar avaliação (na memória):', avaliacao.id, error);
             }
         }
     }
@@ -104,7 +188,9 @@ export class AnalyticsDataProcessor {
     processDetailedAnalytics() {
         AnalyticsDataUtils.processDetailedAnalytics(this.processedData, this.detailedAnalytics);
     }
-
+    
+    // ... (COLE O RESTO DAS SUAS FUNÇÕES AQUI: calculateSummary, getStudentAnalytics, etc.) ...
+    // ... Elas não precisam de NENHUMA alteração. ...
     calculateSummary() {
         const totalAvaliacoes = this.allAvaliacoes.length;
         const totalAlunos = new Set(this.allAvaliacoes.map(a => a.alunoId)).size;
