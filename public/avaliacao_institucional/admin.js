@@ -1,106 +1,73 @@
-import { initializeFirebase } from './modules/firebaseConfig.js';
+import { FirebaseAuth } from '../avaliacao_disciplinas/modules/shared/firebase.js';
 import { initUsersSection } from './modules/usersSection.js';
 import { initQuestionsSection } from './modules/questionsSection.js';
 import { initResultsSection } from './modules/resultsSection.js';
 
-// Initialize Firebase
-initializeFirebase();
-
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-// Elements
-const adminLoginContainer = document.getElementById('admin-login-container');
-const adminPanel = document.getElementById('admin-panel');
-const adminGoogleLoginButton = document.getElementById('admin-google-login-button');
-const adminLoginError = document.getElementById('admin-login-error');
-const logoutBtn = document.getElementById('logout-btn');
-
-// Check auth state
-auth.onAuthStateChanged(user => {
-    if (user) {
-        // Check if user is admin
-        checkIfAdmin(user.email);
-    } else {
-        showLoginScreen();
+class AdminController {
+    constructor() {
+        this.auth = new FirebaseAuth();
+        this.init();
     }
-});
 
-// Google login
-adminGoogleLoginButton.addEventListener('click', () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    provider.setCustomParameters({
-        hd: 'seminarioconcordia.com.br,faculdadeluteranaconcordia.com.br'
-    });
-    
-    auth.signInWithPopup(provider)
-        .then((result) => {
-            const email = result.user.email;
-            checkIfAdmin(email);
-        })
-        .catch((error) => {
-            console.error("Error during Google sign in:", error);
-            adminLoginError.textContent = 'Erro ao fazer login: ' + error.message;
+    async init() {
+        // Verifica silenciosamente o status na BD
+        this.auth.check_login_status((user) => {
+            if (user) {
+                // Checa a memória local guardada no login
+                const userTipos = JSON.parse(localStorage.getItem("user_tipos") || "[]");
+                
+                if (userTipos.includes('admin')) {
+                    // SUCESSO: Remove a tela de carregamento e mostra o painel
+                    document.getElementById('app-loader').style.display = 'none';
+                    document.getElementById('admin-sidebar').style.display = 'flex';
+                    document.getElementById('admin-main').style.display = 'block';
+                    
+                    this.setupNavigation();
+                    this.loadSections();
+                } else {
+                    // Aluno tentou aceder ao painel admin alterando a URL!
+                    window.location.href = './index.html';
+                }
+            } else {
+                // Não está logado! Expulsa para o login.
+                window.location.href = './login';
+            }
         });
-});
+    }
 
-// Check if user is admin
-async function checkIfAdmin(email) {
-    try {
-        const snapshot = await db.collection('users')
-            .where('email', '==', email)
-            .where('role', '==', 'admin')
-            .get();
-        
-        if (!snapshot.empty) {
-            showAdminPanel();
-        } else {
-            auth.signOut();
-            adminLoginError.textContent = 'Você não tem permissão para acessar o painel administrativo.';
-            showLoginScreen();
-        }
-    } catch (error) {
-        console.error('Error checking admin status:', error);
-        adminLoginError.textContent = 'Erro ao verificar permissões: ' + error.message;
-        auth.signOut();
-        showLoginScreen();
+    loadSections() {
+        // Carrega os módulos (Arquitetura Modular perfeita)
+        initUsersSection();
+        initQuestionsSection();
+        initResultsSection();
+    }
+
+    setupNavigation() {
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const sections = document.querySelectorAll('.admin-section');
+
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const sectionName = btn.dataset.section;
+                
+                // Reseta visibilidade
+                navBtns.forEach(b => b.classList.remove('active'));
+                sections.forEach(s => s.classList.remove('active'));
+                
+                // Ativa a nova tab
+                btn.classList.add('active');
+                document.getElementById(`${sectionName}-section`).classList.add('active');
+            });
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await this.auth.logout();
+            window.location.href = './login';
+        });
     }
 }
 
-function showLoginScreen() {
-    adminLoginContainer.style.display = 'flex';
-    adminPanel.style.display = 'none';
-}
-
-function showAdminPanel() {
-    adminLoginContainer.style.display = 'none';
-    adminPanel.style.display = 'flex';
-    adminLoginError.textContent = '';
-    
-    // Initialize sections
-    initUsersSection();
-    initQuestionsSection();
-    initResultsSection();
-}
-
-// Logout
-logoutBtn.addEventListener('click', async () => {
-    await auth.signOut();
-    showLoginScreen();
-});
-
-// Navigation
-const navBtns = document.querySelectorAll('.sidebar-btn');
-const sections = document.querySelectorAll('.admin-section');
-
-navBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        const sectionName = btn.dataset.section;
-        
-        navBtns.forEach(b => b.classList.remove('active'));
-        sections.forEach(s => s.classList.remove('active'));
-        
-        btn.classList.add('active');
-        document.getElementById(`${sectionName}-section`).classList.add('active');
-    });
+// Inicia o motor do painel CPA
+document.addEventListener('DOMContentLoaded', () => {
+    new AdminController();
 });

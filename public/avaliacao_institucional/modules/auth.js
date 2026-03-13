@@ -203,7 +203,7 @@ export function setupAuth() {
         } else {
             hideAdminPanel();
             // Only show error if on admin page
-            if (window.location.pathname.includes('admin.html')) {
+            if (window.location.pathname.includes('admin')) {
                 loginError.textContent = 'Você não tem permissão para acessar o painel administrativo.';
             } else {
                 loginError.textContent = 'Login realizado com sucesso! Redirecionando para avaliação...';

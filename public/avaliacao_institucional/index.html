@@ -1,153 +1,122 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Avaliação CPA</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="main.css">
+    <title>CPA - Avaliação Institucional</title>
+    <link rel="stylesheet" href="../avaliacao_disciplinas/styles/shared/base.css">
+    <link rel="stylesheet" href="../avaliacao_disciplinas/evaluation-base.css">
+    <link rel="stylesheet" href="../avaliacao_disciplinas/evaluation-components.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        /* Ajustes específicos para a CPA (Tema Roxo/Púrpura) */
+        :root {
+            --accent: #a855f7; /* Roxo CPA */
+            --accent-hover: #9333ea;
+        }
+        .cpa-card {
+            max-width: 600px; margin: 40px auto; text-align: center;
+            padding: 40px; border-top: 4px solid var(--accent);
+        }
+        .cpa-card .card-icon {
+            width: 64px; height: 64px; background: #f3e8ff; color: var(--accent);
+            border-radius: 16px; display: flex; justify-content: center; align-items: center;
+            margin: 0 auto 20px;
+        }
+        .cpa-card .card-icon .material-icons { font-size: 32px; }
+        .axes-container { display: flex; flex-direction: column; gap: 32px; }
+        .axis-section h2 { color: var(--accent); margin-bottom: 24px; font-size: 20px; display: flex; align-items: center; gap: 8px; }
+    </style>
 </head>
 <body>
-    <div id="app">
-        <div id="login-container">
-            <h1>Sistema de Avaliação CPA</h1>
-            <div id="login-form">
-                <div id="login-tabs">
-                    <button id="email-tab" class="login-tab active">Email Institucional</button>
+
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="brand-icon" style="background: var(--accent);">
+                    <span class="material-icons">domain</span>
                 </div>
-                
-                <div id="email-login" class="login-method">
-                    <p>Entre com seu email institucional</p>
-                    <button id="google-login-button" class="google-btn">
-                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/google.svg" alt="Google">
-                        Entrar com Google
-                    </button>
-                    <p class="login-info">Apenas domínios @seminarioconcordia.com.br e @faculdadeluteranaconcordia.com.br são aceitos</p>
+                <div class="logo-text">
+                    <h3>EduPanel CPA</h3>
+                    <p>Avaliação Institucional</p>
                 </div>
-                
-                <p id="login-error" class="error-message"></p>
             </div>
-            <div class="admin-access">
-                <a href="admin.html" class="admin-btn">Acessar Painel Administrativo</a>
+            <div class="header-actions">
+                <div id="userInfo" style="margin-right: 16px; font-weight: 600; font-size: 14px; color: var(--text-secondary);"></div>
+                <button id="logoutButton" class="btn btn-secondary">
+                    <span class="material-icons">logout</span> Sair
+                </button>
             </div>
         </div>
-        
-        <div id="evaluation-container" style="display: none;">
-            <header>
-                <h1>Avaliação Institucional CPA</h1>
-                <div class="user-info">
-                    <span id="user-name-display"></span>
-                    <button id="eval-logout-button">Sair</button>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Avaliação Institucional</h1>
+            <p>A sua opinião constrói a nossa faculdade. Avalie a infraestrutura, serviços e gestão.</p>
+        </div>
+
+        <main>
+            <div class="discipline-card cpa-card" id="cpaStartCard">
+                <div class="card-icon"><span class="material-icons">assignment</span></div>
+                <h3>Ciclo Avaliativo Aberto</h3>
+                <p style="margin: 12px 0 24px;">Preencha o formulário da Comissão Própria de Avaliação. O seu feedback é 100% anónimo e essencial para o nosso plano de melhorias.</p>
+                
+                <div id="cpaStatusContainer">
+                    <button class="evaluate-btn" id="btnStartCpa" style="width: 100%;">
+                        <span class="material-icons">play_arrow</span> Iniciar Avaliação
+                    </button>
                 </div>
-            </header>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <div class="evaluation-form-overlay" role="dialog" id="cpaModal">
+        <div class="evaluation-form-container">
+            <button class="close-btn" id="btnCloseCpa">&times;</button>
             
-            <div class="evaluation-wrapper">
-                <div class="evaluation-progress">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill"></div>
-                    </div>
-                    <div class="progress-text">
-                        <span id="progress-current">0</span>/<span id="progress-total">0</span> questões
+            <div class="form-header sticky-header">
+                <div class="header-titles">
+                    <h2>Avaliação Institucional (CPA)</h2>
+                    <div class="privacy-badge">
+                        <span class="material-icons">lock</span> Respostas anónimas
                     </div>
                 </div>
-                
-                <div id="question-container">
-                    <div class="question-header">
-                        <span class="question-number">Questão <span id="current-question-num">1</span></span>
-                    </div>
-                    <h2 id="question-text"></h2>
-                    
-                    <div class="rating-legend">
-                        <h4><i class="fas fa-info-circle"></i> Escala de Avaliação</h4>
-                        <div class="legend-scale">
-                            <div class="legend-scale-item">
-                                <div class="scale-number">1</div>
-                                <div class="scale-label">Discordo Totalmente</div>
-                            </div>
-                            <div class="legend-scale-item">
-                                <div class="scale-number">2</div>
-                                <div class="scale-label">Discordo Parcialmente</div>
-                            </div>
-                            <div class="legend-scale-item">
-                                <div class="scale-number">3</div>
-                                <div class="scale-label">Neutro</div>
-                            </div>
-                            <div class="legend-scale-item">
-                                <div class="scale-number">4</div>
-                                <div class="scale-label">Concordo Parcialmente</div>
-                            </div>
-                            <div class="legend-scale-item">
-                                <div class="scale-number">5</div>
-                                <div class="scale-label">Concordo Totalmente</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="rating-container">
-                        <div class="rating-options">
-                            <label class="rating-option">
-                                <input type="radio" name="rating" value="1">
-                                <span class="rating-circle">
-                                    <span class="rating-number">1</span>
-                                </span>
-                                <span class="rating-text">Discordo Totalmente</span>
-                            </label>
-                            <label class="rating-option">
-                                <input type="radio" name="rating" value="2">
-                                <span class="rating-circle">
-                                    <span class="rating-number">2</span>
-                                </span>
-                                <span class="rating-text">Discordo Parcialmente</span>
-                            </label>
-                            <label class="rating-option">
-                                <input type="radio" name="rating" value="3">
-                                <span class="rating-circle">
-                                    <span class="rating-number">3</span>
-                                </span>
-                                <span class="rating-text">Neutro</span>
-                            </label>
-                            <label class="rating-option">
-                                <input type="radio" name="rating" value="4">
-                                <span class="rating-circle">
-                                    <span class="rating-number">4</span>
-                                </span>
-                                <span class="rating-text">Concordo Parcialmente</span>
-                            </label>
-                            <label class="rating-option">
-                                <input type="radio" name="rating" value="5">
-                                <span class="rating-circle">
-                                    <span class="rating-number">5</span>
-                                </span>
-                                <span class="rating-text">Concordo Totalmente</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="question-navigation">
-                        <button id="prev-question" class="secondary"><i class="fas fa-arrow-left"></i> Anterior</button>
-                        <button id="next-question">Próxima <i class="fas fa-arrow-right"></i></button>
-                        <button id="submit-evaluation" style="display: none;"><i class="fas fa-check-circle"></i> Finalizar Avaliação</button>
-                    </div>
-                </div>
-                
-                <div id="evaluation-complete" style="display: none;">
-                    <div class="success-message">
-                        <i class="fas fa-check-circle"></i>
-                        <h2>Avaliação Concluída!</h2>
-                        <p>Obrigado por participar da avaliação institucional CPA.</p>
-                        <p>Suas respostas foram registradas com sucesso.</p>
-                        <button id="return-button">Voltar ao Início</button>
+                <div class="form-progress-container">
+                    <div class="progress-text"><span id="progress-percentage">0%</span> concluído</div>
+                    <div class="form-progress-bar">
+                        <div class="form-progress-fill" id="form-progress-fill" style="background: var(--accent);"></div>
                     </div>
                 </div>
             </div>
+            
+            <form id="cpaForm" novalidate>
+                <div id="form-dynamic-content" class="axes-container"></div>
+
+                <div class="form-section feedback-section" style="margin-top: 40px;">
+                    <h2 style="color: var(--accent); display: flex; align-items: center; gap: 8px;">
+                        <span class="material-icons">forum</span> Comentários Gerais
+                    </h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 16px;">Sinta-se à vontade para deixar sugestões de melhoria para a instituição.</p>
+                    
+                    <div class="question-group">
+                        <textarea name="comentarios" class="modern-textarea" placeholder="O que mais gosta na instituição? O que podemos melhorar?"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions sticky-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelCpa">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnSubmitCpa" style="background: var(--accent);">
+                        <span class="material-icons">send</span> Enviar Respostas
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-    
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    
-    <script type="module" src="app.js"></script>
+
+    <script type="module" src="../avaliacao_institucional/app.js"></script>
 </body>
 </html>

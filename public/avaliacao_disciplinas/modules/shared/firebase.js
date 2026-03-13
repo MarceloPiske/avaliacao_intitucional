@@ -115,14 +115,15 @@ export class FirebaseAuth {
 
     pages_redirect(page) {
         const currentPath = window.location.pathname;
-        const targetPath = `${page}.html`;
+        const targetPath = `${page}`;
+        console.log("passei");
         
         // Only redirect if not already on the target page
         if (!currentPath.includes(targetPath)) {
             if (window.location.href.includes("avaliacao_intitucional")) {
-                window.location.href = `/avaliacao_intitucional/${targetPath}`;
+                window.location.href = `/intitucional/${targetPath}`;
             } else {
-                window.location.href = targetPath;
+                window.location.href = `/disciplinas/${targetPath}`;
             }
         }
     }

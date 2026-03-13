@@ -1,119 +1,109 @@
+import { jsPDF } from 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/+esm';
+import autoTableModule from 'https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/+esm';
+
+const autoTable = autoTableModule.default || autoTableModule;
+
 export async function exportResultsToPDF(questionFilter, typeFilter, allResponses, allQuestions) {
-    // Show loading indicator
-    const loadingDiv = document.createElement('div');
-    loadingDiv.className = 'pdf-loading';
-    loadingDiv.innerHTML = `
-        <div class="pdf-loading-content">
-            <div class="loading-spinner"></div>
-            <p>Gerando PDF... Por favor, aguarde.</p>
-        </div>
-    `;
-    document.body.appendChild(loadingDiv);
+    showLoading(true);
 
     try {
-        const { jsPDF } = window.jspdf;
         const doc = new jsPDF('p', 'mm', 'a4');
-
         const pageWidth = doc.internal.pageSize.getWidth();
         const pageHeight = doc.internal.pageSize.getHeight();
         const margin = 15;
         const contentWidth = pageWidth - 2 * margin;
         let yPos = margin;
 
-        // Title
-        doc.setFontSize(20);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Relatório de Avaliação CPA', pageWidth / 2, yPos, { align: 'center' });
-        yPos += 10;
-
-        // Date
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, pageWidth / 2, yPos, { align: 'center' });
-        yPos += 15;
-
-        // Filter info
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Filtros Aplicados:', margin, yPos);
-        yPos += 6;
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(10);
-
-        const typeLabel = typeFilter === 'all' ? 'Todos' : 
-                         typeFilter === 'aluno' ? 'Alunos' : 
-                         typeFilter === 'professor' ? 'Professores' : 'Técnicos';
-        doc.text(`• Tipo de Usuário: ${typeLabel}`, margin + 5, yPos);
-        yPos += 5;
-
-        const questionLabel = questionFilter === 'all' ? 'Todas as Perguntas' : 
-                            `Pergunta ${questionFilter}`;
-        doc.text(`• Pergunta: ${questionLabel}`, margin + 5, yPos);
-        yPos += 10;
-
-        // Statistics
-        const stats = calculateStatistics(allResponses, questionFilter);
-
-        doc.setFillColor(102, 126, 234);
-        doc.rect(margin, yPos, contentWidth, 8, 'F');
+        // Cabeçalho
+        doc.setFillColor(126, 34, 206);
+        doc.rect(0, 0, pageWidth, 35, 'F');
         doc.setTextColor(255, 255, 255);
-        doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
-        doc.text('Estatísticas Gerais', margin + 3, yPos + 5.5);
-        yPos += 8;
-        doc.setTextColor(0, 0, 0);
-
-        // Stats boxes
-        doc.setFontSize(10);
+        doc.setFontSize(22);
+        doc.text('Relatório Executivo - CPA', margin, 18);
         doc.setFont('helvetica', 'normal');
-        const statBoxWidth = (contentWidth - 10) / 5;
-        const statBoxHeight = 20;
-        const statBoxY = yPos + 5;
+        doc.setFontSize(10);
+        doc.setTextColor(233, 213, 255);
+        doc.text(`Comissão Própria de Avaliação Institucional | Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, margin, 26);
 
-        const statData = [
-            { label: 'Total de Respostas', value: stats.totalResponses, color: [102, 126, 234] },
-            { label: 'Média Geral', value: stats.avgRating, color: [118, 75, 162] },
-            { label: 'Respostas Alunos', value: stats.alunoResponses, color: [17, 153, 142] },
-            { label: 'Respostas Professores', value: stats.professorResponses, color: [244, 107, 69] },
-            { label: 'Respostas Técnicos', value: stats.tecnicoResponses, color: [142, 45, 226] }
+        yPos = 45;
+
+        // Filtros
+        doc.setTextColor(15, 23, 42);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        const typeLabel = typeFilter === 'all' ? 'Todos os Perfis' : (typeFilter === 'aluno' ? 'Apenas Alunos' : (typeFilter === 'professor' ? 'Apenas Professores' : 'Apenas Técnicos'));
+        const questionLabel = questionFilter === 'all' ? 'Todas as Perguntas' : `ID da Questão: ${questionFilter}`;
+        doc.text(`Filtros: ${typeLabel} | ${questionLabel}`, margin, yPos);
+        yPos += 12;
+
+        // KPIs
+        const stats = calculateStatistics(allResponses, questionFilter);
+        const cardWidth = (contentWidth - 10) / 3;
+        const cardHeight = 22;
+        const kpis = [
+            { title: 'TOTAL AVALIAÇÕES', value: stats.totalResponses, color: [168, 85, 247] },
+            { title: 'MÉDIA GERAL', value: stats.avgRating, color: [14, 165, 233] },
+            { title: 'PARTICIPAÇÃO (ALUNOS)', value: stats.alunoResponses, color: [34, 197, 94] }
         ];
 
-        statData.forEach((stat, index) => {
-            const x = margin + index * (statBoxWidth + 2);
-            doc.setFillColor(stat.color[0], stat.color[1], stat.color[2], 0.1);
-            doc.rect(x, statBoxY, statBoxWidth, statBoxHeight, 'F');
-            doc.setDrawColor(stat.color[0], stat.color[1], stat.color[2]);
-            doc.rect(x, statBoxY, statBoxWidth, statBoxHeight);
-
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(stat.color[0], stat.color[1], stat.color[2]);
-            doc.text(String(stat.value), x + statBoxWidth / 2, statBoxY + 10, { align: 'center' });
-
+        kpis.forEach((kpi, index) => {
+            const startX = margin + index * (cardWidth + 5);
+            doc.setFillColor(248, 250, 252);
+            doc.setDrawColor(226, 232, 240);
+            doc.roundedRect(startX, yPos, cardWidth, cardHeight, 2, 2, 'FD');
+            doc.setFillColor(...kpi.color);
+            doc.roundedRect(startX, yPos, 3, cardHeight, 2, 2, 'F');
             doc.setFontSize(8);
-            doc.setFont('helvetica', 'normal');
-            doc.setTextColor(100, 100, 100);
-            const lines = doc.splitTextToSize(stat.label, statBoxWidth - 2);
-            doc.text(lines, x + statBoxWidth / 2, statBoxY + 16, { align: 'center' });
+            doc.setTextColor(100, 116, 139);
+            doc.setFont("helvetica", "bold");
+            doc.text(kpi.title, startX + 8, yPos + 8);
+            doc.setFontSize(18);
+            doc.setTextColor(15, 23, 42);
+            doc.text(String(kpi.value), startX + 8, yPos + 18);
         });
 
-        doc.setTextColor(0, 0, 0);
-        yPos = statBoxY + statBoxHeight + 10;
+        yPos += cardHeight + 15;
 
-        // Charts
-        yPos = await addChartsToPDF(doc, yPos, pageHeight, margin, contentWidth, questionFilter, allResponses);
+        // Gráficos
+        yPos = await drawChartsToPDF(doc, yPos, margin, contentWidth, stats, allResponses, questionFilter);
 
-        // Detailed table
-        yPos = addDetailedTable(doc, yPos, pageHeight, margin, contentWidth, questionFilter, allResponses, allQuestions);
+        if (yPos > pageHeight - 60) { doc.addPage(); yPos = margin; }
 
-        // Save
-        doc.save(`relatorio_avaliacao_${new Date().toISOString().split('T')[0]}.pdf`);
+        doc.setFontSize(14);
+        doc.setTextColor(15, 23, 42);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Detalhamento por Pergunta Oficial (SINAES)', margin, yPos);
+        yPos += 8;
+
+        const tableData = prepareTableData(allResponses, allQuestions, questionFilter);
+
+        autoTable(doc, {
+            startY: yPos,
+            head: [['ID', 'Texto da Pergunta', 'Média', 'Alunos', 'Prof/Téc', 'Distr. (1 a 5)']],
+            body: tableData,
+            theme: 'grid',
+            headStyles: { fillColor: [126, 34, 206], textColor: 255, fontStyle: 'bold', fontSize: 9, valign: 'middle' },
+            bodyStyles: { textColor: [51, 65, 85], fontSize: 9, valign: 'middle' },
+            alternateRowStyles: { fillColor: [248, 250, 252] },
+            columnStyles: {
+                0: { halign: 'center', cellWidth: 15, fontStyle: 'bold' },
+                1: { cellWidth: 80 },
+                2: { halign: 'center', fontStyle: 'bold', textColor: [126, 34, 206] },
+                3: { halign: 'center' },
+                4: { halign: 'center' },
+                5: { halign: 'center', fontSize: 8, textColor: [100, 116, 139] }
+            },
+            margin: { left: margin, right: margin }
+        });
+
+        doc.save(`Relatorio_CPA_${new Date().toISOString().split('T')[0]}.pdf`);
 
     } catch (error) {
-        console.error('Error generating PDF:', error);
-        alert('Erro ao gerar PDF: ' + error.message);
+        console.error('Erro na exportação PDF:', error);
+        alert('Ocorreu um erro ao gerar o PDF.');
     } finally {
-        document.body.removeChild(loadingDiv);
+        showLoading(false);
     }
 }
 
@@ -122,240 +112,38 @@ function calculateStatistics(allResponses, questionFilter) {
     const alunoResponses = allResponses.filter(r => r.userRole === 'aluno').length;
     const professorResponses = allResponses.filter(r => r.userRole === 'professor').length;
     const tecnicoResponses = allResponses.filter(r => r.userRole === 'tecnico').length;
-
-    let totalRatings = 0;
-    let ratingCount = 0;
-
-    allResponses.forEach(response => {
-        if (response.answers) {
-            Object.entries(response.answers).forEach(([qId, rating]) => {
-                if (questionFilter === 'all' || qId === questionFilter) {
-                    totalRatings += parseInt(rating);
-                    ratingCount++;
-                }
-            });
-        }
-    });
-
-    const avgRating = ratingCount > 0 ? (totalRatings / ratingCount).toFixed(1) : '0.0';
-
-    return {
-        totalResponses,
-        avgRating,
-        alunoResponses,
-        professorResponses,
-        tecnicoResponses
-    };
-}
-
-async function addChartsToPDF(doc, yPos, pageHeight, margin, contentWidth, questionFilter, allResponses) {
-    // Distribution Chart
-    if (yPos > pageHeight - 80) {
-        doc.addPage();
-        yPos = margin;
-    }
-
-    doc.setFillColor(102, 126, 234);
-    doc.rect(margin, yPos, contentWidth, 8, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Distribuição de Respostas', margin + 3, yPos + 5.5);
-    yPos += 10;
-    doc.setTextColor(0, 0, 0);
-
+    let totalRatings = 0; let ratingCount = 0;
     const distributionData = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+
     allResponses.forEach(response => {
         if (response.answers) {
             Object.entries(response.answers).forEach(([qId, rating]) => {
                 if (questionFilter === 'all' || qId === questionFilter) {
-                    distributionData[rating]++;
+                    const r = parseInt(rating);
+                    totalRatings += r; ratingCount++; distributionData[r]++;
                 }
             });
         }
     });
 
-    const chartCanvas = document.createElement('canvas');
-    chartCanvas.width = 600;
-    chartCanvas.height = 300;
-    const ctx = chartCanvas.getContext('2d');
-
-    const chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['1', '2', '3', '4', '5'],
-            datasets: [{
-                label: 'Respostas',
-                data: [distributionData[1], distributionData[2], distributionData[3], distributionData[4], distributionData[5]],
-                backgroundColor: [
-                    'rgba(231, 76, 60, 0.8)',
-                    'rgba(230, 126, 34, 0.8)',
-                    'rgba(241, 196, 15, 0.8)',
-                    'rgba(52, 152, 219, 0.8)',
-                    'rgba(46, 204, 113, 0.8)'
-                ]
-            }]
-        },
-        options: {
-            responsive: false,
-            animation: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { stepSize: 1 }
-                }
-            }
-        }
-    });
-
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const chartImage = chartCanvas.toDataURL('image/png');
-    doc.addImage(chartImage, 'PNG', margin, yPos, contentWidth, 60);
-    chart.destroy();
-    yPos += 65;
-
-    // Legend
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'italic');
-    const legendY = yPos;
-    const legendItems = [
-        '1: Discordo Totalmente',
-        '2: Discordo Parcialmente',
-        '3: Neutro',
-        '4: Concordo Parcialmente',
-        '5: Concordo Totalmente'
-    ];
-    legendItems.forEach((item, i) => {
-        doc.text(`• ${item}`, margin + (i % 3) * 60, legendY + Math.floor(i / 3) * 4);
-    });
-    yPos += 10;
-
-    // Average by Role Chart
-    if (yPos > pageHeight - 80) {
-        doc.addPage();
-        yPos = margin;
-    }
-
-    doc.setFillColor(118, 75, 162);
-    doc.rect(margin, yPos, contentWidth, 8, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Média por Tipo de Usuário', margin + 3, yPos + 5.5);
-    yPos += 10;
-    doc.setTextColor(0, 0, 0);
-
-    const roleAverages = {
-        aluno: { total: 0, count: 0 },
-        professor: { total: 0, count: 0 },
-        tecnico: { total: 0, count: 0 }
-    };
-
-    allResponses.forEach(response => {
-        const role = response.userRole;
-        if (response.answers && roleAverages[role]) {
-            Object.entries(response.answers).forEach(([qId, rating]) => {
-                if (questionFilter === 'all' || qId === questionFilter) {
-                    roleAverages[role].total += parseInt(rating);
-                    roleAverages[role].count++;
-                }
-            });
-        }
-    });
-
-    const chartCanvas2 = document.createElement('canvas');
-    chartCanvas2.width = 600;
-    chartCanvas2.height = 300;
-    const ctx2 = chartCanvas2.getContext('2d');
-
-    const chart2 = new Chart(ctx2, {
-        type: 'bar',
-        data: {
-            labels: ['Alunos', 'Professores', 'Técnicos'],
-            datasets: [{
-                label: 'Média',
-                data: [
-                    roleAverages.aluno.count > 0 ? roleAverages.aluno.total / roleAverages.aluno.count : 0,
-                    roleAverages.professor.count > 0 ? roleAverages.professor.total / roleAverages.professor.count : 0,
-                    roleAverages.tecnico.count > 0 ? roleAverages.tecnico.total / roleAverages.tecnico.count : 0
-                ],
-                backgroundColor: [
-                    'rgba(102, 126, 234, 0.8)',
-                    'rgba(118, 75, 162, 0.8)',
-                    'rgba(17, 153, 142, 0.8)'
-                ]
-            }]
-        },
-        options: {
-            responsive: false,
-            animation: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 5,
-                    ticks: { stepSize: 0.5 }
-                }
-            }
-        }
-    });
-
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const chartImage2 = chartCanvas2.toDataURL('image/png');
-    doc.addImage(chartImage2, 'PNG', margin, yPos, contentWidth, 60);
-    chart2.destroy();
-    yPos += 70;
-
-    return yPos;
+    return { totalResponses, alunoResponses, profTecResponses: professorResponses + tecnicoResponses, avgRating: ratingCount > 0 ? (totalRatings / ratingCount).toFixed(2) : '0.00', distributionData };
 }
 
-function addDetailedTable(doc, yPos, pageHeight, margin, contentWidth, questionFilter, allResponses, allQuestions) {
-    if (yPos > pageHeight - 40) {
-        doc.addPage();
-        yPos = margin;
-    }
-
-    doc.setFillColor(17, 153, 142);
-    doc.rect(margin, yPos, contentWidth, 8, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Detalhamento por Pergunta', margin + 3, yPos + 5.5);
-    yPos += 12;
-    doc.setTextColor(0, 0, 0);
-
+function prepareTableData(allResponses, allQuestions, questionFilter) {
     const questionData = {};
     allResponses.forEach(response => {
         if (response.answers) {
             Object.entries(response.answers).forEach(([qId, rating]) => {
-                if (questionFilter === 'all' || qId === questionFilter) {
+                if (questionFilter === 'all' || String(qId) === String(questionFilter)) {
                     if (!questionData[qId]) {
-                        questionData[qId] = {
-                            ratings: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
-                            total: 0,
-                            count: 0,
-                            byRole: {
-                                aluno: { total: 0, count: 0 },
-                                professor: { total: 0, count: 0 },
-                                tecnico: { total: 0, count: 0 }
-                            }
-                        };
+                        questionData[qId] = { ratings: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }, total: 0, count: 0, byRole: { aluno: { total: 0, count: 0 }, profTec: { total: 0, count: 0 } } };
                     }
-
                     const r = parseInt(rating);
-                    questionData[qId].ratings[r]++;
-                    questionData[qId].total += r;
-                    questionData[qId].count++;
-
-                    const role = response.userRole;
-                    if (questionData[qId].byRole[role]) {
-                        questionData[qId].byRole[role].total += r;
-                        questionData[qId].byRole[role].count++;
+                    questionData[qId].ratings[r]++; questionData[qId].total += r; questionData[qId].count++;
+                    if (response.userRole === 'aluno') {
+                        questionData[qId].byRole.aluno.total += r; questionData[qId].byRole.aluno.count++;
+                    } else {
+                        questionData[qId].byRole.profTec.total += r; questionData[qId].byRole.profTec.count++;
                     }
                 }
             });
@@ -363,53 +151,88 @@ function addDetailedTable(doc, yPos, pageHeight, margin, contentWidth, questionF
     });
 
     const sortedQuestions = Object.keys(questionData).sort((a, b) => parseInt(a) - parseInt(b));
+    const tableRows = [];
 
-    sortedQuestions.forEach((qId, index) => {
-        if (yPos > pageHeight - 35) {
-            doc.addPage();
-            yPos = margin;
-        }
-
+    sortedQuestions.forEach(qId => {
         const data = questionData[qId];
-        const question = allQuestions.find(q => q.id === qId);
-        const questionText = question ? question.texto : `Pergunta ${qId}`;
-
-        doc.setFillColor(245, 247, 250);
-        doc.rect(margin, yPos, contentWidth, 30, 'F');
-        doc.setDrawColor(200, 200, 200);
-        doc.rect(margin, yPos, contentWidth, 30);
-
-        doc.setFontSize(9);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(102, 126, 234);
-        doc.text(`Pergunta ${qId}`, margin + 2, yPos + 5);
-
-        doc.setFontSize(8);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(0, 0, 0);
-        const textLines = doc.splitTextToSize(questionText, contentWidth - 4);
-        doc.text(textLines.slice(0, 2), margin + 2, yPos + 9);
-
-        const avgGeneral = (data.total / data.count).toFixed(2);
-        const avgAluno = data.byRole.aluno.count > 0 ? (data.byRole.aluno.total / data.byRole.aluno.count).toFixed(2) : 'N/A';
-        const avgProfessor = data.byRole.professor.count > 0 ? (data.byRole.professor.total / data.byRole.professor.count).toFixed(2) : 'N/A';
-        const avgTecnico = data.byRole.tecnico.count > 0 ? (data.byRole.tecnico.total / data.byRole.tecnico.count).toFixed(2) : 'N/A';
-
-        doc.setFontSize(8);
-        doc.text(`Média Geral: ${avgGeneral}`, margin + 2, yPos + 20);
-        doc.text(`Total: ${data.count}`, margin + 35, yPos + 20);
-        doc.text(`Alunos: ${avgAluno}`, margin + 55, yPos + 20);
-        doc.text(`Prof: ${avgProfessor}`, margin + 80, yPos + 20);
-        doc.text(`Téc: ${avgTecnico}`, margin + 105, yPos + 20);
-
-        doc.setFontSize(7);
-        doc.setTextColor(100, 100, 100);
-        doc.text(`Distribuição: 1(${data.ratings[1]}) 2(${data.ratings[2]}) 3(${data.ratings[3]}) 4(${data.ratings[4]}) 5(${data.ratings[5]})`, 
-                 margin + 2, yPos + 26);
-
-        doc.setTextColor(0, 0, 0);
-        yPos += 33;
+        
+        // CORREÇÃO AQUI: Força a comparação de Strings para encontrar a pergunta
+        const question = allQuestions.find(q => String(q.id) === String(qId));
+        
+        const questionText = question ? question.texto : `Pergunta não mapeada (ID: ${qId})`;
+        const avgGen = (data.total / data.count).toFixed(2);
+        const avgAluno = data.byRole.aluno.count > 0 ? (data.byRole.aluno.total / data.byRole.aluno.count).toFixed(2) : '-';
+        const avgProf = data.byRole.profTec.count > 0 ? (data.byRole.profTec.total / data.byRole.profTec.count).toFixed(2) : '-';
+        const distStr = `${data.ratings[1]} | ${data.ratings[2]} | ${data.ratings[3]} | ${data.ratings[4]} | ${data.ratings[5]}`;
+        tableRows.push([qId, questionText, avgGen, avgAluno, avgProf, distStr]);
     });
 
-    return yPos;
+    return tableRows;
+}
+
+async function drawChartsToPDF(doc, yPos, margin, contentWidth, stats, allResponses, questionFilter) {
+    const halfWidth = (contentWidth - 10) / 2;
+    doc.setFontSize(12); doc.setTextColor(15, 23, 42);
+    doc.text("Distribuição de Notas Finais", margin, yPos);
+    doc.text("Satisfação por Perfil", margin + halfWidth + 10, yPos);
+    yPos += 5;
+
+    const canvas1 = document.createElement('canvas'); canvas1.width = 800; canvas1.height = 450;
+    const ctx1 = canvas1.getContext('2d'); ctx1.fillStyle = '#FFFFFF'; ctx1.fillRect(0, 0, canvas1.width, canvas1.height);
+    const chart1 = new Chart(ctx1, {
+        type: 'bar',
+        data: { labels: ['Nota 1', 'Nota 2', 'Nota 3', 'Nota 4', 'Nota 5'], datasets: [{ data: [stats.distributionData[1], stats.distributionData[2], stats.distributionData[3], stats.distributionData[4], stats.distributionData[5]], backgroundColor: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#16a34a'], borderRadius: 8 }] },
+        options: { animation: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    const roleAverages = { aluno: { t: 0, c: 0 }, prof: { t: 0, c: 0 }, tec: { t: 0, c: 0 } };
+    allResponses.forEach(r => {
+        if (r.answers) {
+            Object.entries(r.answers).forEach(([qId, rating]) => {
+                if (questionFilter === 'all' || String(qId) === String(questionFilter)) {
+                    if (r.userRole === 'aluno') { roleAverages.aluno.t += parseInt(rating); roleAverages.aluno.c++; }
+                    else if (r.userRole === 'professor') { roleAverages.prof.t += parseInt(rating); roleAverages.prof.c++; }
+                    else { roleAverages.tec.t += parseInt(rating); roleAverages.tec.c++; }
+                }
+            });
+        }
+    });
+
+    const canvas2 = document.createElement('canvas'); canvas2.width = 800; canvas2.height = 450;
+    const ctx2 = canvas2.getContext('2d'); ctx2.fillStyle = '#FFFFFF'; ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
+    const chart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: { labels: ['Alunos', 'Professores', 'Técnicos'], datasets: [{ data: [ roleAverages.aluno.c > 0 ? roleAverages.aluno.t / roleAverages.aluno.c : 0, roleAverages.prof.c > 0 ? roleAverages.prof.t / roleAverages.prof.c : 0, roleAverages.tec.c > 0 ? roleAverages.tec.t / roleAverages.tec.c : 0 ], backgroundColor: ['#3b82f6', '#f59e0b', '#a855f7'], borderRadius: 8 }] },
+        options: { animation: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 5 } } }
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 300));
+    doc.addImage(canvas1.toDataURL('image/jpeg', 1.0), 'JPEG', margin, yPos, halfWidth, halfWidth * 0.6);
+    doc.addImage(canvas2.toDataURL('image/jpeg', 1.0), 'JPEG', margin + halfWidth + 10, yPos, halfWidth, halfWidth * 0.6);
+    chart1.destroy(); chart2.destroy();
+    
+    return yPos + (halfWidth * 0.6) + 15;
+}
+
+function showLoading(show) {
+    let loader = document.getElementById('pdf-loader-overlay');
+    if (show) {
+        if (!loader) {
+            loader = document.createElement('div');
+            loader.id = 'pdf-loader-overlay';
+            loader.innerHTML = `
+                <div style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.8); z-index:9999; display:flex; justify-content:center; align-items:center; backdrop-filter: blur(4px);">
+                    <div style="background:white; padding:32px 40px; border-radius:16px; text-align:center; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+                        <div style="width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: #a855f7; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px auto;"></div>
+                        <h3 style="margin:0 0 8px; color:#0f172a; font-family:sans-serif;">Processando Relatório...</h3>
+                        <p style="margin:0; color:#64748b; font-size:14px; font-family:sans-serif;">Formatando tabelas e gerando gráficos vetoriais.</p>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(loader);
+        }
+        loader.style.display = 'flex';
+    } else if (loader) {
+        loader.style.display = 'none';
+    }
 }

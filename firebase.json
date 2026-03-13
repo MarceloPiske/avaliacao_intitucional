@@ -18,8 +18,12 @@
         "destination": "/avaliacao_institucional/admin.html"
       },
       {
-        "source": "/institucional/**",
+        "source": "/institucional/index",
         "destination": "/avaliacao_institucional/index.html"
+      },
+      {
+        "source": "/institucional/login",
+        "destination": "/avaliacao_institucional/login.html"
       },
       {
         "source": "/institucional",

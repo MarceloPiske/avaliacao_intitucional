@@ -4,63 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Administrativo - CPA</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round" rel="stylesheet">
+    
+    <style>
+        /* CSS RESET MÁGICO (Evita problemas globais de layout) */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        /* Força a renderização correta da fonte de ícones */
+        .material-icons, .material-icons-outlined, .material-icons-round {
+            font-family: 'Material Icons';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+            -moz-osx-font-smoothing: grayscale;
+            font-feature-settings: 'liga';
+        }
+
+        /* Tela de Carregamento Anti-Flicker */
+        #app-loader { position: fixed; top:0; left:0; width:100vw; height:100vh; background:#f8fafc; z-index:9999; display:flex; flex-direction: column; justify-content:center; align-items:center; gap: 16px; }
+        .loader-spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: #a855f7; border-radius: 50%; animation: spin 1s linear infinite; }
+        .loader-text { color: #64748b; font-family: 'Inter', sans-serif; font-weight: 500; font-size: 14px; letter-spacing: 0.5px;}
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Estrutura do Painel Admin */
+        body { background: #f8fafc; margin: 0; display: flex; height: 100vh; overflow: hidden; font-family: 'Inter', sans-serif; color: #0f172a;}
+        
+        /* Menu Lateral Moderno */
+        .admin-sidebar { width: 260px; background: white; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 12px;}
+        .sidebar-header .brand-icon { background: linear-gradient(135deg, #a855f7, #7e22ce); color: white; width: 36px; height: 36px; border-radius: 10px; display: flex; justify-content: center; align-items: center;}
+        .sidebar-header h2 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+        
+        .sidebar-nav { padding: 24px 16px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+        .nav-btn { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: none; background: transparent; border-radius: 10px; color: #64748b; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s ease; text-align: left; }
+        .nav-btn:hover { background: #f1f5f9; color: #0f172a; transform: translateX(4px); }
+        .nav-btn.active { background: #f3e8ff; color: #a855f7; }
+        .nav-btn .material-icons { font-size: 20px; }
+        
+        .sidebar-footer { padding: 24px 16px; border-top: 1px solid #e2e8f0; }
+        .logout-btn { display: flex; align-items: center; justify-content: center; gap: 8px; color: #ef4444; background: #fef2f2; border: 1px solid #fee2e2; font-weight: 600; cursor: pointer; font-size: 14px; width: 100%; padding: 12px; border-radius: 10px; transition: 0.2s;}
+        .logout-btn:hover { background: #fee2e2; }
+
+        /* Área de Conteúdo Dinâmico */
+        .admin-main { flex: 1; overflow-y: auto; padding: 40px; position: relative; scroll-behavior: smooth; }
+        .admin-section { display: none; animation: fadeIn 0.4s ease; }
+        .admin-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Toast Container Global */
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+    </style>
 </head>
 <body>
-    <div id="app">
-        <div id="admin-login-container">
-            <h1>Painel Administrativo CPA</h1>
-            <div id="admin-login-form">
-                <p>Entre com seu email institucional de administrador</p>
-                <button id="admin-google-login-button" class="google-btn">
-                    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/google.svg" alt="Google">
-                    Entrar com Google
-                </button>
-                <p class="login-info">Apenas administradores autorizados podem acessar</p>
-                <p id="admin-login-error" class="error-message"></p>
-            </div>
-        </div>
-        
-        <div id="admin-panel" style="display: none;">
-            <header>
-                <h1>Painel Administrativo CPA</h1>
-                <button id="logout-btn">Sair</button>
-            </header>
-            
-            <div class="admin-container">
-                <aside class="sidebar">
-                    <button class="sidebar-btn active" data-section="users">
-                        <i class="fas fa-users"></i>
-                        Usuários
-                    </button>
-                    <button class="sidebar-btn" data-section="questions">
-                        <i class="fas fa-question-circle"></i>
-                        Perguntas
-                    </button>
-                    <button class="sidebar-btn" data-section="results">
-                        <i class="fas fa-chart-bar"></i>
-                        Resultados
-                    </button>
-                </aside>
-                
-                <main class="content">
-                    <div id="users-section" class="admin-section active"></div>
-                    <div id="questions-section" class="admin-section"></div>
-                    <div id="results-section" class="admin-section"></div>
-                </main>
-            </div>
-        </div>
+    <div id="app-loader">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">A validar credenciais CPA...</div>
     </div>
-    
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <aside class="admin-sidebar" id="admin-sidebar" style="display: none;">
+        <div class="sidebar-header">
+            <div class="brand-icon"><span class="material-icons">domain</span></div>
+            <h2>EduPanel CPA</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <button class="nav-btn active" data-section="users"><span class="material-icons">groups</span> Usuários</button>
+            <button class="nav-btn" data-section="questions"><span class="material-icons">rule</span> Matriz de Perguntas</button>
+            <button class="nav-btn" data-section="results"><span class="material-icons">donut_large</span> Análise de Dados</button>
+        </nav>
+        <div class="sidebar-footer">
+            <button id="logout-btn" class="logout-btn"><span class="material-icons">logout</span> Encerrar Sessão</button>
+        </div>
+    </aside>
+
+    <main class="admin-main" id="admin-main" style="display: none;">
+        <div id="toast-container" class="toast-container"></div>
+        
+        <div id="users-section" class="admin-section active"></div>
+        <div id="questions-section" class="admin-section"></div>
+        <div id="results-section" class="admin-section"></div>
+    </main>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
-    <script type="module" src="admin.js"></script>
+    <script type="module" src="../avaliacao_institucional/admin.js"></script>
 </body>
 </html>
