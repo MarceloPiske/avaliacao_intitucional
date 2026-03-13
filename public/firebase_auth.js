@@ -59,7 +59,7 @@ export class FirebaseAuth {
             const domain = email.split("@")[1]; // Extrai o domínio do email
 
             // Lista de domínios permitidos
-            const allowedDomains = ["seminarioconcordia.com.br", "faculdadeluteranaconcordia.com.br"];
+            const allowedDomains = ["seminarioconcordia.com.br", "faculdadeluteranaconcordia.com.br", "pyske.com", "gmail.com"]; // FIXME Adicione os domínios permitidos aqui
 
             // Verifica se o domínio do email é permitido
             if (allowedDomains.includes(domain)) {

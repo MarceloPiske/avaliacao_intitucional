@@ -1026,3 +1026,119 @@ exports.criarFormularioTeste = onRequest(async (req, res) => {
     res.status(500).send(`Ocorreu um erro interno. Verifique os logs da função. Erro: ${error.message}`);
   }
 });
+
+setGlobalOptions({maxInstances: 1, timeoutSeconds: 540});
+
+// ==========================================
+// TRAVA DE SEGURANÇA (DRY RUN)
+// Mude para 'false' apenas quando quiser gravar no banco!
+// ==========================================
+const MODO_TESTE = false;
+
+exports.importarAvaliacoes = onRequest(async (req, res) => {
+  try {
+    console.log(`🚀 Iniciando Migração 2024.2... [MODO TESTE: ${MODO_TESTE}]`);
+
+    const jsonPath = path.join(__dirname, "firestore-dumps/respostas.json");
+    if (!fs.existsSync(jsonPath)) {
+      return res.status(404).json({error: "Arquivo respostas.json não encontrado."});
+    }
+
+    const respostasAntigas = JSON.parse(fs.readFileSync(jsonPath, "utf-8"));
+
+    console.log("📥 Buscando estritamente turmas do semestre 2024.2...");
+    const turmasSnap = await db.collection("ad_turmas").where("semestre", "==", "2024.2").get();
+    const turmas2024 = {};
+
+    turmasSnap.forEach((doc) => {
+      const data = doc.data();
+      if (data.disciplinaNome) {
+        const nomeSeguro = data.disciplinaNome.trim().toLowerCase();
+        turmas2024[nomeSeguro] = {id: doc.id, nome: data.disciplinaNome, formId: data.formularioId};
+      }
+    });
+
+    const stats = {
+      avaliacoesLidas: Object.keys(respostasAntigas).length,
+      avaliacoesMigradas: 0,
+      errosTurmaNaoEncontrada: 0,
+    };
+
+    // CORREÇÃO: Usamos 'let' em vez de 'const' para podermos recriar o batch
+    let batch = db.batch();
+    let operacoesNoBatch = 0;
+
+    for (const [avaliacaoIdAntigo, dadosAntigos] of Object.entries(respostasAntigas)) {
+      const nomeDisciplinaAntiga = (dadosAntigos.discipline_name || "").trim().toLowerCase();
+      const turmaMatch = turmas2024[nomeDisciplinaAntiga];
+
+      if (!turmaMatch) {
+        console.warn(`⚠️ IGNORADO: Disciplina '${dadosAntigos.discipline_name}' não possui turma aberta em 2024.2.`);
+        stats.errosTurmaNaoEncontrada++;
+        continue;
+      }
+
+      const avaliacaoRef = db.collection("ad_avaliacoes").doc();
+      const avaliacaoData = {
+        alunoId: `anonimo_${avaliacaoIdAntigo}`,
+        turmaId: turmaMatch.id,
+        formularioId: turmaMatch.formId || "formulario_migrado",
+        dataResposta: Timestamp.fromDate(new Date("2024-12-15T12:00:00Z")),
+        comentarios: dadosAntigos.comentarios || "",
+        sugestoes: dadosAntigos.sugestoes || "",
+      };
+
+      if (!MODO_TESTE) batch.set(avaliacaoRef, avaliacaoData);
+      operacoesNoBatch++;
+
+      const categorias = ["disciplina", "aluno", "professor"];
+      for (const categoria of categorias) {
+        if (dadosAntigos[categoria]) {
+          const questoes = Object.values(dadosAntigos[categoria]);
+
+          for (let i = 0; i < questoes.length; i++) {
+            const qData = questoes[i];
+            const respostaRef = avaliacaoRef.collection("respostas").doc();
+
+            if (!MODO_TESTE) {
+              batch.set(respostaRef, {
+                questaoTexto: qData.pergunta,
+                respostaValor: parseInt(qData.resposta),
+                tipo: categoria,
+                ordem: i + 1,
+              });
+            }
+            operacoesNoBatch++;
+          }
+        }
+      }
+
+      stats.avaliacoesMigradas++;
+
+      // ==========================================
+      // CORREÇÃO AQUI: Recriar o Batch após o Commit!
+      // ==========================================
+      if (!MODO_TESTE && operacoesNoBatch > 400) {
+        await batch.commit(); // Envia o envelope atual
+        batch = db.batch(); // Cria um envelope NOVO
+        operacoesNoBatch = 0; // Zera o contador de papéis no envelope
+      }
+    }
+
+    // Commita o restinho que sobrou no último envelope
+    if (!MODO_TESTE && operacoesNoBatch > 0) {
+      await batch.commit();
+    }
+
+    console.log("🎉 Processo finalizado!", stats);
+
+    return res.status(200).json({
+      modo_teste: MODO_TESTE ? "ATIVO (Nenhum dado foi gravado)" : "INATIVO (Dados gravados com sucesso!)",
+      message: "Processamento concluído.",
+      resultados: stats,
+    });
+  } catch (error) {
+    console.error("❌ Erro fatal durante a migração:", error);
+    return res.status(500).json({error: "Erro interno", details: error.message});
+  }
+});

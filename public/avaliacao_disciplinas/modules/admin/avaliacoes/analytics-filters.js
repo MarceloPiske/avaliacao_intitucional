@@ -45,12 +45,13 @@ export class AnalyticsFilters {
     }
 
     populateFilters(processedData) {
-        const years = [...new Set(processedData.map(item => item.year))].sort().reverse();
-        const semesters = [...new Set(processedData.map(item => item.semestre))].sort().reverse();
-        const professors = [...new Set(processedData.map(item => item.professorNome))].sort();
-        const disciplines = [...new Set(processedData.map(item => item.disciplinaNome))].sort();
-        const formularios = [...new Set(processedData.map(item => item.formularioTitulo))].sort();
-        const statusOptions = [...new Set(processedData.map(item => item.statusTurma))].sort();
+        // O .filter(Boolean) previne que campos vazios ou undefined criem opções em branco no select
+        const years = [...new Set(processedData.map(item => item.year).filter(Boolean))].sort().reverse();
+        const semesters = [...new Set(processedData.map(item => item.semestre).filter(Boolean))].sort().reverse();
+        const professors = [...new Set(processedData.map(item => item.professorNome).filter(Boolean))].sort();
+        const disciplines = [...new Set(processedData.map(item => item.disciplinaNome).filter(Boolean))].sort();
+        const formularios = [...new Set(processedData.map(item => item.formularioTitulo).filter(Boolean))].sort();
+        const statusOptions = [...new Set(processedData.map(item => item.statusTurma).filter(Boolean))].sort();
         
         this.availableProfessors = professors;
         this.availableDisciplines = disciplines;
@@ -62,15 +63,16 @@ export class AnalyticsFilters {
         this.populateSelect('formularioAnalyticsFilter', formularios);
         this.populateSelect('statusTurmaFilter', statusOptions);
         
-        // CORREÇÃO: Validação de segurança antes de injetar os valores
+        // CORREÇÃO: Forçar o carregamento inicial para a visão "Todos" (all)
+        // Assim as turmas de 2024.2 e de 2025 vão aparecer juntas no Dashboard
         const yearSelect = document.getElementById('yearFilter');
-        if (yearSelect && years.length > 0) {
-            yearSelect.value = years[0];
+        if (yearSelect && yearSelect.options.length > 0) {
+            yearSelect.value = 'all';
         }
         
         const semesterSelect = document.getElementById('semesterFilter');
-        if (semesterSelect && semesters.length > 0) {
-            semesterSelect.value = semesters[0];
+        if (semesterSelect && semesterSelect.options.length > 0) {
+            semesterSelect.value = 'all';
         }
     }
 

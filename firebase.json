@@ -24,6 +24,10 @@
         "destination": "/avaliacao_disciplinas/login.html"
       },
       {
+        "source": "/disciplinas/admin/**",
+        "destination": "/avaliacao_disciplinas/admin.html"
+      },
+      {
         "source": "/",
         "destination": "/avaliacao_disciplinas/login.html"
       }

@@ -7,352 +7,286 @@ export class EvaluationForm {
         this.currentFormulario = null;
         this.currentQuestoes = [];
         this.currentTurma = null;
+        
         this.initializeForm();
         this.setupEventListeners();
     }
 
     async initializeForm() {
         try {
-            // Get current turma and its formulario
             const turmaId = localStorage.getItem("atual_turma_id");
-            if (!turmaId) {
-                console.error('Turma ID não encontrada');
-                return;
-            }
+            if (!turmaId) return;
 
             this.currentTurma = await this.turmasCRUD.read(turmaId);
-            if (!this.currentTurma || !this.currentTurma.formularioId) {
-                console.error('Turma ou formulário não encontrado');
-                return;
-            }
+            if (!this.currentTurma || !this.currentTurma.formularioId) return;
 
-            // Load the specific formulario for this turma
             this.currentFormulario = await this.formulariosCRUD.read(this.currentTurma.formularioId);
             
-            if (!this.currentFormulario) {
-                console.error('Formulário não encontrado');
-                return;
-            }
-
-            // Load questions for this formulario using the correct subcollection path
             const questoesCRUD = new FirebaseCRUD(`ad_formularios/${this.currentTurma.formularioId}/questoes`);
             const questoesData = await questoesCRUD.readAll();
-            
-            // Ensure we have valid questions data
             this.currentQuestoes = questoesData || [];
-            
-            // Sort questions by ordem
             this.currentQuestoes.sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
 
-            console.log('Formulário carregado:', this.currentFormulario);
-            console.log('Questões carregadas:', this.currentQuestoes);
-            console.log('Total de questões:', this.currentQuestoes.length);
+            if (this.currentQuestoes.length > 0) this.populateFormSections();
 
-            // Populate form sections only if we have questions
-            if (this.currentQuestoes.length > 0) {
-                this.populateFormSections();
-            } else {
-                console.warn('Nenhuma questão encontrada para este formulário');
-                console.warn('Caminho da subcoleção:', `ad_formularios/${this.currentTurma.formularioId}/questoes`);
-            }
         } catch (error) {
             console.error('Erro ao carregar formulário:', error);
         }
     }
 
     populateFormSections() {
-        // Group questions by categoria
-        const groupedQuestions = {
-            disciplina: [],
-            aluno: [],
-            professor: []
-        };
+        const groupedQuestions = { disciplina: [], aluno: [], professor: [] };
 
-        console.log('Agrupando questões por categoria...');
         this.currentQuestoes.forEach(questao => {
             const categoria = questao.categoria || 'disciplina';
-            console.log(`Questão: ${questao.texto} - Categoria: ${categoria}`);
-            if (groupedQuestions[categoria]) {
-                groupedQuestions[categoria].push(questao);
-            } else {
-                console.warn(`Categoria desconhecida: ${categoria}`);
-            }
+            if (groupedQuestions[categoria]) groupedQuestions[categoria].push(questao);
         });
 
-        console.log('Questões agrupadas:', groupedQuestions);
+        // Injeta o HTML em cada seção e adiciona um título à seção se ela tiver perguntas
+        const renderSection = (id, questions, title, icon) => {
+            const container = document.getElementById(id);
+            if (container) {
+                if (questions.length > 0) {
+                    container.innerHTML = `<h2 style="color: var(--primary-700); margin-bottom: 24px;"><span class="material-icons" style="vertical-align:text-bottom;">${icon}</span> ${title}</h2>` + 
+                                          questions.map(q => this.createQuestionElement(q, id.split('-')[0])).join('');
+                } else {
+                    container.innerHTML = '';
+                    container.parentElement.style.display = 'none'; // Esconde a seção se vazia
+                }
+            }
+        };
 
-        // Populate each section
-        const disciplinaContainer = document.getElementById('disciplina-questions');
-        const alunoContainer = document.getElementById('aluno-questions');
-        const professorContainer = document.getElementById('professor-questions');
+        renderSection('disciplina-questions', groupedQuestions.disciplina, 'Sobre a Disciplina', 'menu_book');
+        renderSection('professor-questions', groupedQuestions.professor, 'Sobre o Docente', 'person');
+        renderSection('aluno-questions', groupedQuestions.aluno, 'Autoavaliação (Aluno)', 'face');
 
-        if (disciplinaContainer) {
-            const disciplinaHtml = groupedQuestions.disciplina.map(q => this.createQuestionElement(q, 'disciplina')).join('');
-            disciplinaContainer.innerHTML = disciplinaHtml;
-            console.log('Disciplina HTML:', disciplinaHtml);
-        }
-
-        if (alunoContainer) {
-            const alunoHtml = groupedQuestions.aluno.map(q => this.createQuestionElement(q, 'aluno')).join('');
-            alunoContainer.innerHTML = alunoHtml;
-            console.log('Aluno HTML:', alunoHtml);
-        }
-
-        if (professorContainer) {
-            const professorHtml = groupedQuestions.professor.map(q => this.createQuestionElement(q, 'professor')).join('');
-            professorContainer.innerHTML = professorHtml;
-            console.log('Professor HTML:', professorHtml);
-        }
+        this.setupInteractiveUI(); // Liga o Auto-scroll e Barra de Progresso
     }
 
     createQuestionElement(questao, categoria) {
         const inputType = questao.tipo || 'escala_1_a_5';
-        const questionId = questao.id || `${categoria}_${questao.ordem || Math.random()}`;
+        const questionId = questao.id || `${categoria}_${questao.ordem || Math.random().toString(36).substr(2, 9)}`;
+        const inputName = `${categoria}_${questionId}`;
         
-        console.log(`Criando elemento para questão: ${questao.texto} (${inputType})`);
+        // Legendas sérias e profissionais
+        const legends = ['Muito Mau', 'Mau', 'Razoável', 'Bom', 'Excelente'];
         
         if (inputType === 'escala_1_a_5') {
             return `
-                <div class="question-group">
-                    <p>${questao.texto}</p>
+                <div class="question-group" id="q_${inputName}">
+                    <p class="question-text">${questao.ordem ? questao.ordem + '.' : ''} ${questao.texto}</p>
                     <div class="radio-group">
-                        ${[1, 2, 3, 4, 5].map(value => `
-                            <div class="radio-option">
-                                <input type="radio" name="${categoria}_${questionId}" value="${value}" required>
-                                <label>${value}</label>
-                            </div>
+                        ${[1, 2, 3, 4, 5].map((value, index) => `
+                            <label class="radio-option">
+                                <input type="radio" name="${inputName}" value="${value}" required>
+                                <span class="radio-number">${value}</span>
+                                <span class="radio-label-text">${legends[index]}</span>
+                            </label>
                         `).join('')}
                     </div>
                 </div>
             `;
-        } else if (inputType === 'texto_livre') {
+        } else {
             return `
-                <div class="question-group">
-                    <p>${questao.texto}</p>
-                    <textarea name="${categoria}_${questionId}" placeholder="Digite sua resposta..."></textarea>
+                <div class="question-group" id="q_${inputName}">
+                    <p class="question-text">${questao.ordem ? questao.ordem + '.' : ''} ${questao.texto}</p>
+                    <textarea name="${inputName}" placeholder="A sua resposta (opcional)..." class="modern-textarea"></textarea>
                 </div>
             `;
         }
-        return '';
+    }
+
+    // ==========================================
+    // MAGIA DE UI: Auto-Scroll e Barra de Progresso
+    // ==========================================
+    setupInteractiveUI() {
+        const requiredInputs = document.querySelectorAll('input[type="radio"]');
+        const totalGroups = new Set(Array.from(requiredInputs).map(i => i.name)).size;
+
+        const updateProgress = () => {
+            const answeredGroups = new Set(Array.from(document.querySelectorAll('input[type="radio"]:checked')).map(i => i.name)).size;
+            const percentage = totalGroups === 0 ? 100 : Math.round((answeredGroups / totalGroups) * 100);
+            
+            document.getElementById('progress-percentage').textContent = `${percentage}%`;
+            document.getElementById('form-progress-fill').style.width = `${percentage}%`;
+            
+            // Se chegou a 100%, destaca o botão de enviar
+            const btnSubmit = document.getElementById('btnSubmitAvaliacao');
+            if (percentage === 100) {
+                btnSubmit.style.transform = 'scale(1.05)';
+                btnSubmit.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.4)';
+                btnSubmit.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+            }
+        };
+
+        // Adiciona evento a cada clique nas bolinhas
+        requiredInputs.forEach(input => {
+            input.addEventListener('change', (e) => {
+                // 1. Atualiza Barra
+                updateProgress();
+                
+                // 2. Remove estado de erro (se tivesse)
+                const qGroup = e.target.closest('.question-group');
+                qGroup.classList.remove('has-error');
+
+                // 3. AUTO-SCROLL Suave para a próxima pergunta!
+                const allGroups = Array.from(document.querySelectorAll('.question-group'));
+                const currentIndex = allGroups.indexOf(qGroup);
+                if (currentIndex >= 0 && currentIndex < allGroups.length - 1) {
+                    setTimeout(() => {
+                        allGroups[currentIndex + 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 250); // Pequeno delay para a animação do botão terminar
+                }
+            });
+        });
+
+        // Inicializa a barra a 0%
+        updateProgress();
     }
 
     setupEventListeners() {
-        // Form submission handler
         document.getElementById('avaliacaoForm').addEventListener('submit', async (e) => {
             await this.handleFormSubmission(e);
         });
 
-        // Close form handlers
-        document.querySelector('.close-btn').addEventListener('click', () => {
-            this.closeForm();
-        });
-
-        document.querySelector('.evaluation-form-overlay').addEventListener('click', (e) => {
-            if (e.target === document.querySelector('.evaluation-form-overlay')) {
-                this.closeForm();
-            }
-        });
+        document.querySelector('.close-btn').addEventListener('click', () => this.closeForm());
     }
 
-    async handleFormSubmission(e) {
-        e.preventDefault();
-
-        // Validate required questions before submission
-        if (!this.validateRequiredQuestions()) {
-            return;
-        }
-
-        const userId = localStorage.getItem("user_id");
-        const turmaId = localStorage.getItem("atual_turma_id");
-
-        if (!this.currentFormulario || !this.currentQuestoes || this.currentQuestoes.length === 0) {
-            alert('Formulário ou questões não encontrados. Recarregue a página.');
-            return;
-        }
-
-        // Ensure we have a valid formulario ID
-        const formularioId = this.currentFormulario.id || this.currentTurma?.formularioId;
-        if (!formularioId) {
-            alert('ID do formulário não encontrado. Recarregue a página.');
-            return;
-        }
-
-        try {
-            // Create the main evaluation document
-            const avaliacaoData = {
-                alunoId: userId,
-                turmaId: turmaId,
-                formularioId: formularioId, // Use the verified formularioId
-                dataResposta: new Date(),
-                comentarios: document.querySelector('textarea[name="comentarios"]').value || "",
-                sugestoes: document.querySelector('textarea[name="sugestoes"]').value || ""
-            };
-
-            const avaliacoesCRUD = new FirebaseCRUD("ad_avaliacoes");
-            
-            // Create evaluation document with a generated ID
-            const avaliacaoId = this.generateId();
-            await avaliacoesCRUD.create({ id: avaliacaoId, ...avaliacaoData });
-
-            // Create subcollection for responses
-            const respostasCRUD = new FirebaseCRUD(`ad_avaliacoes/${avaliacaoId}/respostas`);
-            
-            // Collect and save all responses
-            const responsePromises = this.currentQuestoes.map(async (questao) => {
-                const categoria = questao.categoria || 'disciplina';
-                const questionId = questao.id || `${categoria}_${questao.ordem || Math.random()}`;
-                const inputName = `${categoria}_${questionId}`;
-                let respostaValor = null;
-
-                const inputType = questao.tipo || 'escala_1_a_5';
-                
-                if (inputType === 'escala_1_a_5') {
-                    const selectedRadio = document.querySelector(`input[name="${inputName}"]:checked`);
-                    if (selectedRadio) {
-                        respostaValor = parseInt(selectedRadio.value);
-                    }
-                } else if (inputType === 'texto_livre') {
-                    const textarea = document.querySelector(`textarea[name="${inputName}"]`);
-                    if (textarea) {
-                        respostaValor = textarea.value;
-                    }
-                }
-
-                if (respostaValor !== null && respostaValor !== '') {
-                    const respostaData = {
-                        questaoTexto: questao.texto,
-                        respostaValor: respostaValor,
-                        tipo: categoria,
-                        ordem: questao.ordem || 0
-                    };
-
-                    await respostasCRUD.create(respostaData);
-                }
-            });
-
-            await Promise.all(responsePromises);
-
-            alert('Avaliação enviada com sucesso!');
-            this.closeForm();
-            
-            // Reload the page to refresh the disciplines list
-            window.location.reload();
-        } catch (error) {
-            console.error('Erro ao enviar avaliação:', error);
-            alert('Erro ao enviar avaliação. Tente novamente.');
-        }
-    }
-
+    // ==========================================
+    // VALIDAÇÃO COM TOASTS E SHAKE EFFECT
+    // ==========================================
     validateRequiredQuestions() {
-        if (!this.currentQuestoes || this.currentQuestoes.length === 0) {
-            alert('Formulário não encontrado. Recarregue a página.');
-            return false;
-        }
+        const requiredQuestions = this.currentQuestoes.filter(q => (q.tipo || 'escala_1_a_5') === 'escala_1_a_5');
+        let hasError = false;
+        let firstErrorElement = null;
 
-        const requiredQuestions = this.currentQuestoes.filter(questao => 
-            (questao.tipo || 'escala_1_a_5') === 'escala_1_a_5'
-        );
-
-        const unansweredQuestions = [];
+        // Limpa erros antigos
+        document.querySelectorAll('.question-group.has-error').forEach(el => el.classList.remove('has-error'));
 
         for (const questao of requiredQuestions) {
             const categoria = questao.categoria || 'disciplina';
-            const questionId = questao.id || `${categoria}_${questao.ordem || Math.random()}`;
+            const questionId = questao.id || `${categoria}_${questao.ordem}`;
             const inputName = `${categoria}_${questionId}`;
             
-            const selectedRadio = document.querySelector(`input[name="${inputName}"]:checked`);
-            if (!selectedRadio) {
-                unansweredQuestions.push({
-                    texto: questao.texto,
-                    categoria: categoria
-                });
+            const isAnswered = document.querySelector(`input[name="${inputName}"]:checked`);
+            if (!isAnswered) {
+                hasError = true;
+                const groupEl = document.getElementById(`q_${inputName}`);
+                if (groupEl) {
+                    groupEl.classList.add('has-error');
+                    if (!firstErrorElement) firstErrorElement = groupEl;
+                }
             }
         }
 
-        if (unansweredQuestions.length > 0) {
-            const categoryNames = {
-                'disciplina': 'Sobre a Disciplina',
-                'aluno': 'Sobre você',
-                'professor': 'Sobre o Professor'
-            };
-
-            let message = 'Por favor, responda todas as questões obrigatórias:\n\n';
-            
-            // Group by category for better user experience
-            const groupedByCategory = {};
-            unansweredQuestions.forEach(q => {
-                if (!groupedByCategory[q.categoria]) {
-                    groupedByCategory[q.categoria] = [];
-                }
-                groupedByCategory[q.categoria].push(q.texto);
-            });
-
-            Object.entries(groupedByCategory).forEach(([categoria, questoes]) => {
-                message += `${categoryNames[categoria]}:\n`;
-                questoes.forEach((texto, index) => {
-                    const shortText = texto.length > 60 ? texto.substring(0, 60) + '...' : texto;
-                    message += `  ${index + 1}. ${shortText}\n`;
-                });
-                message += '\n';
-            });
-
-            message += 'As questões de texto são opcionais e podem ser deixadas em branco.';
-            
-            alert(message);
-            
-            // Scroll to the first unanswered question
-            if (unansweredQuestions.length > 0) {
-                const firstUnanswered = unansweredQuestions[0];
-                const categoria = firstUnanswered.categoria;
-                const sectionId = `${categoria}-questions`;
-                const section = document.getElementById(sectionId);
-                if (section) {
-                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+        if (hasError) {
+            this.showToast('Faltam responder algumas questões obrigatórias (a vermelho).', 'error');
+            if (firstErrorElement) {
+                firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-            
             return false;
         }
 
         return true;
     }
 
-    generateId() {
-        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    async handleFormSubmission(e) {
+        e.preventDefault();
+
+        if (!this.validateRequiredQuestions()) return;
+
+        const userId = localStorage.getItem("user_id");
+        const turmaId = localStorage.getItem("atual_turma_id");
+        const formularioId = this.currentFormulario?.id || this.currentTurma?.formularioId;
+
+        const btnSubmit = document.getElementById('btnSubmitAvaliacao');
+        btnSubmit.innerHTML = '<div class="loader" style="width:20px;height:20px;border-width:2px;display:inline-block;"></div> A Enviar...';
+        btnSubmit.disabled = true;
+
+        try {
+            const avaliacaoData = {
+                alunoId: userId, turmaId: turmaId, formularioId: formularioId,
+                dataResposta: new Date(),
+                comentarios: document.querySelector('textarea[name="comentarios"]')?.value || "",
+            };
+
+            const avaliacoesCRUD = new FirebaseCRUD("ad_avaliacoes");
+            const avaliacaoId = this.generateId();
+            await avaliacoesCRUD.create({ id: avaliacaoId, ...avaliacaoData });
+
+            const respostasCRUD = new FirebaseCRUD(`ad_avaliacoes/${avaliacaoId}/respostas`);
+            
+            const responsePromises = this.currentQuestoes.map(async (questao) => {
+                const categoria = questao.categoria || 'disciplina';
+                const questionId = questao.id || `${categoria}_${questao.ordem}`;
+                const inputName = `${categoria}_${questionId}`;
+                let respostaValor = null;
+
+                if ((questao.tipo || 'escala_1_a_5') === 'escala_1_a_5') {
+                    const sel = document.querySelector(`input[name="${inputName}"]:checked`);
+                    if (sel) respostaValor = parseInt(sel.value);
+                } else {
+                    const txt = document.querySelector(`textarea[name="${inputName}"]`);
+                    if (txt) respostaValor = txt.value;
+                }
+
+                if (respostaValor !== null && respostaValor !== '') {
+                    await respostasCRUD.create({
+                        questaoTexto: questao.texto, respostaValor: respostaValor, tipo: categoria, ordem: questao.ordem || 0
+                    });
+                }
+            });
+
+            await Promise.all(responsePromises);
+
+            this.showToast('🎉 Avaliação submetida com sucesso! Obrigado pelo seu feedback.', 'success');
+            
+            setTimeout(() => {
+                this.closeForm();
+                window.location.reload();
+            }, 2000);
+
+        } catch (error) {
+            console.error('Erro:', error);
+            this.showToast('Erro ao enviar. Verifique a sua ligação à internet.', 'error');
+            btnSubmit.innerHTML = '<span class="material-icons">send</span> Submeter Avaliação';
+            btnSubmit.disabled = false;
+        }
+    }
+
+    generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
+
+    showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = `modern-toast toast-${type}`;
+        const icon = type === 'success' ? 'check_circle' : 'error_outline';
+        toast.innerHTML = `<span class="material-icons">${icon}</span><p>${message}</p>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 4000);
     }
 
     async showForm(disciplineName, professorName) {
-        // Initialize form data first
         await this.initializeForm();
-        
-        if (!this.currentFormulario) {
-            alert('Formulário não encontrado para esta turma.');
-            return;
-        }
-
-        if (!this.currentQuestoes || this.currentQuestoes.length === 0) {
-            alert('Nenhuma questão encontrada neste formulário. Verifique se o formulário possui questões cadastradas.');
+        if (!this.currentFormulario || !this.currentQuestoes.length) {
+            this.showToast('Este formulário ainda não tem perguntas ativas.', 'error');
             return;
         }
 
         const formTitle = document.getElementById('form-title');
         if (formTitle) {
             formTitle.innerHTML = `
-                Avaliação da Disciplina: ${disciplineName}
-                <p style="color: #546e7a; font-size: 0.9em; margin-top: 0.5rem; font-weight: normal;">Professor(a): ${professorName}</p>
+                ${disciplineName}
+                <div style="color: var(--primary-600); font-size: 14px; margin-top: 8px; font-weight: 500;">
+                    <span class="material-icons" style="font-size:16px; vertical-align:text-bottom;">person</span> Prof. ${professorName}
+                </div>
             `;
         }
         
-        // Show the form
         document.querySelector('.evaluation-form-overlay').style.display = 'block';
-        
-        // Give a small delay to ensure DOM is updated, then populate
-        setTimeout(() => {
-            this.populateFormSections();
-        }, 100);
     }
 
-    closeForm() {
-        document.querySelector('.evaluation-form-overlay').style.display = 'none';
-    }
+    closeForm() { document.querySelector('.evaluation-form-overlay').style.display = 'none'; }
 }

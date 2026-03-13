@@ -13,160 +13,124 @@
     <link rel="stylesheet" href="evaluation-components.css">
 </head>
 <body>
-    <!-- Header -->
     <header class="app-header">
         <div class="header-content">
             <div class="logo-section">
-                <div class="logo-icon">
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="32" height="32" rx="8" fill="url(#logoGradient)"/>
-                        <path d="M8 12L16 8L24 12V20C24 21.1046 23.1046 22 22 22H10C8.89543 22 8 21.1046 8 20V12Z" fill="white"/>
-                        <path d="M12 16H20M12 19H18" stroke="url(#logoGradient)" stroke-width="2" stroke-linecap="round"/>
-                        <defs>
-                            <linearGradient id="logoGradient" x1="0" y1="0" x2="32" y2="32">
-                                <stop offset="0%" stop-color="#0ea5e9"/>
-                                <stop offset="100%" stop-color="#3b82f6"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
+                <div class="brand-icon">
+                    <span class="material-icons">school</span>
                 </div>
                 <div class="logo-text">
-                    <h3>Sistema de Avaliação</h3>
-                    <p>de Disciplinas</p>
+                    <h3>EduPanel</h3>
+                    <p>Portal do Aluno</p>
                 </div>
             </div>
             <div class="header-actions">
                 <button id="logoutButton" class="btn btn-secondary" aria-label="Sair do sistema">
                     <span class="material-icons">logout</span>
-                    Sair
+                    <span>Sair</span>
                 </button>
             </div>
         </div>
     </header>
 
     <div class="container">
-        <!-- Page Header -->
         <div class="page-header">
-            <h1>Avaliação de Disciplinas</h1>
-            <p>Avalie suas disciplinas do semestre atual e contribua para a melhoria do ensino</p>
+            <h1>Avaliação Acadêmica</h1>
+            <p>A sua voz molda o futuro da nossa instituição. O seu feedback é 100% anónimo.</p>
         </div>
-        
-        <main>
-            <section class="disciplines-grid" role="region" aria-label="Lista de disciplinas para avaliação">
-                <!-- Disciplines will be loaded dynamically -->
-            </section>
-        </main>
+        <main><section class="disciplines-grid"></section></main>
     </div>
 
-    <!-- Evaluation Form Modal -->
+    <div id="toast-container" class="toast-container"></div>
+
     <div class="evaluation-form-overlay" role="dialog" aria-modal="true" aria-labelledby="form-title">
         <div class="evaluation-form-container">
-            <button class="close-btn" aria-label="Fechar formulário de avaliação">&times;</button>
+            <button class="close-btn" aria-label="Fechar">&times;</button>
             
-            <div class="form-header">
-                <h2 id="form-title">Avaliação da Disciplina</h2>
+            <div class="form-header sticky-header">
+                <div class="header-titles">
+                    <h2 id="form-title">Avaliação da Disciplina</h2>
+                    <div class="privacy-badge">
+                        <span class="material-icons">lock</span>
+                        <span>As suas respostas são anónimas e criptografadas</span>
+                    </div>
+                </div>
+                <div class="form-progress-container">
+                    <div class="progress-text">
+                        <span id="progress-percentage">0%</span> concluído
+                    </div>
+                    <div class="form-progress-bar">
+                        <div class="form-progress-fill" id="form-progress-fill"></div>
+                    </div>
+                </div>
             </div>
             
             <form id="avaliacaoForm" novalidate>
-                <div class="legend">
-                    <h3>Escala de Avaliação</h3>
-                    <div class="legend-grid">
-                        <div class="legend-item"><strong>1</strong> - Discordo Totalmente</div>
-                        <div class="legend-item"><strong>2</strong> - Discordo</div>
-                        <div class="legend-item"><strong>3</strong> - Concordo Parcialmente</div>
-                        <div class="legend-item"><strong>4</strong> - Concordo</div>
-                        <div class="legend-item"><strong>5</strong> - Concordo Totalmente</div>
+                <div id="form-dynamic-content">
+                    <div class="form-section"><div id="disciplina-questions"></div></div>
+                    <div class="form-section"><div id="aluno-questions"></div></div>
+                    <div class="form-section"><div id="professor-questions"></div></div>
+                </div>
+
+                <div class="form-section feedback-section">
+                    <h2><span class="material-icons">forum</span> Feedback Aberto</h2>
+                    <p style="color: var(--gray-600); margin-bottom: 16px;">Sinta-se à vontade para justificar as suas notas ou deixar sugestões.</p>
+                    
+                    <div class="question-group">
+                        <label style="font-weight: 600; display: block; margin-bottom: 8px;">Pontos Fortes e Melhorias (Opcional)</label>
+                        <textarea name="comentarios" class="modern-textarea" placeholder="O que mais gostou na disciplina? O que mudaria?"></textarea>
                     </div>
                 </div>
 
-                <div class="form-section">
-                    <h2>Sobre a Disciplina</h2>
-                    <div id="disciplina-questions" role="group" aria-labelledby="disciplina-section">
-                        <!-- Questions will be loaded dynamically -->
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h2>Sobre você</h2>
-                    <div id="aluno-questions" role="group" aria-labelledby="aluno-section">
-                        <!-- Questions will be loaded dynamically -->
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h2>Sobre o Professor</h2>
-                    <div id="professor-questions" role="group" aria-labelledby="professor-section">
-                        <!-- Questions will be loaded dynamically -->
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h2>Comentários sobre a disciplina</h2>
-                    <textarea 
-                        name="comentarios"
-                        placeholder="Deixe seus comentários sobre a disciplina e/ou professor (opcional)"
-                        aria-label="Comentários sobre a disciplina"></textarea>
-                </div>
-
-                <div class="form-section">
-                    <h2>Sugestões para o questionário</h2>
-                    <textarea 
-                        name="sugestoes"
-                        placeholder="Deixe suas sugestões de melhorias para o questionário de avaliação (opcional)"
-                        aria-label="Sugestões para melhorias"></textarea>
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
-                        <span class="material-icons">edit</span>
-                        Enviar Avaliação
+                <div class="form-actions sticky-footer">
+                    <button type="button" class="btn btn-secondary" onclick="document.querySelector('.evaluation-form-overlay').style.display='none'">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnSubmitAvaliacao">
+                        <span class="material-icons">send</span>
+                        Submeter Avaliação
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="app-footer">
         <div class="footer-content">
             <div class="footer-section">
-                <h4>Sistema de Avaliação</h4>
-                <p>Plataforma moderna para avaliação acadêmica e feedback institucional</p>
+                <h4>EduPanel</h4>
+                <p>Plataforma moderna para avaliação acadêmica e feedback institucional contínuo.</p>
             </div>
             <div class="footer-section">
-                <h5>Recursos</h5>
+                <h5>Acesso Rápido</h5>
                 <ul>
-                    <li><a href="#avaliacoes">Avaliações</a></li>
-                    <li><a href="#disciplinas">Disciplinas</a></li>
-                    <li><a href="#progresso">Progresso</a></li>
+                    <li><a href="#avaliacoes">Minhas Avaliações</a></li>
+                    <li><a href="#disciplinas">Disciplinas do Semestre</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h5>Suporte</h5>
                 <ul>
-                    <li><a href="#ajuda">Ajuda</a></li>
-                    <li><a href="#contato">Contato</a></li>
-                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#ajuda">Central de Ajuda</a></li>
+                    <li><a href="#contato">Falar com a Secretaria</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h5>Institucional</h5>
                 <ul>
-                    <li><a href="#sobre">Sobre</a></li>
-                    <li><a href="#privacidade">Privacidade</a></li>
-                    <li><a href="#termos">Termos</a></li>
+                    <li><a href="#privacidade">Política de Privacidade</a></li>
+                    <li><a href="#termos">Termos de Uso</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2025 Sistema de Avaliação de Disciplinas. Todos os direitos reservados.</p>
+            <p>&copy; 2026 Sistema de Avaliação. Todos os direitos reservados.</p>
             <div class="footer-links">
-                <a href="#status">Status do Sistema</a>
-                <a href="#versao">Versão 1.0</a>
+                <span style="font-size: 11px; font-weight: 600; color: #94a3b8; letter-spacing: 1px;">
+                    POWERED BY <strong style="color: #0ea5e9;">PYSKE</strong>
+                </span>
             </div>
         </div>
     </footer>
 
-    <script type="module" src="app.js"></script>
+    <script type="module" src="../avaliacao_disciplinas/app.js"></script>
 </body>
 </html>
