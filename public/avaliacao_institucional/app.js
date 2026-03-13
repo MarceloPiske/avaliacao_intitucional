@@ -1,304 +1,285 @@
-import { FirebaseAuth, FirebaseCRUD, db } from '../avaliacao_disciplinas/modules/shared/firebase.js';
+import { FirebaseAuth, db } from '../avaliacao_disciplinas/modules/shared/firebase.js';
+import { collection, getDocs, addDoc, query, where, serverTimestamp, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-class CPAApp {
+class CPAEvaluationApp {
     constructor() {
         this.auth = new FirebaseAuth();
-        this.avaliacoesCRUD = new FirebaseCRUD("cpa_avaliacoes");
         this.currentUser = null;
-        this.perguntas = [];
-        this.perguntasFiltradas = [];
         
-        // Nomes oficiais dos Eixos SINAES/MEC
-        this.nomesEixos = {
-            "1": "Planejamento e Avaliação Institucional",
-            "2": "Desenvolvimento Institucional",
-            "3": "Políticas Acadêmicas",
-            "4": "Políticas de Gestão",
-            "5": "Infraestrutura Física"
+        // Variável Dinâmica do Ciclo
+        this.CICLO_ATUAL = null; 
+        
+        this.questions = [];
+        this.answers = {}; 
+        this.currentIndex = 0;
+
+        this.ui = {
+            loader: document.getElementById('app-loader'),
+            wizardCard: document.getElementById('wizard-card'),
+            statusCard: document.getElementById('status-card'),
+            questionText: document.getElementById('question-text'),
+            currentQNum: document.getElementById('current-q-num'),
+            totalQNum: document.getElementById('total-q-num'),
+            progressText: document.getElementById('progress-text'),
+            progressFill: document.getElementById('progress-fill'),
+            btnPrev: document.getElementById('btn-prev'),
+            btnNext: document.getElementById('btn-next'),
+            btnSubmit: document.getElementById('btn-submit'),
+            ratingInputs: document.querySelectorAll('input[name="rating"]')
         };
 
         this.init();
     }
 
     async init() {
-        // 1. Proteção de Rota e Identificação
         this.auth.check_login_status(async (user) => {
             if (!user) {
-                window.location.href = '/institucional/login'; // Redireciona para o login do CPA
+                window.location.href = '/institucional/login';
                 return;
             }
 
-            // Vai buscar os dados completos do utilizador ao Firestore para saber a "role"
-            const userCRUD = new FirebaseCRUD("users");
-            this.currentUser = await userCRUD.read(user.uid);
+            const userId = localStorage.getItem("user_id");
+            const userRole = localStorage.getItem("user_tipos") ? JSON.parse(localStorage.getItem("user_tipos"))[0] : 'aluno';
+            const userName = localStorage.getItem("user_nome") || user.email;
 
-            if (this.currentUser) {
-                document.getElementById('userInfo').innerHTML = `
-                    <span class="material-icons" style="font-size:16px; vertical-align:text-bottom;">account_circle</span> 
-                    ${this.currentUser.displayName} (${this.currentUser.role || 'aluno'})
-                `;
+            document.getElementById('header-user-name').textContent = `${userName} (${userRole})`;
+            this.currentUser = { id: userId, role: userRole };
+
+            // 1º - LÊ O CICLO DINÂMICO DO BANCO DE DADOS
+            await this.loadActiveCycle();
+
+            // 2º - VERIFICA SE JÁ RESPONDEU NESTE CICLO
+            const hasResponded = await this.checkIfAlreadyResponded();
+            
+            if (hasResponded) {
+                this.showStatus('success', 'Avaliação Já Concluída!', `Você já preencheu a avaliação institucional para o ciclo ${this.CICLO_ATUAL}. Obrigado pelo seu tempo!`);
+                return;
             }
 
-            // 2. Carregar as Perguntas e Setup da UI
+            // 3º - CARREGA AS PERGUNTAS SE AINDA NÃO RESPONDEU
             await this.loadQuestions();
-            this.setupEventListeners();
-            this.checkExistingSubmission();
         });
+
+        this.setupEventListeners();
+    }
+
+    async loadActiveCycle() {
+        try {
+            const configRef = doc(db, 'config', 'cpa_settings');
+            const configSnap = await getDoc(configRef);
+            
+            if (configSnap.exists() && configSnap.data().ciclo_atual) {
+                this.CICLO_ATUAL = configSnap.data().ciclo_atual;
+            } else {
+                // Auto-Criação: Se não existir, define o ano atual como padrão
+                this.CICLO_ATUAL = new Date().getFullYear().toString(); 
+                await setDoc(configRef, { ciclo_atual: this.CICLO_ATUAL }, { merge: true });
+            }
+            console.log("Ciclo de Avaliação Ativo:", this.CICLO_ATUAL);
+        } catch (error) {
+            console.error("Erro ao carregar configurações do ciclo:", error);
+            this.CICLO_ATUAL = new Date().getFullYear().toString(); // Fallback de segurança
+        }
+    }
+
+    async checkIfAlreadyResponded() {
+        try {
+            const q = query(
+                collection(db, 'respostas_avaliacao_institucional'),
+                where('userId', '==', this.currentUser.id),
+                where('year', '==', this.CICLO_ATUAL) // Filtra pelo ciclo dinâmico
+            );
+            const snapshot = await getDocs(q);
+            return !snapshot.empty;
+        } catch (error) {
+            console.error("Erro ao verificar submissão:", error);
+            return false;
+        }
     }
 
     async loadQuestions() {
         try {
-            // Vamos ler o JSON diretamente para garantir que usamos a sua matriz perfeita
-            const response = await fetch('./avaliacao_cpa_perguntas.json'); // Ajuste o nome do seu json aqui se necessário
-            if (!response.ok) throw new Error("Erro ao carregar perguntas");
+            const snapshot = await getDocs(collection(db, 'perguntas_avaliacao_institucional'));
+            const allQ = [];
             
-            const data = await response.json();
-            
-            // Converte o objeto do JSON num array para facilitar
-            this.perguntas = Object.values(data);
-            
-            // 3. FILTRO MÁGICO DE ROLES (Aluno, Professor ou Funcionario)
-            const userRole = this.currentUser?.role || 'aluno';
-            
-            this.perguntasFiltradas = this.perguntas.filter(q => {
-                if (userRole === 'aluno' && q.aluno) return true;
-                if (userRole === 'professor' && q.professor) return true;
-                if (userRole === 'funcionario' && q.funcionario) return true;
-                return false;
+            snapshot.forEach(doc => {
+                const q = { id: doc.id, ...doc.data() };
+                if (this.currentUser.role === 'aluno' && q.aluno) allQ.push(q);
+                else if (this.currentUser.role === 'professor' && q.professor) allQ.push(q);
+                else if ((this.currentUser.role === 'tecnico' || this.currentUser.role === 'admin') && q.funcionario) allQ.push(q);
             });
 
-            // Ordena pelo eixo e depois pela dimensão
-            this.perguntasFiltradas.sort((a, b) => {
-                if (a.eixo !== b.eixo) return a.eixo.localeCompare(b.eixo);
-                return a.dimensao.localeCompare(b.dimensao);
-            });
+            this.questions = allQ.sort((a, b) => parseInt(a.id) - parseInt(b.id));
 
-            this.renderQuestions();
+            if (this.questions.length === 0) {
+                this.showStatus('info', 'Nenhuma pergunta disponível', 'A coordenação ainda não disponibilizou perguntas para o seu perfil no ciclo atual.');
+                return;
+            }
+
+            this.ui.currentQNum.parentElement.innerHTML = `Pergunta&nbsp;<span id="current-q-num">1</span>&nbsp;de&nbsp;<span id="total-q-num">${this.questions.length}</span>`;
+            
+            this.ui.currentQNum = document.getElementById('current-q-num');
+            this.ui.totalQNum = document.getElementById('total-q-num');
+
+            this.ui.loader.style.display = 'none';
+            this.ui.wizardCard.style.display = 'flex';
+            
+            this.renderQuestion();
 
         } catch (error) {
-            console.error("Erro ao carregar a matriz da CPA:", error);
-            this.showToast("Erro ao carregar o formulário. Contacte o suporte.", "error");
+            console.error("Erro ao carregar perguntas:", error);
+            this.showStatus('error', 'Erro de Conexão', 'Não foi possível carregar o questionário. Tente novamente mais tarde.');
         }
     }
 
-    renderQuestions() {
-        const container = document.getElementById('form-dynamic-content');
-        container.innerHTML = '';
+    renderQuestion() {
+        if (this.currentIndex >= this.questions.length || this.currentIndex < 0) return; 
 
-        // Agrupa as perguntas por Eixo
-        const perguntasPorEixo = {};
-        this.perguntasFiltradas.forEach(q => {
-            if (!perguntasPorEixo[q.eixo]) perguntasPorEixo[q.eixo] = [];
-            perguntasPorEixo[q.eixo].push(q);
-        });
+        const qArea = document.getElementById('question-area');
+        qArea.style.animation = 'none';
+        qArea.offsetHeight; 
+        qArea.style.animation = 'fadeIn 0.4s ease';
 
-        // Legendas sérias (Padrão MEC/CPA)
-        const legends = ['Discordo Totalmente', 'Discordo', 'Não sei avaliar', 'Concordo', 'Concordo Totalmente'];
-
-        // Renderiza as seções
-        Object.keys(perguntasPorEixo).sort().forEach(eixoId => {
-            const questoes = perguntasPorEixo[eixoId];
-            const nomeEixo = this.nomesEixos[eixoId] || `Eixo ${eixoId}`;
-
-            let htmlEixo = `
-                <div class="axis-section">
-                    <h2><span class="material-icons">account_balance</span> Eixo ${eixoId} - ${nomeEixo}</h2>
-            `;
-
-            questoes.forEach((q, index) => {
-                const inputName = `q_${q.id}`;
-                htmlEixo += `
-                    <div class="question-group" id="group_${inputName}">
-                        <p class="question-text">${index + 1}. ${q.texto}</p>
-                        <div class="radio-group">
-                            ${[1, 2, 3, 4, 5].map((value, idx) => `
-                                <label class="radio-option">
-                                    <input type="radio" name="${inputName}" value="${value}" required>
-                                    <span class="radio-number">${value}</span>
-                                    <span class="radio-label-text">${legends[idx]}</span>
-                                </label>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            });
-
-            htmlEixo += `</div>`;
-            container.insertAdjacentHTML('beforeend', htmlEixo);
-        });
-
-        this.setupInteractiveUI();
-    }
-
-    // ==========================================
-    // MAGIA DE UI: Auto-Scroll e Progresso
-    // ==========================================
-    setupInteractiveUI() {
-        const requiredInputs = document.querySelectorAll('input[type="radio"]');
-        const totalGroups = new Set(Array.from(requiredInputs).map(i => i.name)).size;
-
-        const updateProgress = () => {
-            const answeredGroups = new Set(Array.from(document.querySelectorAll('input[type="radio"]:checked')).map(i => i.name)).size;
-            const percentage = totalGroups === 0 ? 100 : Math.round((answeredGroups / totalGroups) * 100);
-            
-            document.getElementById('progress-percentage').textContent = `${percentage}%`;
-            document.getElementById('form-progress-fill').style.width = `${percentage}%`;
-            
-            const btnSubmit = document.getElementById('btnSubmitCpa');
-            if (percentage === 100) {
-                btnSubmit.style.transform = 'scale(1.05)';
-                btnSubmit.style.boxShadow = '0 0 20px rgba(168, 85, 247, 0.4)'; // Brilho roxo
-            }
-        };
-
-        requiredInputs.forEach(input => {
-            input.addEventListener('change', (e) => {
-                updateProgress();
-                
-                const qGroup = e.target.closest('.question-group');
-                qGroup.classList.remove('has-error');
-
-                const allGroups = Array.from(document.querySelectorAll('.question-group'));
-                const currentIndex = allGroups.indexOf(qGroup);
-                if (currentIndex >= 0 && currentIndex < allGroups.length - 1) {
-                    setTimeout(() => {
-                        allGroups[currentIndex + 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 250);
-                }
-            });
-        });
-
-        updateProgress();
-    }
-
-    async checkExistingSubmission() {
-        // Verifica se o aluno já enviou a avaliação deste ano
-        try {
-            const anoAtual = new Date().getFullYear();
-            const querySnapshot = await this.avaliacoesCRUD.readAll();
-            
-            // Faremos uma procura na memória para simplificar, já que é o portal do aluno
-            const jaRespondeu = querySnapshot.some(av => av.userId === this.currentUser.id && av.year === anoAtual);
-
-            if (jaRespondeu) {
-                const card = document.getElementById('cpaStartCard');
-                card.innerHTML = `
-                    <div class="card-icon" style="background: #dcfce7; color: #10b981;"><span class="material-icons">check_circle</span></div>
-                    <h3>Avaliação Concluída</h3>
-                    <p style="margin: 12px 0;">Você já submeteu a sua avaliação institucional para o ciclo de ${anoAtual}. Muito obrigado pela sua contribuição!</p>
-                `;
-                card.style.borderColor = '#10b981';
-            }
-        } catch (error) {
-            console.error("Erro ao verificar submissão:", error);
+        const q = this.questions[this.currentIndex];
+        
+        this.ui.currentQNum.textContent = this.currentIndex + 1;
+        this.ui.questionText.textContent = q.texto;
+        
+        this.ui.btnPrev.style.visibility = this.currentIndex === 0 ? 'hidden' : 'visible';
+        
+        if (this.currentIndex === this.questions.length - 1) {
+            this.ui.btnNext.style.display = 'none';
+            this.ui.btnSubmit.style.display = 'inline-flex';
+        } else {
+            this.ui.btnNext.style.display = 'inline-flex';
+            this.ui.btnSubmit.style.display = 'none';
         }
+
+        this.ui.ratingInputs.forEach(input => {
+            input.checked = false;
+            if (this.answers[q.id] && input.value === this.answers[q.id]) {
+                input.checked = true;
+            }
+        });
+
+        this.updateProgress();
+    }
+
+    updateProgress() {
+        const answeredCount = Object.keys(this.answers).length;
+        const percentage = (answeredCount / this.questions.length) * 100;
+        
+        this.ui.progressText.textContent = `${answeredCount} de ${this.questions.length} respondidas`;
+        this.ui.progressFill.style.width = `${percentage}%`;
     }
 
     setupEventListeners() {
-        document.getElementById('btnStartCpa')?.addEventListener('click', () => {
-            document.getElementById('cpaModal').style.display = 'block';
-        });
+        let autoAdvanceTimeout;
 
-        document.getElementById('btnCloseCpa')?.addEventListener('click', () => {
-            document.getElementById('cpaModal').style.display = 'none';
-        });
-        
-        document.getElementById('btnCancelCpa')?.addEventListener('click', () => {
-            document.getElementById('cpaModal').style.display = 'none';
-        });
-
-        document.getElementById('cpaForm')?.addEventListener('submit', (e) => this.handleSubmit(e));
-
-        document.getElementById('logoutButton')?.addEventListener('click', () => {
+        document.getElementById('btn-logout').addEventListener('click', () => {
             this.auth.logout().then(() => { window.location.href = '/institucional/login'; });
         });
-    }
 
-    validateForm() {
-        let hasError = false;
-        let firstErrorElement = null;
-
-        document.querySelectorAll('.question-group.has-error').forEach(el => el.classList.remove('has-error'));
-
-        this.perguntasFiltradas.forEach(q => {
-            const inputName = `q_${q.id}`;
-            const isAnswered = document.querySelector(`input[name="${inputName}"]:checked`);
-            
-            if (!isAnswered) {
-                hasError = true;
-                const groupEl = document.getElementById(`group_${inputName}`);
-                if (groupEl) {
-                    groupEl.classList.add('has-error');
-                    if (!firstErrorElement) firstErrorElement = groupEl;
-                }
+        this.ui.btnPrev.addEventListener('click', () => {
+            if (autoAdvanceTimeout) clearTimeout(autoAdvanceTimeout); 
+            if (this.currentIndex > 0) {
+                this.currentIndex--;
+                this.renderQuestion();
             }
         });
 
-        if (hasError) {
-            this.showToast('Por favor, responda a todas as questões assinaladas a vermelho.', 'error');
-            if (firstErrorElement) firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            return false;
-        }
-        return true;
+        this.ui.btnNext.addEventListener('click', () => {
+            if (autoAdvanceTimeout) clearTimeout(autoAdvanceTimeout);
+            if (!this.getCurrentAnswer()) {
+                alert('Por favor, selecione uma nota antes de avançar.');
+                return;
+            }
+            if (this.currentIndex < this.questions.length - 1) {
+                this.currentIndex++;
+                this.renderQuestion();
+            }
+        });
+
+        this.ui.ratingInputs.forEach(input => {
+            input.addEventListener('change', (e) => {
+                if (this.currentIndex >= this.questions.length) return;
+
+                const qId = this.questions[this.currentIndex].id;
+                this.answers[qId] = e.target.value;
+                this.updateProgress();
+
+                if (autoAdvanceTimeout) clearTimeout(autoAdvanceTimeout);
+
+                if (this.currentIndex < this.questions.length - 1) {
+                    autoAdvanceTimeout = setTimeout(() => {
+                        this.currentIndex++;
+                        this.renderQuestion();
+                    }, 400); 
+                } else {
+                    this.ui.btnSubmit.style.transform = 'scale(1.05)';
+                    setTimeout(() => this.ui.btnSubmit.style.transform = 'scale(1)', 200);
+                }
+            });
+        });
+
+        this.ui.btnSubmit.addEventListener('click', () => this.submitEvaluation());
     }
 
-    async handleSubmit(e) {
-        e.preventDefault();
+    getCurrentAnswer() {
+        if (this.currentIndex >= this.questions.length) return null;
+        const qId = this.questions[this.currentIndex].id;
+        return this.answers[qId] || null;
+    }
 
-        if (!this.validateForm()) return;
+    async submitEvaluation() {
+        if (!this.getCurrentAnswer()) {
+            alert('Por favor, responda à última pergunta antes de enviar.');
+            return;
+        }
 
-        const btnSubmit = document.getElementById('btnSubmitCpa');
-        btnSubmit.innerHTML = '<div class="loader" style="width:20px;height:20px;border-width:2px;display:inline-block;"></div> A Enviar...';
-        btnSubmit.disabled = true;
+        const answeredCount = Object.keys(this.answers).length;
+        if (answeredCount < this.questions.length) {
+            if (!confirm(`Você respondeu apenas ${answeredCount} de ${this.questions.length}. Deseja mesmo enviar o formulário incompleto?`)) return;
+        }
+
+        this.ui.btnSubmit.innerHTML = '<div class="loader-spinner" style="width: 20px; height: 20px; border-width: 2px;"></div> Enviando...';
+        this.ui.btnSubmit.disabled = true;
 
         try {
-            const answers = {};
-            this.perguntasFiltradas.forEach(q => {
-                const inputName = `q_${q.id}`;
-                const sel = document.querySelector(`input[name="${inputName}"]:checked`);
-                if (sel) answers[q.id.toString()] = sel.value; // Guardar em formato string como no seu JSON antigo
-            });
-
-            const avaliacaoData = {
+            const payload = {
                 userId: this.currentUser.id,
-                userRole: this.currentUser.role || 'aluno',
-                year: new Date().getFullYear(),
-                timestamp: new Date(),
-                answers: answers,
-                comentarios: document.querySelector('textarea[name="comentarios"]').value || ""
+                userRole: this.currentUser.role,
+                answers: this.answers,
+                year: this.CICLO_ATUAL, // SALVA COM O CICLO CORRETO!
+                timestamp: serverTimestamp()
             };
 
-            await this.avaliacoesCRUD.create(avaliacaoData);
-
-            this.showToast('🎉 Avaliação submetida com sucesso! Obrigado.', 'success');
-            
-            setTimeout(() => {
-                document.getElementById('cpaModal').style.display = 'none';
-                window.location.reload();
-            }, 2000);
+            await addDoc(collection(db, 'respostas_avaliacao_institucional'), payload);
+            this.showStatus('success', 'Avaliação Concluída!', `Obrigado pelo seu feedback no ciclo ${this.CICLO_ATUAL}. As suas respostas foram registadas.`);
 
         } catch (error) {
-            console.error('Erro ao submeter CPA:', error);
-            this.showToast('Erro ao enviar. Verifique a sua internet.', 'error');
-            btnSubmit.innerHTML = '<span class="material-icons">send</span> Enviar Respostas';
-            btnSubmit.disabled = false;
+            console.error("Erro ao enviar:", error);
+            alert("Erro de conexão ao enviar respostas. Verifique a internet e tente novamente.");
+            this.ui.btnSubmit.innerHTML = '<span class="material-icons">check_circle</span> Enviar Avaliação';
+            this.ui.btnSubmit.disabled = false;
         }
     }
 
-    showToast(message, type = 'success') {
-        const container = document.getElementById('toast-container');
-        if (!container) return;
-        const toast = document.createElement('div');
-        toast.className = `modern-toast toast-${type}`;
-        const icon = type === 'success' ? 'check_circle' : 'error_outline';
-        toast.innerHTML = `<span class="material-icons">${icon}</span><p>${message}</p>`;
-        container.appendChild(toast);
-        setTimeout(() => toast.classList.add('show'), 10);
-        setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 4000);
+    showStatus(type, title, message) {
+        this.ui.loader.style.display = 'none';
+        this.ui.wizardCard.style.display = 'none';
+        
+        const iconEl = document.getElementById('status-icon');
+        iconEl.className = `status-icon status-${type === 'success' ? 'success' : 'info'}`;
+        iconEl.innerHTML = `<span class="material-icons" style="font-size: 40px;">${type === 'success' ? 'check' : 'info_outline'}</span>`;
+        
+        document.getElementById('status-title').textContent = title;
+        document.getElementById('status-message').textContent = message;
+        
+        this.ui.statusCard.style.display = 'flex';
     }
 }
 
-// Inicializa a App
 document.addEventListener('DOMContentLoaded', () => {
-    new CPAApp();
+    new CPAEvaluationApp();
 });

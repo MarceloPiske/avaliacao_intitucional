@@ -4,118 +4,195 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CPA - Avaliação Institucional</title>
-    <link rel="stylesheet" href="../avaliacao_disciplinas/styles/shared/base.css">
-    <link rel="stylesheet" href="../avaliacao_disciplinas/evaluation-base.css">
-    <link rel="stylesheet" href="../avaliacao_disciplinas/evaluation-components.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
     <style>
-        /* Ajustes específicos para a CPA (Tema Roxo/Púrpura) */
         :root {
-            --accent: #a855f7; /* Roxo CPA */
-            --accent-hover: #9333ea;
+            --brand-primary: #a855f7;
+            --brand-primary-dark: #7e22ce;
+            --bg-app: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
         }
-        .cpa-card {
-            max-width: 600px; margin: 40px auto; text-align: center;
-            padding: 40px; border-top: 4px solid var(--accent);
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg-app); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* Loader Inicial */
+        #app-loader { position: fixed; inset: 0; background: var(--bg-app); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 16px; }
+        .loader-spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: var(--brand-primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Header */
+        header { background: white; padding: 16px 32px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--brand-primary), var(--brand-primary-dark)); color: white; border-radius: 10px; display: flex; justify-content: center; align-items: center; }
+        .brand-text h1 { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+        .brand-text p { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .user-controls { display: flex; align-items: center; gap: 16px; }
+        #user-name-display { font-weight: 600; font-size: 14px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+        .btn-logout { background: #f1f5f9; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; color: #ef4444; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; font-size: 13px; }
+        .btn-logout:hover { background: #fef2f2; }
+
+        /* Container Central */
+        main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px 20px; }
+        
+        .wizard-card { background: white; width: 100%; max-width: 800px; border-radius: 24px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; overflow: hidden; display: none; flex-direction: column; }
+        
+        /* Barra de Progresso */
+        .progress-container { background: #f8fafc; padding: 20px 32px; border-bottom: 1px solid #e2e8f0; }
+        .progress-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+        .progress-track { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--brand-primary), #d8b4fe); width: 0%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* Área da Pergunta */
+        .question-area { padding: 48px 40px; flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 400px; animation: fadeIn 0.4s ease; }
+        .q-badge { display: inline-flex; background: #f3e8ff; color: var(--brand-primary-dark); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 24px; width: fit-content; }
+        #question-text { font-size: 24px; font-weight: 700; color: var(--text-main); line-height: 1.4; margin-bottom: 40px; }
+
+        /* Escala de Avaliação (Typeform Style) */
+        .rating-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 40px; }
+        .rating-option { position: relative; cursor: pointer; }
+        .rating-option input { position: absolute; opacity: 0; }
+        .rating-box { background: white; border: 2px solid #e2e8f0; border-radius: 16px; padding: 24px 10px; display: flex; flex-direction: column; align-items: center; gap: 12px; transition: all 0.2s; text-align: center; }
+        .rating-number { font-size: 24px; font-weight: 800; color: var(--text-muted); }
+        .rating-label { font-size: 12px; font-weight: 600; color: var(--text-muted); line-height: 1.2; }
+        
+        .rating-option:hover .rating-box { border-color: #d8b4fe; background: #faf5ff; transform: translateY(-4px); }
+        .rating-option input:checked + .rating-box { border-color: var(--brand-primary); background: var(--brand-primary); box-shadow: 0 10px 20px rgba(168, 85, 247, 0.3); transform: translateY(-4px); }
+        .rating-option input:checked + .rating-box .rating-number, .rating-option input:checked + .rating-box .rating-label { color: white; }
+
+        /* Navegação */
+        .wizard-nav { display: flex; justify-content: space-between; padding: 24px 40px; background: white; border-top: 1px solid #e2e8f0; }
+        .btn-nav { padding: 12px 24px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; border: none; }
+        .btn-prev { background: white; color: var(--text-muted); border: 1px solid #cbd5e1; }
+        .btn-prev:hover { background: #f1f5f9; color: var(--text-main); }
+        .btn-next { background: var(--text-main); color: white; margin-left: auto; }
+        .btn-next:hover { background: black; }
+        .btn-submit { background: linear-gradient(135deg, var(--brand-primary), var(--brand-primary-dark)); color: white; display: none; margin-left: auto; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4); }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(168, 85, 247, 0.5); }
+
+        /* Estado de Conclusão / Sem Perguntas */
+        .status-card { text-align: center; max-width: 500px; background: white; padding: 48px; border-radius: 24px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05); display: none; flex-direction: column; align-items: center; }
+        .status-icon { width: 80px; height: 80px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 40px; margin-bottom: 24px; }
+        .status-success { background: #dcfce7; color: #16a34a; }
+        .status-info { background: #f1f5f9; color: #64748b; }
+        .status-card h2 { font-size: 24px; font-weight: 800; margin-bottom: 12px; }
+        .status-card p { color: var(--text-muted); line-height: 1.6; margin-bottom: 32px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+        @media(max-width: 768px) {
+            .rating-grid { grid-template-columns: 1fr; gap: 8px; }
+            .rating-box { flex-direction: row; justify-content: space-between; padding: 16px 24px; }
+            .rating-number { font-size: 20px; }
+            .question-area { padding: 32px 24px; }
+            #question-text { font-size: 20px; }
+            .wizard-nav { padding: 16px 24px; }
+            header { padding: 16px 20px; }
+            #user-name-display span.name-text { display: none; }
         }
-        .cpa-card .card-icon {
-            width: 64px; height: 64px; background: #f3e8ff; color: var(--accent);
-            border-radius: 16px; display: flex; justify-content: center; align-items: center;
-            margin: 0 auto 20px;
-        }
-        .cpa-card .card-icon .material-icons { font-size: 32px; }
-        .axes-container { display: flex; flex-direction: column; gap: 32px; }
-        .axis-section h2 { color: var(--accent); margin-bottom: 24px; font-size: 20px; display: flex; align-items: center; gap: 8px; }
     </style>
 </head>
 <body>
 
-    <header class="app-header">
-        <div class="header-content">
-            <div class="logo-section">
-                <div class="brand-icon" style="background: var(--accent);">
-                    <span class="material-icons">domain</span>
-                </div>
-                <div class="logo-text">
-                    <h3>EduPanel CPA</h3>
-                    <p>Avaliação Institucional</p>
-                </div>
+    <div id="app-loader">
+        <div class="loader-spinner"></div>
+        <div style="color: #64748b; font-weight: 500;">Preparando ambiente...</div>
+    </div>
+
+    <header>
+        <div class="brand">
+            <div class="brand-icon"><span class="material-icons">domain</span></div>
+            <div class="brand-text">
+                <h1>EduPanel CPA</h1>
+                <p>Avaliação Institucional</p>
             </div>
-            <div class="header-actions">
-                <div id="userInfo" style="margin-right: 16px; font-weight: 600; font-size: 14px; color: var(--text-secondary);"></div>
-                <button id="logoutButton" class="btn btn-secondary">
-                    <span class="material-icons">logout</span> Sair
-                </button>
+        </div>
+        <div class="user-controls">
+            <div id="user-name-display">
+                <span class="material-icons">account_circle</span>
+                <span class="name-text" id="header-user-name">Carregando...</span>
             </div>
+            <button id="btn-logout" class="btn-logout">
+                <span class="material-icons" style="font-size: 16px;">logout</span> Sair
+            </button>
         </div>
     </header>
 
-    <div class="container">
-        <div class="page-header">
-            <h1>Avaliação Institucional</h1>
-            <p>A sua opinião constrói a nossa faculdade. Avalie a infraestrutura, serviços e gestão.</p>
-        </div>
+    <main>
+        <div id="wizard-card" class="wizard-card">
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span>Progresso da Avaliação</span>
+                    <span id="progress-text">0 de 0 respondidas</span>
+                </div>
+                <div class="progress-track">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+            </div>
 
-        <main>
-            <div class="discipline-card cpa-card" id="cpaStartCard">
-                <div class="card-icon"><span class="material-icons">assignment</span></div>
-                <h3>Ciclo Avaliativo Aberto</h3>
-                <p style="margin: 12px 0 24px;">Preencha o formulário da Comissão Própria de Avaliação. O seu feedback é 100% anónimo e essencial para o nosso plano de melhorias.</p>
+            <div class="question-area" id="question-area">
+                <div class="q-badge">Pergunta <span id="current-q-num">1</span> de <span id="total-q-num">10</span></div>
+                <h2 id="question-text">Carregando pergunta...</h2>
                 
-                <div id="cpaStatusContainer">
-                    <button class="evaluate-btn" id="btnStartCpa" style="width: 100%;">
-                        <span class="material-icons">play_arrow</span> Iniciar Avaliação
-                    </button>
+                <div class="rating-grid" id="rating-grid">
+                    <label class="rating-option">
+                        <input type="radio" name="rating" value="1">
+                        <div class="rating-box">
+                            <span class="rating-number">1</span>
+                            <span class="rating-label">Discordo<br>Totalmente</span>
+                        </div>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="rating" value="2">
+                        <div class="rating-box">
+                            <span class="rating-number">2</span>
+                            <span class="rating-label">Discordo<br>Parcialmente</span>
+                        </div>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="rating" value="3">
+                        <div class="rating-box">
+                            <span class="rating-number">3</span>
+                            <span class="rating-label">Não sei<br>avaliar</span>
+                        </div>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="rating" value="4">
+                        <div class="rating-box">
+                            <span class="rating-number">4</span>
+                            <span class="rating-label">Concordo<br>Parcialmente</span>
+                        </div>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="rating" value="5">
+                        <div class="rating-box">
+                            <span class="rating-number">5</span>
+                            <span class="rating-label">Concordo<br>Totalmente</span>
+                        </div>
+                    </label>
                 </div>
             </div>
-        </main>
-    </div>
 
-    <div id="toast-container" class="toast-container"></div>
-
-    <div class="evaluation-form-overlay" role="dialog" id="cpaModal">
-        <div class="evaluation-form-container">
-            <button class="close-btn" id="btnCloseCpa">&times;</button>
-            
-            <div class="form-header sticky-header">
-                <div class="header-titles">
-                    <h2>Avaliação Institucional (CPA)</h2>
-                    <div class="privacy-badge">
-                        <span class="material-icons">lock</span> Respostas anónimas
-                    </div>
-                </div>
-                <div class="form-progress-container">
-                    <div class="progress-text"><span id="progress-percentage">0%</span> concluído</div>
-                    <div class="form-progress-bar">
-                        <div class="form-progress-fill" id="form-progress-fill" style="background: var(--accent);"></div>
-                    </div>
-                </div>
+            <div class="wizard-nav">
+                <button id="btn-prev" class="btn-nav btn-prev"><span class="material-icons">arrow_back</span> Anterior</button>
+                <button id="btn-next" class="btn-nav btn-next">Próxima <span class="material-icons">arrow_forward</span></button>
+                <button id="btn-submit" class="btn-nav btn-submit"><span class="material-icons">check_circle</span> Enviar Avaliação</button>
             </div>
-            
-            <form id="cpaForm" novalidate>
-                <div id="form-dynamic-content" class="axes-container"></div>
-
-                <div class="form-section feedback-section" style="margin-top: 40px;">
-                    <h2 style="color: var(--accent); display: flex; align-items: center; gap: 8px;">
-                        <span class="material-icons">forum</span> Comentários Gerais
-                    </h2>
-                    <p style="color: var(--text-secondary); margin-bottom: 16px;">Sinta-se à vontade para deixar sugestões de melhoria para a instituição.</p>
-                    
-                    <div class="question-group">
-                        <textarea name="comentarios" class="modern-textarea" placeholder="O que mais gosta na instituição? O que podemos melhorar?"></textarea>
-                    </div>
-                </div>
-
-                <div class="form-actions sticky-footer">
-                    <button type="button" class="btn btn-secondary" id="btnCancelCpa">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="btnSubmitCpa" style="background: var(--accent);">
-                        <span class="material-icons">send</span> Enviar Respostas
-                    </button>
-                </div>
-            </form>
         </div>
-    </div>
+
+        <div id="status-card" class="status-card">
+            <div id="status-icon" class="status-icon status-success">
+                <span class="material-icons" style="font-size: inherit;">check</span>
+            </div>
+            <h2 id="status-title">Avaliação Concluída!</h2>
+            <p id="status-message">Agradecemos a sua participação. As suas respostas são anónimas e fundamentais para a melhoria da nossa instituição.</p>
+            <button onclick="window.location.href='/'" class="btn-nav btn-submit" style="display: flex;">Voltar ao Hub Central</button>
+        </div>
+
+    </main>
 
     <script type="module" src="../avaliacao_institucional/app.js"></script>
 </body>

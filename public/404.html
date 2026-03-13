@@ -1,33 +1,202 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Page Not Found</title>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página não encontrada | EduPanel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px 16px; border-radius: 3px; }
-      #message h3 { color: #888; font-weight: normal; font-size: 16px; margin: 16px 0 12px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
+        :root {
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --bg-color: #f8fafc;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header Minimalista */
+        header {
+            padding: 24px 40px;
+            display: flex;
+            justify-content: flex-start;
+            position: relative;
+            z-index: 10;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .brand-icon {
+            background: var(--text-main); color: white; border-radius: 10px;
+            width: 36px; height: 36px; display: flex; justify-content: center; align-items: center;
+        }
+        .brand-text h1 { margin: 0; font-size: 18px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
+
+        /* Container Principal do 404 */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* O Gigante 404 com Gradiente Animado */
+        .error-code {
+            font-size: 160px;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #0ea5e9, #a855f7, #ec4899);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 5s ease infinite;
+            letter-spacing: -8px;
+            position: relative;
+        }
+
+        /* Elemento decorativo dentro do 404 */
+        .error-code::after {
+            content: 'search';
+            font-family: 'Material Icons';
+            font-size: 64px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            -webkit-text-fill-color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .error-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .error-message {
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 460px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        /* Botões de Ação */
+        .actions-group {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-primary {
+            background: var(--text-main);
+            color: white;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-main);
+            border: 1px solid #e2e8f0;
+        }
+        .btn-secondary:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        /* Formas Geométricas Flutuantes ao fundo (Glassmorphism) */
+        .bg-shapes {
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: floatShape 10s infinite alternate ease-in-out;
+        }
+        .shape-blue { width: 400px; height: 400px; background: #bae6fd; top: 10%; left: -100px; animation-delay: 0s; }
+        .shape-purple { width: 500px; height: 500px; background: #e9d5ff; bottom: -100px; right: -150px; animation-delay: -5s; }
+
+        /* Animações */
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes float { 0%, 100% { transform: translate(-50%, -50%); } 50% { transform: translate(-50%, -65%); } }
+        @keyframes floatShape { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, -40px) scale(1.1); } }
+
+        @media(max-width: 768px) {
+            .error-code { font-size: 120px; }
+            .error-code::after { font-size: 48px; }
+            .error-title { font-size: 24px; }
+            .actions-group { flex-direction: column; width: 100%; max-width: 300px; }
+            .btn { justify-content: center; width: 100%; }
+        }
     </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>404</h2>
-      <h1>Page Not Found</h1>
-      <p>The specified file was not found on this website. Please check the URL for mistakes and try again.</p>
-      <h3>Why am I seeing this?</h3>
-      <p>This page was generated by the Firebase Command-Line Interface. To modify it, edit the <code>404.html</code> file in your project's configured <code>public</code> directory.</p>
+</head>
+<body>
+
+    <div class="bg-shapes">
+        <div class="shape shape-blue"></div>
+        <div class="shape shape-purple"></div>
     </div>
-  </body>
+
+    <header>
+        <a href="/" class="brand">
+            <div class="brand-icon"><span class="material-icons">apps</span></div>
+            <div class="brand-text"><h1>EduPanel</h1></div>
+        </a>
+    </header>
+
+    <main>
+        <div class="error-code">404</div>
+        <h2 class="error-title">Fora da Matriz Curricular!</h2>
+        <p class="error-message">Parece que você se perdeu pelo campus virtual. A página que tentou aceder foi movida, eliminada ou o link está quebrado.</p>
+        
+        <div class="actions-group">
+            <a href="/" class="btn btn-primary">
+                <span class="material-icons">home</span> Voltar ao Hub Central
+            </a>
+            <a href="javascript:history.back()" class="btn btn-secondary">
+                <span class="material-icons">arrow_back</span> Voltar à página anterior
+            </a>
+        </div>
+    </main>
+
+</body>
 </html>

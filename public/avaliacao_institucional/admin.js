@@ -2,6 +2,7 @@ import { FirebaseAuth } from '../avaliacao_disciplinas/modules/shared/firebase.j
 import { initUsersSection } from './modules/usersSection.js';
 import { initQuestionsSection } from './modules/questionsSection.js';
 import { initResultsSection } from './modules/resultsSection.js';
+import { initSettingsSection } from './modules/settingsSection.js';
 
 class AdminController {
     constructor() {
@@ -40,6 +41,7 @@ class AdminController {
         initUsersSection();
         initQuestionsSection();
         initResultsSection();
+        initSettingsSection();
     }
 
     setupNavigation() {
