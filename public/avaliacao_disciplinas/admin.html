@@ -56,7 +56,7 @@
             <button id="logoutButton" class="btn-logout">
                 <span class="material-icons">logout</span> Encerrar Sessão
             </button>
-            
+
             <div style="text-align: center; margin-top: 16px; opacity: 0.4;">
                 <span style="font-size: 10px; color: white; letter-spacing: 1px; font-weight: 500;">
                     POWERED BY <strong style="color: var(--accent);">PYSKE</strong>
@@ -89,7 +89,7 @@
         <div class="saas-content">
 
             <section id="dashboard-section" class="content-section active">
-                
+
                 <div class="welcome-banner">
                     <div class="welcome-content">
                         <h2 id="welcomeMessage">Olá, Administrador! 👋</h2>
@@ -133,21 +133,26 @@
                 </div>
 
                 <div class="dash-grid-2col">
-                    
+
                     <div class="dash-col-left">
                         <div class="saas-panel p-20">
                             <h3 class="panel-subtitle">Ações Rápidas</h3>
                             <div class="quick-actions-grid">
-                                <button class="quick-action-btn" onclick="document.querySelector('[data-section=\'usuarios\']').click()">
+                                <button class="quick-action-btn"
+                                    onclick="document.querySelector('[data-section=\'usuarios\']').click()">
                                     <div class="qa-icon"><span class="material-icons">person_add</span></div>
                                     <span>Gerir Usuários</span>
                                 </button>
-                                <button class="quick-action-btn" onclick="document.querySelector('[data-section=\'turmas\']').click()">
-                                    <div class="qa-icon" style="color: var(--success); background: #f0fdf4;"><span class="material-icons">school</span></div>
+                                <button class="quick-action-btn"
+                                    onclick="document.querySelector('[data-section=\'turmas\']').click()">
+                                    <div class="qa-icon" style="color: var(--success); background: #f0fdf4;"><span
+                                            class="material-icons">school</span></div>
                                     <span>Ver Turmas</span>
                                 </button>
-                                <button class="quick-action-btn" onclick="document.querySelector('[data-section=\'avaliacoes\']').click()">
-                                    <div class="qa-icon" style="color: var(--warning); background: #fef3c7;"><span class="material-icons">analytics</span></div>
+                                <button class="quick-action-btn"
+                                    onclick="document.querySelector('[data-section=\'avaliacoes\']').click()">
+                                    <div class="qa-icon" style="color: var(--warning); background: #fef3c7;"><span
+                                            class="material-icons">analytics</span></div>
                                     <span>Ver Relatórios</span>
                                 </button>
                             </div>
@@ -305,7 +310,7 @@
                         <h2><span class="material-icons">query_stats</span> Análise Institucional</h2>
                         <p>Explore os resultados das avaliações através de filtros e relatórios detalhados.</p>
                     </div>
-                    
+
                     <div class="dash-actions">
                         <div class="export-toggle-group">
                             <label class="toggle-switch">
@@ -314,7 +319,7 @@
                             </label>
                             <span class="toggle-label">Incluir Respostas Detalhadas</span>
                         </div>
-            
+
                         <button id="exportAnalyticsBtn" class="btn-primary-modern">
                             <span class="material-icons">download</span>
                             <span>Baixar PDF</span>
@@ -324,42 +329,54 @@
                         </button>
                     </div>
                 </div>
-            
+
                 <div class="dash-filters-container">
                     <div class="filters-header">
                         <div class="filters-title">
                             <span class="material-icons">filter_list</span> Parâmetros de Análise
                         </div>
                         <div class="filters-chips">
-                            <span id="activeFiltersCount" class="badge-modern" style="display: none;">0 filtros ativos</span>
+                            <span id="activeFiltersCount" class="badge-modern" style="display: none;">0 filtros
+                                ativos</span>
                             <button id="clearFiltersBtn" class="btn-text">Limpar</button>
-                            <button id="advancedFiltersToggle" class="btn-text">Filtros Avançados <span class="material-icons">expand_more</span></button>
+                            <button id="advancedFiltersToggle" class="btn-text">Filtros Avançados <span
+                                    class="material-icons">expand_more</span></button>
                         </div>
                     </div>
-            
+
                     <div class="filters-grid basic-filters">
                         <div class="filter-box">
                             <label>Ano</label>
-                            <select id="yearFilter"><option value="all">Todos</option></select>
+                            <select id="yearFilter">
+                                <option value="all">Todos</option>
+                            </select>
                         </div>
                         <div class="filter-box">
                             <label>Semestre</label>
-                            <select id="semesterFilter"><option value="all">Todos</option></select>
+                            <select id="semesterFilter">
+                                <option value="all">Todos</option>
+                            </select>
                         </div>
                         <div class="filter-box">
                             <label>Professor</label>
-                            <select id="professorAnalyticsFilter"><option value="all">Todos</option></select>
+                            <select id="professorAnalyticsFilter">
+                                <option value="all">Todos</option>
+                            </select>
                         </div>
                         <div class="filter-box">
                             <label>Disciplina</label>
-                            <select id="disciplinaAnalyticsFilter"><option value="all">Todas</option></select>
+                            <select id="disciplinaAnalyticsFilter">
+                                <option value="all">Todas</option>
+                            </select>
                         </div>
                     </div>
-            
+
                     <div id="advancedFiltersSection" class="filters-grid advanced-filters" style="display: none;">
                         <div class="filter-box">
                             <label>Formulário</label>
-                            <select id="formularioAnalyticsFilter"><option value="all">Todos</option></select>
+                            <select id="formularioAnalyticsFilter">
+                                <option value="all">Todos</option>
+                            </select>
                         </div>
                         <div class="filter-box">
                             <label>Categoria de Questão</label>
@@ -387,7 +404,7 @@
                         </div>
                     </div>
                 </div>
-            
+
                 <div class="dash-kpi-section">
                     <h3 class="section-subtitle">Métricas do Filtro Atual</h3>
                     <div class="kpi-grid">
@@ -416,22 +433,29 @@
                             <div class="kpi-icon alt-3"><span class="material-icons">school</span></div>
                             <div class="kpi-info">
                                 <span class="kpi-label">Professores e Discip.</span>
-                                <strong class="kpi-value"><span id="totalProfessores">0</span> / <span id="totalDisciplinas">0</span></strong>
+                                <strong class="kpi-value"><span id="totalProfessores">0</span> / <span
+                                        id="totalDisciplinas">0</span></strong>
                             </div>
                         </div>
                     </div>
                 </div>
-            
+
                 <div class="dash-tabs-container">
                     <nav class="modern-tabs">
-                        <button class="tab-btn active" data-tab="overview"><span class="material-icons">pie_chart</span> Visão Geral</button>
-                        <button class="tab-btn" data-tab="professors"><span class="material-icons">person</span> Professores</button>
-                        <button class="tab-btn" data-tab="disciplines"><span class="material-icons">book</span> Disciplinas</button>
-                        <button class="tab-btn" data-tab="students"><span class="material-icons">face</span> Alunos</button>
-                        <button class="tab-btn" data-tab="questions"><span class="material-icons">help_outline</span> Questões</button>
-                        <button class="tab-btn" data-tab="comments"><span class="material-icons">forum</span> Comentários</button>
+                        <button class="tab-btn active" data-tab="overview"><span class="material-icons">pie_chart</span>
+                            Visão Geral</button>
+                        <button class="tab-btn" data-tab="professors"><span class="material-icons">person</span>
+                            Professores</button>
+                        <button class="tab-btn" data-tab="disciplines"><span class="material-icons">book</span>
+                            Disciplinas</button>
+                        <button class="tab-btn" data-tab="students"><span class="material-icons">face</span>
+                            Alunos</button>
+                        <button class="tab-btn" data-tab="questions"><span class="material-icons">help_outline</span>
+                            Questões</button>
+                        <button class="tab-btn" data-tab="comments"><span class="material-icons">forum</span>
+                            Comentários</button>
                     </nav>
-            
+
                     <div class="tabs-content-wrapper">
                         <div class="tab-content active" id="overview-tab">
                             <div class="charts-grid-modern">
@@ -449,12 +473,22 @@
                                 </div>
                             </div>
                         </div>
-            
-                        <div class="tab-content" id="students-tab"><div id="studentsAnalysisContainer"></div></div>
-                        <div class="tab-content" id="professors-tab"><div id="professorsAnalysisContainer"></div></div>
-                        <div class="tab-content" id="disciplines-tab"><div id="disciplinesAnalysisContainer"></div></div>
-                        <div class="tab-content" id="questions-tab"><div id="questionsAnalysisContainer"></div></div>
-                        <div class="tab-content" id="comments-tab"><div id="commentsContainer"></div></div>
+
+                        <div class="tab-content" id="students-tab">
+                            <div id="studentsAnalysisContainer"></div>
+                        </div>
+                        <div class="tab-content" id="professors-tab">
+                            <div id="professorsAnalysisContainer"></div>
+                        </div>
+                        <div class="tab-content" id="disciplines-tab">
+                            <div id="disciplinesAnalysisContainer"></div>
+                        </div>
+                        <div class="tab-content" id="questions-tab">
+                            <div id="questionsAnalysisContainer"></div>
+                        </div>
+                        <div class="tab-content" id="comments-tab">
+                            <div id="commentsContainer"></div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -474,7 +508,41 @@
             </div>
         </div>
     </div>
+    <div id="exportColumnsModal" class="modal-overlay">
+        <div class="modal-container-modern" style="max-width: 650px;">
+            <div class="modal-header">
+                <h3><span class="material-icons"
+                        style="vertical-align: bottom; margin-right: 8px; color: var(--accent);">view_column</span>
+                    Selecionar Colunas para Exportação</h3>
+            </div>
 
+            <div class="modal-body">
+                <p
+                    style="color: var(--text-secondary); font-size: 14px; margin-top: 0; margin-bottom: 20px; line-height: 1.5;">
+                    Selecione as perguntas que deseja incluir no relatório detalhado. As colunas
+                    <strong>Disciplina</strong> e <strong>Professor</strong> serão sempre incluídas automaticamente para
+                    dar contexto às respostas.
+                </p>
+
+                <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+                    <button type="button" id="selectAllColumnsBtn" class="btn-cancel"
+                        style="font-size: 12px; padding: 6px 12px;">Selecionar Todas</button>
+                    <button type="button" id="deselectAllColumnsBtn" class="btn-cancel"
+                        style="font-size: 12px; padding: 6px 12px;">Limpar Seleção</button>
+                </div>
+
+                <div id="columnsCheckboxList" style="display: flex; flex-direction: column; gap: 8px;">
+                </div>
+            </div>
+
+            <div class="form-actions" style="margin-top: 0; padding: 16px 24px; background: #fafafa;">
+                <button id="cancelExportBtn" class="btn-cancel">Cancelar</button>
+                <button id="confirmCustomExportBtn" class="btn-primary-modern">
+                    <span class="material-icons">picture_as_pdf</span> Gerar PDF
+                </button>
+            </div>
+        </div>
+    </div>
     <script>
         window.openMissingStudentsForm = async (missingStudentIds) => {
             const turmasManager = new (await import('./modules/admin/turmas-manager.js')).TurmasManager();

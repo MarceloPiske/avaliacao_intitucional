@@ -27,69 +27,213 @@ export class AvaliacoesManager {
         this.filters.onFilterChange = () => this.applyFilters();
         this.tabs.onTabChange = (tabName) => this.updateAnalytics();
         
-        // NOVO: Escutar cliques para exportar abas específicas
+        // Escutar cliques para exportar abas específicas
         this.tabs.onExportTab = (tabName) => {
             console.log(`Iniciando exportação da aba: ${tabName}`);
-            
-            // Aqui você poderá chamar futuramente:
-            // this.exporter.exportMiniReport(tabName, this.filteredData);
-            
             alert(`A exportação específica da aba "${tabName}" será processada com os filtros atuais! (Em desenvolvimento)`);
         };
 
-        // Export button - ALTERADO PARA USAR DADOS FILTRADOS
+        // ==========================================
+        // LÓGICA DE EXPORTAÇÃO PRINCIPAL E MODAL
+        // ==========================================
+        
+        // 1. Botão de Exportação Principal
         document.getElementById('exportAnalyticsBtn')?.addEventListener('click', () => {
-
-            // 1. Verificar se há dados filtrados
             if (!this.filteredData || this.filteredData.length === 0) {
                 alert("Não há dados filtrados para exportar.");
                 return;
             }
 
-            // 2. Capturar a escolha do utilizador no checkbox (NOVO)
             const isDetailed = document.getElementById('detailedExportCheckbox')?.checked || false;
 
-            this.showLoading(true);
-
-            // 3. Preparar objetos temporários para recalcular estatísticas baseadas no FILTRO
-            const filteredDetailedAnalytics = {
-                byStudent: new Map(),
-                byProfessor: new Map(),
-                byDiscipline: new Map(),
-                byTurma: new Map()
-            };
-
-            // 4. Processar os dados filtrados usando a Utility existente
-            AnalyticsDataUtils.processDetailedAnalytics(this.filteredData, filteredDetailedAnalytics);
-
-            // 5. Calcular o Sumário baseado APENAS nos dados filtrados
-            const summary = this.dataProcessor.calculateSummary(this.filteredData);
-
-            // 6. Converter Maps para Arrays para o exportador
-            const studentAnalytics = Array.from(filteredDetailedAnalytics.byStudent.values());
-            const professorAnalytics = Array.from(filteredDetailedAnalytics.byProfessor.values());
-            const disciplineAnalytics = Array.from(filteredDetailedAnalytics.byDiscipline.values());
-
-            // 7. Obter texto dos filtros ativos para mostrar no cabeçalho
-            const activeFiltersText = this.getFormattedActiveFilters();
-
-            // 8. Chamar o exporter com os dados filtrados e a flag do detalhamento (MODIFICADO)
-            this.exporter.exportAnalytics(
-                summary,
-                studentAnalytics,
-                professorAnalytics,
-                disciplineAnalytics,
-                activeFiltersText,
-                this.filteredData, // Passamos o array de respostas brutas
-                isDetailed         // Passamos se ele quer o detalhamento
-            ).finally(() => {
-                this.showLoading(false);
-            });
+            if (isDetailed) {
+                // Se detalhado, abre o modal para escolher as colunas
+                this.openColumnsSelectionModal();
+            } else {
+                // Exportação executiva direta
+                this.executeExport(false, null);
+            }
         });
+
+        // 2. Botões do Modal de Colunas
+        document.getElementById('cancelExportBtn')?.addEventListener('click', () => {
+            const modal = document.getElementById('exportColumnsModal');
+            if (modal) modal.style.display = 'none';
+        });
+
+        document.getElementById('confirmCustomExportBtn')?.addEventListener('click', () => {
+            const selectedCheckboxes = document.querySelectorAll('.column-checkbox:checked');
+            const selectedQuestions = Array.from(selectedCheckboxes).map(cb => cb.value);
+            
+            if (selectedQuestions.length === 0) {
+                alert("Por favor, selecione pelo menos uma coluna para o relatório detalhado.");
+                return;
+            }
+
+            const modal = document.getElementById('exportColumnsModal');
+            if (modal) modal.style.display = 'none';
+            
+            this.executeExport(true, selectedQuestions);
+        });
+
+        // 3. Controlos de Seleção Rápida no Modal
+        document.getElementById('selectAllColumnsBtn')?.addEventListener('click', () => {
+            document.querySelectorAll('.column-checkbox').forEach(cb => cb.checked = true);
+        });
+        
+        document.getElementById('deselectAllColumnsBtn')?.addEventListener('click', () => {
+            document.querySelectorAll('.column-checkbox').forEach(cb => cb.checked = false);
+        });
+
+        // Botão de Refresh
         document.getElementById('refreshAnalyticsBtn')?.addEventListener('click', () => this.loadData());
     }
 
-    // NOVA FUNÇÃO AUXILIAR: Formata texto dos filtros para o PDF
+    // ==========================================
+    // MÉTODOS DE APOIO À EXPORTAÇÃO
+    // ==========================================
+
+    openColumnsSelectionModal() {
+        const container = document.getElementById('columnsCheckboxList');
+        
+        if (!container) {
+            console.warn("Modal de colunas não encontrado no HTML. A exportar todas as colunas.");
+            this.executeExport(true, null);
+            return;
+        }
+
+        container.innerHTML = ''; // Limpar opções anteriores
+
+        // Helper para criar Títulos (DRY)
+        const createCategoryTitle = (titleText, isFirst = false) => {
+            const catTitle = document.createElement('h4');
+            catTitle.textContent = titleText;
+            catTitle.style.margin = '16px 0 12px 0';
+            catTitle.style.color = 'var(--text-primary)';
+            catTitle.style.fontSize = '14px';
+            catTitle.style.fontWeight = '600';
+            catTitle.style.borderBottom = '1px solid var(--border-color)';
+            catTitle.style.paddingBottom = '6px';
+            if (isFirst) catTitle.style.marginTop = '0';
+            return catTitle;
+        };
+
+        // Helper para criar Checkboxes (DRY)
+        const createCheckbox = (text, value) => {
+            const label = document.createElement('label');
+            label.className = 'sm-checkbox';
+            label.style.marginBottom = '12px';
+            label.style.alignItems = 'flex-start';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'column-checkbox';
+            checkbox.value = value;
+            checkbox.checked = true;
+
+            const fakeBox = document.createElement('div');
+            fakeBox.className = 'checkbox-box';
+            fakeBox.style.marginTop = '2px';
+            fakeBox.style.flexShrink = '0';
+
+            const textSpan = document.createElement('span');
+            textSpan.textContent = text;
+            textSpan.style.fontSize = '13px';
+            textSpan.style.color = 'var(--text-primary)';
+            textSpan.style.lineHeight = '1.4';
+            textSpan.style.marginLeft = '10px';
+
+            label.appendChild(checkbox);
+            label.appendChild(fakeBox);
+            label.appendChild(textSpan);
+            return label;
+        };
+
+        const uniqueQuestions = [...new Set(this.filteredData.map(item => item.questaoTexto))].filter(Boolean);
+
+        if (uniqueQuestions.length === 0) {
+            alert("Não há dados detalhados disponíveis para os filtros atuais.");
+            return;
+        }
+
+        const categories = {
+            'disciplina': 'Avaliação da Disciplina',
+            'professor': 'Avaliação do Professor',
+            'aluno': 'Autoavaliação do Aluno'
+        };
+
+        const questionsByType = AnalyticsDataUtils.groupByCategory(this.filteredData);
+        let isFirstCategory = true;
+
+        // 1. Renderiza as categorias objetivas
+        Object.keys(questionsByType).forEach(tipo => {
+            if (questionsByType[tipo].length === 0) return;
+            
+            container.appendChild(createCategoryTitle(categories[tipo] || tipo.toUpperCase(), isFirstCategory));
+            isFirstCategory = false;
+
+            const uniqueQuestionsForType = [...new Set(questionsByType[tipo].map(item => item.questaoTexto))].filter(Boolean);
+            uniqueQuestionsForType.forEach(question => {
+                container.appendChild(createCheckbox(question, question));
+            });
+        });
+
+        // 2. Renderiza a categoria de Questões Discursivas (Comentários e Sugestões)
+        const hasComentarios = this.filteredData.some(item => item.comentarios && item.comentarios.trim() !== '');
+        const hasSugestoes = this.filteredData.some(item => item.sugestoes && item.sugestoes.trim() !== '');
+
+        if (hasComentarios || hasSugestoes) {
+            container.appendChild(createCategoryTitle('Questões Discursivas', isFirstCategory));
+            // Usamos chaves especiais para não conflitar com perguntas objetivas
+            if (hasComentarios) container.appendChild(createCheckbox('Comentários Gerais', '_DISCURSIVA_COMENTARIOS_'));
+            if (hasSugestoes) container.appendChild(createCheckbox('Sugestões', '_DISCURSIVA_SUGESTOES_'));
+        }
+
+        // Mostrar o modal
+        const modal = document.getElementById('exportColumnsModal');
+        if (modal) modal.style.display = 'flex';
+    }
+
+    executeExport(isDetailed, selectedQuestions) {
+        this.showLoading(true);
+
+        // 1. Preparar objetos temporários para recalcular estatísticas baseadas no FILTRO
+        const filteredDetailedAnalytics = {
+            byStudent: new Map(),
+            byProfessor: new Map(),
+            byDiscipline: new Map(),
+            byTurma: new Map()
+        };
+
+        // 2. Processar os dados filtrados
+        AnalyticsDataUtils.processDetailedAnalytics(this.filteredData, filteredDetailedAnalytics);
+
+        // 3. Calcular o Sumário baseado APENAS nos dados filtrados
+        const summary = this.dataProcessor.calculateSummary(this.filteredData);
+
+        // 4. Converter Maps para Arrays para o exportador
+        const studentAnalytics = Array.from(filteredDetailedAnalytics.byStudent.values());
+        const professorAnalytics = Array.from(filteredDetailedAnalytics.byProfessor.values());
+        const disciplineAnalytics = Array.from(filteredDetailedAnalytics.byDiscipline.values());
+
+        // 5. Obter texto dos filtros
+        const activeFiltersText = this.getFormattedActiveFilters();
+
+        // 6. Chamar o exporter enviando a lista de questões selecionadas
+        this.exporter.exportAnalytics(
+            summary,
+            studentAnalytics,
+            professorAnalytics,
+            disciplineAnalytics,
+            activeFiltersText,
+            this.filteredData,
+            isDetailed,
+            selectedQuestions // Novo parâmetro
+        ).finally(() => {
+            this.showLoading(false);
+        });
+    }
+
     getFormattedActiveFilters() {
         const filters = this.filters.getCurrentFilters();
         let parts = [];
@@ -103,6 +247,10 @@ export class AvaliacoesManager {
 
         return parts.length > 0 ? parts.join(' | ') : "Todos os dados (Sem filtros)";
     }
+
+    // ==========================================
+    // FLUXO DE DADOS PRINCIPAL E UI
+    // ==========================================
 
     async loadData() {
         try {
@@ -139,7 +287,6 @@ export class AvaliacoesManager {
     updateSummary() {
         const summary = this.dataProcessor.calculateSummary();
 
-        // Função auxiliar de segurança: só insere o texto se o elemento existir no HTML
         const safeSetText = (id, text) => {
             const el = document.getElementById(id);
             if (el) el.textContent = text;
@@ -184,7 +331,6 @@ export class AvaliacoesManager {
         this.charts.createCategoryChart(this.filteredData, this.dataProcessor.groupByCategory.bind(this.dataProcessor));
         this.charts.createSemesterChart(this.filteredData, this.dataProcessor.groupBySemester.bind(this.dataProcessor));
         this.charts.createDistributionChart(this.filteredData);
-        //this.charts.createTimelineChart(this.filteredData, this.dataProcessor.groupByMonth.bind(this.dataProcessor));
     }
 
     showLoading(show) {

@@ -239,7 +239,7 @@ export class AnalyticsExporter {
         }
     }
 
-    async addDetailedResponses(filteredData) {
+   async addDetailedResponses(filteredData, selectedQuestions = null) {
         const avaliacoesMap = new Map();
         
         filteredData.forEach(item => {
@@ -248,6 +248,8 @@ export class AnalyticsExporter {
                     disciplina: item.disciplinaNome,
                     semestre: item.semestre,
                     professor: item.professorNome,
+                    comentarios: item.comentarios, // <-- Capturamos aqui
+                    sugestoes: item.sugestoes,     // <-- Capturamos aqui
                     respostas: {}
                 });
             }
@@ -255,9 +257,12 @@ export class AnalyticsExporter {
         });
 
         const questoesPorCategoria = { disciplina: new Set(), professor: new Set(), aluno: new Set() };
+        
         filteredData.forEach(item => {
-            if (questoesPorCategoria[item.tipo]) {
-                questoesPorCategoria[item.tipo].add(item.questaoTexto);
+            if (!selectedQuestions || selectedQuestions.includes(item.questaoTexto)) {
+                if (questoesPorCategoria[item.tipo]) {
+                    questoesPorCategoria[item.tipo].add(item.questaoTexto);
+                }
             }
         });
 
@@ -267,6 +272,7 @@ export class AnalyticsExporter {
             { id: 'aluno', titulo: 'Autoavaliação do Aluno' }
         ];
 
+        // 1. GERAR TABELAS DE QUESTÕES OBJETIVAS (Numéricas)
         categorias.forEach(cat => {
             const perguntas = Array.from(questoesPorCategoria[cat.id]);
             if (perguntas.length === 0) return; 
@@ -290,7 +296,6 @@ export class AnalyticsExporter {
             if (body.length > 0) {
                 this.pdf.addPage('a4', 'l'); 
                 
-                // CORREÇÃO DA TABELA DETALHADA: Mais legível e sem esmagar
                 autoTable(this.pdf, {
                     startY: 28,
                     head: head,
@@ -299,11 +304,11 @@ export class AnalyticsExporter {
                     headStyles: { 
                         fillColor: [15, 23, 42], 
                         textColor: 255,
-                        fontSize: 6.5, // Fonte menor no cabeçalho para acomodar textos longos
+                        fontSize: 6.5,
                         halign: 'center', 
                         valign: 'middle',
                         cellPadding: 2,
-                        minCellHeight: 15 // Garante que o cabeçalho não fica bizarramente alto
+                        minCellHeight: 15
                     },
                     bodyStyles: { 
                         fontSize: 7.5, 
@@ -330,6 +335,73 @@ export class AnalyticsExporter {
                 });
             }
         });
+
+        // 2. GERAR TABELA ESPECÍFICA PARA QUESTÕES DISCURSIVAS
+        // Verificamos se há seleção destas colunas no array selectedQuestions (ou se é null, assume tudo)
+        const includeComentarios = !selectedQuestions || selectedQuestions.includes('_DISCURSIVA_COMENTARIOS_');
+        const includeSugestoes = !selectedQuestions || selectedQuestions.includes('_DISCURSIVA_SUGESTOES_');
+
+        if (includeComentarios || includeSugestoes) {
+            const head = [['Disciplina', 'Professor']];
+            if (includeComentarios) head[0].push('Comentários Gerais');
+            if (includeSugestoes) head[0].push('Sugestões');
+            
+            const body = [];
+            
+            avaliacoesMap.forEach(av => {
+                const temComentario = includeComentarios && av.comentarios && av.comentarios.trim() !== '';
+                const temSugestao = includeSugestoes && av.sugestoes && av.sugestoes.trim() !== '';
+                
+                // Só adicionamos a linha se este aluno tiver escrito alguma coisa
+                if (temComentario || temSugestao) {
+                    const row = [`${av.disciplina}\n(${av.semestre})`, av.professor];
+                    if (includeComentarios) row.push(temComentario ? av.comentarios : '-');
+                    if (includeSugestoes) row.push(temSugestao ? av.sugestoes : '-');
+                    body.push(row);
+                }
+            });
+
+            if (body.length > 0) {
+                this.pdf.addPage('a4', 'l');
+                
+                autoTable(this.pdf, {
+                    startY: 28,
+                    head: head,
+                    body: body,
+                    theme: 'grid',
+                    headStyles: { 
+                        fillColor: [15, 23, 42], 
+                        textColor: 255,
+                        fontSize: 8, // Fonte ligeiramente maior aqui para facilitar leitura
+                        halign: 'center', 
+                        valign: 'middle',
+                        cellPadding: 3
+                    },
+                    bodyStyles: { 
+                        fontSize: 8, 
+                        halign: 'left', // Alinhamento à esquerda é essencial para blocos de texto
+                        valign: 'middle',
+                        textColor: [51, 65, 85]
+                    },
+                    alternateRowStyles: { fillColor: [248, 250, 252] },
+                    columnStyles: {
+                        0: { cellWidth: 35, fontStyle: 'bold' }, 
+                        1: { cellWidth: 30 }
+                    },
+                    margin: { left: 10, right: 10, bottom: 15 },
+                    didDrawPage: (data) => {
+                        const pageWidth = this.pdf.internal.pageSize.getWidth();
+                        this.pdf.setFillColor(15, 23, 42);
+                        this.pdf.rect(0, 0, pageWidth, 18, 'F');
+                        
+                        this.pdf.setTextColor(255, 255, 255);
+                        this.pdf.setFontSize(14);
+                        this.pdf.setFont("helvetica", "bold");
+                        this.pdf.text(`Respostas Detalhadas: Questões Discursivas (Anônimo)`, 10, 12);
+                    }
+                });
+            }
+        }
     }
 
     checkPageBreak(contentHeight) {
@@ -357,6 +429,34 @@ export class AnalyticsExporter {
             }
         } else {
             if (loadingEl) loadingEl.remove();
+        }
+    }
+    async exportAnalytics(summary, studentAnalytics, professorAnalytics, disciplineAnalytics, activeFiltersText, filteredData = [], isDetailed = false, selectedQuestions = null) {
+        this.showLoading(true);
+
+        try {
+            this.pdf = new jsPDF('p', 'mm', 'a4');
+            this.pdfWidth = this.pdf.internal.pageSize.getWidth();
+            this.pdfHeight = this.pdf.internal.pageSize.getHeight();
+            this.yOffset = this.pageMargin;
+
+            this.addExecutiveHeader(activeFiltersText);
+            this.addNativeKPICards(summary);
+            await this.addCompactCharts();
+            this.addNativeRankings(professorAnalytics, disciplineAnalytics);
+
+            // 2. Passe o parâmetro adiante
+            if (isDetailed && filteredData && filteredData.length > 0) {
+                await this.addDetailedResponses(filteredData, selectedQuestions);
+            }
+
+            this.pdf.save(`relatorio-institucional-${new Date().toISOString().split('T')[0]}.pdf`);
+
+        } catch (error) {
+            console.error('Erro ao gerar PDF:', error);
+            alert('Erro na geração do PDF.');
+        } finally {
+            this.showLoading(false);
         }
     }
 }
